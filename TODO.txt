@@ -1,0 +1,6 @@
+Sachen die alle Noch gemacht werden müssen:
+- Rahmenprogramm
+  - read_matrix
+  - write_matrix
+- Naive Multiplikation
+- Unit-Tests mit Hardcoded werden
