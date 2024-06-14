@@ -22,3 +22,11 @@ Nette Links:
 https://www.cs.cmu.edu/~scandal/cacm/node9.html
 Guter Algorithmus evtl:
 https://dl.acm.org/doi/10.1145/355791.355796
+
+Dinge die wir jetzt vor haben zu machen:
+Rahmenprogramm schrieben
+Naive Implementation von sparse Multiplikation schreiben
+Unit-Tests zu Hardgecodeten werten testen (z.B. Ergebnisse gleich Numpy mit normalen Matrizen)
+Optimierte Implementationen schreiben
+Benchmarken und Graph, ... usw erstellen
+Projektbericht.md schreiben
