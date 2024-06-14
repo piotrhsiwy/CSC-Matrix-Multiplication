@@ -1,0 +1,24 @@
+Jun 14: Piotr und Lars:
+
+brauchen Metadata-Struct:
+struct metadata {
+       uint64_t noRows;
+       uint64_t noCols;
+       size_t length_values;
+       float[length_values] values;
+       uint64_t[length_values] row_in;
+       uint64_t[noRows + 1] col_ptr;
+       }
+
+Außerdem:
+diese Methoden brauchen wir noch
+Methode:
+read_matrix(fd) -> eine geladene Matrix
+write_matrix(fd) -> schreibt Matrix in Textformat in fd
+
+Die arrays in dem Struct können erst, wenn sie eingelesen Werden, allokiert werden, da erst dann ihre größe bekannt ist
+
+Nette Links:
+https://www.cs.cmu.edu/~scandal/cacm/node9.html
+Guter Algorithmus evtl:
+https://dl.acm.org/doi/10.1145/355791.355796
