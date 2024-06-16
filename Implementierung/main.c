@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 int algorithm_to_use = 0;
 
@@ -20,6 +22,17 @@ struct config {
     char *matrixB_path;
     char *matrix_output_path;
 };
+
+struct matrix_data {
+    uint64_t noRows;
+    uint64_t noCols;
+    size_t length_values;
+    float* values;
+    uint64_t* rowIndex;
+    // len (*colPtr) = noRows + 1
+    uint64_t* colPtr;
+};
+
 
 
 int main(int argc, char **argv) {
