@@ -25,6 +25,7 @@ Gute Algorithmmen evtl:
 - https://people.eecs.berkeley.edu/~aydin/spgemm_sisc12.pdf
 - https://www.diva-portal.org/smash/get/diva2:821031/FULLTEXT01.pdf
 - https://dl.acm.org/doi/abs/10.1145/2699470
+- https://www.youtube.com/watch?v=F9ZMiccYo8k
 
 Dinge die wir jetzt vor haben zu machen:
 - Rahmenprogramm schrieben
