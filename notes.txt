@@ -13,7 +13,7 @@ struct metadata {
 Außerdem:
 diese Methoden brauchen wir noch
 Methode:
-read_matrix(fd) -> eine geladene Matrix
+[Dominik] read_matrix(fd) -> eine geladene Matrix
 write_matrix(fd) -> schreibt Matrix in Textformat in fd
 
 Die arrays in dem Struct können erst, wenn sie eingelesen Werden, allokiert werden, da erst dann ihre größe bekannt ist
