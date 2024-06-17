@@ -28,6 +28,7 @@ Gute Algorithmmen evtl:
 - https://www.youtube.com/watch?v=F9ZMiccYo8k
 
 Dinge die wir jetzt vor haben zu machen:
+- Make-file erstellen/reparieren
 - Rahmenprogramm schrieben
 - Naive Implementation von sparse Multiplikation schreiben
 - Unit-Tests zu Hardgecodeten werten testen (z.B. Ergebnisse gleich Numpy mit normalen Matrizen)
