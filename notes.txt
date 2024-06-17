@@ -8,7 +8,7 @@ struct metadata {
        float[length_values] values;
        uint64_t[length_values] row_in;
        uint64_t[noRows + 1] col_ptr;
-       }
+}
 
 Außerdem:
 diese Methoden brauchen wir noch
@@ -20,13 +20,16 @@ Die arrays in dem Struct können erst, wenn sie eingelesen Werden, allokiert wer
 
 Nette Links:
 https://www.cs.cmu.edu/~scandal/cacm/node9.html
-Guter Algorithmus evtl:
-https://dl.acm.org/doi/10.1145/355791.355796
+Gute Algorithmmen evtl:
+- https://dl.acm.org/doi/10.1145/355791.355796
+- https://people.eecs.berkeley.edu/~aydin/spgemm_sisc12.pdf
+- https://www.diva-portal.org/smash/get/diva2:821031/FULLTEXT01.pdf
+- https://dl.acm.org/doi/abs/10.1145/2699470
 
 Dinge die wir jetzt vor haben zu machen:
-Rahmenprogramm schrieben
-Naive Implementation von sparse Multiplikation schreiben
-Unit-Tests zu Hardgecodeten werten testen (z.B. Ergebnisse gleich Numpy mit normalen Matrizen)
-Optimierte Implementationen schreiben
-Benchmarken und Graph, ... usw erstellen
-Projektbericht.md schreiben
+- Rahmenprogramm schrieben
+- Naive Implementation von sparse Multiplikation schreiben
+- Unit-Tests zu Hardgecodeten werten testen (z.B. Ergebnisse gleich Numpy mit normalen Matrizen)
+- Optimierte Implementationen schreiben
+- Benchmarken und Graph, ... usw erstellen
+- Projektbericht.md schreiben
