@@ -1,10 +1,13 @@
 #ifndef GRA24CAPSPROJEKT_T064_MATRIX_H
 #define GRA24CAPSPROJEKT_T064_MATRIX_H
 
+#include "util/format.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 typedef struct {
     uint64_t no_rows;
@@ -52,9 +55,9 @@ void destruct_matrix_data(matrix_data* const data)
     free(data->values);
     data->values = NULL;
     free(data->row_index);
-    data->rowIndex = NULL;
-    free(data->colPtr);
-    data->colPtr = NULL;
+    data->row_index = NULL;
+    free(data->col_ptr);
+    data->col_ptr = NULL;
 }
 
 int read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
@@ -85,21 +88,21 @@ int write_matrix_to_fd(FILE* stream, matrix_data data)
     // row_indexes
     for (int i = 0; i < data.length_values; ++i) {
         // TODO error handling
-        if (0 == i) {
-            int ret = fprintf(stream, "%lu", data.row_index[i]);
-        } else {
-            int ret = fprintf(stream, ",%lu", data.row_index[i]);
+        if (0 != i) {
+            int ret = fprintf(stream, ",");
         }
+
+        int ret = fprintf(stream, FORMAT_UINT_64, data.row_index[i]);
     }
     fprintf(stream, "\n");
     // col_ptr
     for (int i = 0; i < (data.no_rows + 1); ++i) {
         // TODO error handling
-        if (0 == i) {
-            int ret = fprintf(stream, "%lu", data.col_ptr[i]);
-        } else {
-            int ret = fprintf(stream, ",%lu", data.col_ptr[i]);
+        if (0 != i) {
+            int ret = fprintf(stream, ",");
         }
+
+        int ret = fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
     fprintf(stream, "\n");
 }
