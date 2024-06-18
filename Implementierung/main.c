@@ -70,11 +70,11 @@ config parse_arguments(int argc, char** argv)
             // alle optionen wurden abgearbeitet
             break;
         }
-        // zeigt was gerade geparst wurde
         // So muss nicht im Switch die Variable erstellt werden
         // ist glaube ich erst mit c23 erlaubt, aber wir nutzen c17
         size_t length_argument;
         char* temp;
+        // zeigt was gerade geparst wurde
         switch (ret_val) {
         case 'a':
             temp = allocate_argument(optarg);
