@@ -9,6 +9,7 @@
 
 
 struct option options_struct[] = {
+    // TODO ich glaube davon ist nur help notwendig, der rest sind ein Buchstabe optionen
     { "a", required_argument, 0, 'a' },
     { "b", required_argument, 0, 'b' },
     { "o", required_argument, 0, 'o' },
