@@ -56,6 +56,10 @@ void destruct_matrix_data(matrix_data *const data)  {
     data->colPtr = NULL;
 }
 
+int read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
+
+}
+
 
 /*
  * Writes the matrix to passed stream in the text representation given by the requirements
