@@ -3,6 +3,8 @@
 
 #include <stlib.h>
 #include <stdint.h>
+#include <string.h>
+#include <stdio.h>
 
 
 typedef struct {
@@ -48,10 +50,46 @@ char* initMatrix(const uint64_t no_rows, const uint64_t no_cols, const size_t le
 void destruct_matrix_data(matrix_data *const data)  {
     free(data->values);
     data->values = NULL;
-    free(data->rowIndex);
+    free(data->row_index);
     data->rowIndex = NULL;
     free(data->colPtr);
     data->colPtr = NULL;
+}
+
+
+int write_matrix_to_fd(FILE *stream, matrix_data data) {
+
+    // write the noRows,NoCols
+    fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
+    // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
+    // TODO macros???
+    for (int i = 0; i < data.length_values; ++i) {
+        // TODO error Handling
+        if (0 == i) {
+            int ret = fprintf(stream, "%f", data.values[i]);
+        } else {
+            int ret = fprintf(stream, ",%f", data.values[i]);
+        }
+    }
+    fprintf(stream, "\n");
+    for (int i = 0; i < data.length_values; ++i) {
+        // TODO error handling
+        if (0 == i) {
+            int ret = fprintf(stream, "%lu", data.row_index[i]);
+        } else {
+            int ret = fprintf(stream, ",%lu", data.row_index[i]);
+        }
+    }
+    fprintf(stream, "\n");
+    for (int i = 0; i < (data.no_rows + 1); ++i) {
+        // TODO error handling
+        if (0 == i) {
+            int ret = fprintf(stream, "%lu", data.col_ptr[i]);
+        } else {
+            int ret = fprintf(stream, ",%lu", data.col_ptr[i]);
+        }
+    }
+    fprintf(stream,"\n");
 }
 
 #endif //GRA24CAPSPROJEKT_T064_MATRIX_H
