@@ -57,12 +57,16 @@ void destruct_matrix_data(matrix_data *const data)  {
 }
 
 
+/*
+ * Writes the matrix to passed stream in the text representation given by the requirements
+ */
 int write_matrix_to_fd(FILE *stream, matrix_data data) {
 
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
     // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
     // TODO macros???
+    // values
     for (int i = 0; i < data.length_values; ++i) {
         // TODO error Handling
         if (0 == i) {
@@ -72,6 +76,7 @@ int write_matrix_to_fd(FILE *stream, matrix_data data) {
         }
     }
     fprintf(stream, "\n");
+    // row_indexes
     for (int i = 0; i < data.length_values; ++i) {
         // TODO error handling
         if (0 == i) {
@@ -81,6 +86,7 @@ int write_matrix_to_fd(FILE *stream, matrix_data data) {
         }
     }
     fprintf(stream, "\n");
+    // col_ptr
     for (int i = 0; i < (data.no_rows + 1); ++i) {
         // TODO error handling
         if (0 == i) {
