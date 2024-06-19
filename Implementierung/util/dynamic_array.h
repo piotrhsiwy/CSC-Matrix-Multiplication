@@ -2,8 +2,19 @@
 #define DYNAMIC_ARRAY_H
 
 #include <stdlib.h>
+#include <stdint.h>
 
 
+/**
+ * A DYNAMIC_ARRAY(void) that guarantees to have the same memory layout as any specific DYNAMIC_ARRAY.
+ */
+typedef struct {
+    void* data;
+    size_t length;
+    size_t capacity;
+} generic_dynamic_array;
+
+/// A poor man's std::vector<T>. "Poor man" as in "C developer".
 #define DYNAMIC_ARRAY(T) ___dynamic_array_##T##_macro_defined
 
 #define dynamic_array_add(T, arr, v) ___dynamic_array_##T##_macro_defined_add(arr, v)
@@ -31,7 +42,7 @@
       const DYNAMIC_ARRAY(T) *const arr, const size_t index) {                                               \
         return arr->data[index];                                                                             \
     }                                                                                                        \
-    const char* ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {   \
+    const char* ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {     \
         if(!(arr->data = (T*)malloc(capacity * sizeof(T))))                                                  \
             return "Out of memory";                                                                          \
         arr->length = 0;                                                                                     \
@@ -39,7 +50,26 @@
         return NULL;                                                                                         \
     }
 
+    /**
+     * Clears all fields of the given array (including als pointers to allocated memory).
+     * This is useful when e. g. transferring ownership of the managed memory but you are on own now to free it.
+     * @param arr The array to clear
+     */
+    void dynamic_array_unbind(generic_dynamic_array *const arr) {
+        arr->data = NULL;
+        arr->capacity = arr->length = 0;
+    }
+    /**
+     * Frees the given array and clears it's fields to avoid accidental double free bugs.
+     * @param arr The array to destroy
+     */
+    void dynamic_array_destroy(generic_dynamic_array *const arr) {
+        free(arr->data);
+        dynamic_array_unbind(arr);
+    }
+
 DYNAMIC_ARRAY_DECL(float)
+DYNAMIC_ARRAY_DECL(uint64_t)
 
 
 
