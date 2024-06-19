@@ -151,13 +151,13 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
-        //TODO: check why false positives are triggered...
-        /*if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
+        //TODO: check for invalid format as well
+        if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             dynamic_array_destroy((generic_dynamic_array*) &ints);
             return invalid_value;
-        }*/
+        }
         dynamic_array_add(uint64_t, &ints, index);
     }
 
@@ -181,14 +181,14 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
-        //TODO: check why false positives are triggered...
-        /*if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
+        //TODO: check for invalid format as well
+        if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             free(data->row_indices);
             dynamic_array_destroy((generic_dynamic_array*) &ints);
             return invalid_value;
-        }*/
+        }
         dynamic_array_add(uint64_t, &ints, index);
     }
 
