@@ -101,6 +101,8 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     //endregion
 
+    //TODO: fail, if still more characters left in line
+
     // region setting values
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
