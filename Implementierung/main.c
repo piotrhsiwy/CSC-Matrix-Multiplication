@@ -128,6 +128,11 @@ config parse_arguments(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+    //Replace with file of your liking
+    //FILE* f = fopen("/mnt/c/Users/nikpe/Downloads/test.csc", "r");
+    //matrix_data m;
+    //read_matrix_from_fd(f, &m);
+
     config options = parse_arguments(argc, argv);
     if (options.requested_help) {
         // TODO Ernsthafte Help

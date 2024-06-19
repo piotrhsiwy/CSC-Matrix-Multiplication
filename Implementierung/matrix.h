@@ -64,6 +64,8 @@ void destruct_matrix_data(matrix_data* const data) {
 }
 
 enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
+    errno = 0;
+
     char* line = NULL;
     size_t line_length;
 
@@ -80,7 +82,7 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     //TODO: check whether to use strtoull
     data->no_rows = strtoul(token, NULL, 10);
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) {
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return invalid_value;
     }
@@ -93,7 +95,7 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return unexpected_end_of_line;
     }
     data->no_cols = strtoul(token, NULL, 10);
-    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) {
+    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return invalid_value;
     }
@@ -147,12 +149,13 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
-        if (index == 0 || (index == ULONG_MAX && errno == ERANGE)) {
+        //TODO: check why false positives are triggered...
+        /*if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             dynamic_array_destroy((generic_dynamic_array*) &ints);
             return invalid_value;
-        }
+        }*/
         dynamic_array_add(uint64_t, &ints, index);
     }
 
@@ -176,13 +179,14 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
-        if (index == 0 || (index == ULONG_MAX && errno == ERANGE)) {
+        //TODO: check why false positives are triggered...
+        /*if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             free(data->row_indices);
             dynamic_array_destroy((generic_dynamic_array*) &ints);
             return invalid_value;
-        }
+        }*/
         dynamic_array_add(uint64_t, &ints, index);
     }
 
