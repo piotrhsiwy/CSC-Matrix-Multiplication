@@ -1,7 +1,7 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-enum IO_error : int {
+enum IO_error {
     ok = 0,
 
     out_of_memory = -1,
