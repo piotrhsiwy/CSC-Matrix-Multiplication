@@ -1,3 +1,5 @@
+#include "matrix.h"
+
 #include <getopt.h>
 #include <stdbool.h>
 #include <stddef.h>

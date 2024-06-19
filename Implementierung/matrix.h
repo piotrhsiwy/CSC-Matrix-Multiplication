@@ -2,6 +2,7 @@
 #define GRA24CAPSPROJEKT_T064_MATRIX_H
 
 #include "util/format.h"
+#include "util/dynamic_array.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -50,8 +51,7 @@ char* initMatrix(const uint64_t no_rows, const uint64_t no_cols, const size_t le
 /**
  * Frees the memory used by the arrays of the given matrix_data.
  */
-void destruct_matrix_data(matrix_data* const data)
-{
+void destruct_matrix_data(matrix_data* const data) {
     free(data->values);
     data->values = NULL;
     free(data->row_index);
@@ -61,7 +61,9 @@ void destruct_matrix_data(matrix_data* const data)
 }
 
 int read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
-
+    DYNAMIC_ARRAY(float) values;
+    if(dynamic_array_new(float, 4, &values))
+        return -1; //Out of memory
 }
 
 
