@@ -6,7 +6,7 @@ CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 OBJS := main.o matrix_mult.o matrix.o
 
 all: main
-	@echo Program compiled successfully
+	@echo ------------------------------ Program compiled successfully
 
 debug: CFLAGS += -g -Og
 debug: main
@@ -18,12 +18,13 @@ release_with_symbols: CFLAGS += -O3 -g
 release_with_symbols: main
 
 %.o: %.c %.h
-	@echo "Compiling: " $@
+	@echo "------------------------------ Compiling: " $@
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 main: $(OBJS)
-	@echo "Linking: " $^
+	@echo "------------------------------ Linking: " $^
 	$(CC) $(CFLAGS) -o main $(OBJS)
+	rm *.o
 
 .PHONY: clean
 clean:
