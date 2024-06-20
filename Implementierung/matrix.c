@@ -1,10 +1,14 @@
 #include "matrix.h"
 
-/**
- * Constructs a struct of type matrix_data with the arrays allocated correctly.
- *
- * Returns an error as c-string or NULL on success.
- */
+#include "util/format.h"
+//#include "util/dynamic_array.h"
+
+#include <errno.h>
+#include <string.h>
+#include <limits.h>
+#include <math.h>
+
+
 const char* init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, const size_t length_values, matrix_data* const data) {
     data->no_rows = no_rows;
     data->no_cols = no_cols;
@@ -27,12 +31,6 @@ const char* init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, co
     return NULL;
 }
 
-
-
-
-/**
- * Frees the memory used by the arrays of the given matrix_data.
- */
 void destruct_matrix_data(matrix_data* const data) {
     free(data->values);
     data->values = NULL;
@@ -41,9 +39,6 @@ void destruct_matrix_data(matrix_data* const data) {
     free(data->col_ptr);
     data->col_ptr = NULL;
 }
-
-
-
 
 
 IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
@@ -204,14 +199,8 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     return ok;
 }
 
-
-
-/*
- * Writes the matrix to passed stream in the text representation given by the requirements
- */
-IO_error write_matrix_to_fd(FILE* stream, matrix_data data)
+IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
 {
-
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
     // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
