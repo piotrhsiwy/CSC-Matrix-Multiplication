@@ -29,7 +29,7 @@ typedef struct {
  *
  * Returns an error as c-string or NULL on success.
  */
-char* initMatrix(const uint64_t no_rows, const uint64_t no_cols, const size_t length_values, matrix_data* const data) {
+const char* init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, const size_t length_values, matrix_data* const data) {
     data->no_rows = no_rows;
     data->no_cols = no_cols;
     data->length_values = length_values;
