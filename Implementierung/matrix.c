@@ -1,6 +1,5 @@
 #include "matrix.h"
 
-
 /**
  * Constructs a struct of type matrix_data with the arrays allocated correctly.
  *

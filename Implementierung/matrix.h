@@ -1,6 +1,8 @@
 #ifndef GRA24CAPSPROJEKT_T064_MATRIX_H
 #define GRA24CAPSPROJEKT_T064_MATRIX_H
 
+// we need this because getline is not part of C-standard, see man 3 getline vs man 3 fgets
+#define _POSIX_C_SOURCE 200809L
 #include "util/format.h"
 #include "util/dynamic_array.h"
 #include "error_handling/errors.h"
@@ -12,7 +14,6 @@
 #include <string.h>
 #include <limits.h>
 #include <math.h>
-
 
 typedef struct {
     uint64_t no_rows;
