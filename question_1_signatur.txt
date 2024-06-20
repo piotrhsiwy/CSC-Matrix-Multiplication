@@ -1,0 +1,34 @@
+
+
+Hallo Piotr,
+
+Ihr sollt die Signatur eigentlich nicht verändern, aber du hast natürlich recht wenn du sagst dass diese Funktionen schönerweise einen Rückgabewert erhalten sollten. ABER da du diese Funktion nicht direkt an den Nutzer exposen musst kannst du dir vorher Gedanken machen, für welche Eingaben das Programm Fehler werfen würde.
+
+
+Also, verändert die Signatur nicht! Ihr könnt euch schon außerhalb darum kümmern, dass nie Fehler in der Funktion vorkommen. Für interne Fehler: ihr habt ja einen Rückgabewert, den könnt ihr clever nutzen ;-)
+
+
+PS: bitte schreibt mich in Zukunft immer auf zulip an, da ich hier keine Fragen mehr beantworten werde.
+On 20.06.24 14:09, Piotr Siwy wrote:
+>
+> Hallo!
+>
+> Wir haben dich als Projektbetreuer für unser GRA-Projekt Betreuer zugeteilt bekommen.
+>
+> Wir haben eine Frage zur Problemstellung. Die Funktion die die tatsächliche Funktionalität implementiert gibt nämlich laut der Angabe kein value zurück:
+> void matr_mult_csc(const void* a, const void* b, void* result)
+>
+> Unserer Meinung nach, wäre es aber hilfreich für Fehlerbehandlung, insbesondere für die Fehler die man erst bei der Multiplikation entdecken kann, wie z.B. ob einen Eintrag in der Ausgabematrix nicht mehr in float passen sollte. Die Frage ist dann ob wir die Rückgabewert der matrmultcsc zum int ändern dürfen, sodass wir die Fehler an die höhere Ebene weitergeben können?
+>
+>     Sie dürfen die angegebenen Funktionssignaturen, bis auf die Änderung des Funktionsnamens für die Benennung der unterschiedlichen Implementierungen (siehe
+>     nächster Punkt) nicht ändern.
+>
+> Zitat aus der Angabe
+>
+>
+> Piotr Siwy
+>
+-- 
+Mit freundlichen Grüßen,
+Franzisco Schmidt
+
