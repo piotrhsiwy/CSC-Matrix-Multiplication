@@ -57,7 +57,7 @@ typedef struct {
         size_t length;                                                                                       \
         size_t capacity;                                                                                     \
     } DYNAMIC_ARRAY(T);                                                                                      \
-    int __dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v); \
+    int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v); \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(                                         \
       const DYNAMIC_ARRAY(T) *const arr, const size_t index);                      \
     const char* ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr);

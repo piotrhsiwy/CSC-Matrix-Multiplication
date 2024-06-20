@@ -38,7 +38,8 @@ typedef struct {
 char* allocate_argument(char* optarg_to_process)
 {
     size_t length = strlen(optarg_to_process);
-    char* buffer = malloc(length);
+    // Danke Piotr
+    char* buffer = malloc(length + 1);
     // TODO mehr error handling?
     if (NULL == buffer) {
         return NULL;

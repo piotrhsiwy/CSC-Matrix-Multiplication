@@ -8,6 +8,12 @@ Ich habe den Code gelesen.
        - Wieso kann value nicht 0.f sein? matrix.h:119
        - Wieso alle Definitionen in Header-files? -> nicht mal längere Kopiliationsdauer?
 
+Lars:
+	- Wir wissen bevor wir die multiplikation durchgeführt haben nicht, wie viele nicht-nulle Werte es im Resultat gibt. Einfach a->length_values * b->length_values zu allokieren geht, aber verschwendet platz.
+	- stimmt, habe ich mal gefixt.
+	- habe seitdem Refactored, aber falls matrix.c mit dem value == 0.f gemeint ist: im values-Array sind eigentlich nur nicht-nulle Werte, da die Nuller absichtlich als Kompremierung nicht gespeichert werden.
+	- Wir dachten, dass leichter zu testen. Ist jetzt aber gefixt, also egal
+
 Jun 14: Piotr und Lars:
 
 brauchen Metadata-Struct:
