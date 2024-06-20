@@ -4,7 +4,7 @@ Ich habe den Code gelesen.
        - Cool and all, aber wofur brauchen wir das dynamisches Array, wenn wir die Groesse des Arrays nach Einlesen vom noRows, noCols genau kennen?
        (vielleicht besser weglassen nachdem je weniger, simpler Code desto weniger Abzugmoeglichkeiten)
        - buffer zu kurz in main.c:40, 0-Byte fehlt
-       - InitMatrix und read_matrix_from_fd name consistency?
+       [x] InitMatrix und read_matrix_from_fd name consistency?
        - Wieso kann value nicht 0.f sein? matrix.h:119
        - Wieso alle Definitionen in Header-files?
 
