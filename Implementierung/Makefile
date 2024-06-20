@@ -1,9 +1,12 @@
 # TODO handle neither compiler being available
 CC := $(shell command -v gcc || command -v clang)
 
-CFLAGS := -std=c17 -Wall -Wextra
+CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
+
+OBJS := main.o matrix_mult.o
 
 all: main
+	@echo Program compiled successfully
 
 debug: CFLAGS += -g -Og
 debug: main
@@ -14,7 +17,14 @@ release: main
 release_with_symbols: CFLAGS += -O3 -g
 release_with_symbols: main
 
-main: main.c
-	$(CC) -g -o main main.c
+%.o: %.c %.h
+	@echo "Compiling: " $@
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+main: $(OBJS)
+	@echo "Linking: " $^
+	$(CC) $(CFLAGS) -o main $(OBJS)
+
+.PHONY: clean
 clean:
-	rm main
+	rm main *.o
