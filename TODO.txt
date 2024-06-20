@@ -1,14 +1,17 @@
 Sachen die alle Noch gemacht werden müssen:
 - Rahmenprogramm
-   read_matrix 
+   [x] read_matrix 
     fur A, B: read_matrix_from_fd
     fur C: init
     ...
-   write_matrix
+   [x] write_matrix
     fur A, B: write_matrix_to_fd
     fur A, B, C: destruct
 - Matrix Multiplikation
-  - Naives Verfahren
+  [x] Naives Verfahren
+  [ ] SIMD?
+  [ ] heuristic?
 - Tests
-  - Performance measurements
-  - Unit-Tests mit Hardcoded werten
+  [ ] Performance measurements
+  [ ] Unit-Tests mit Hardcoded werten
+  [ ] Generic UT?

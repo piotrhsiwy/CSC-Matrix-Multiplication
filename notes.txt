@@ -6,7 +6,7 @@ Ich habe den Code gelesen.
        - buffer zu kurz in main.c:40, 0-Byte fehlt
        [x] InitMatrix und read_matrix_from_fd name consistency?
        - Wieso kann value nicht 0.f sein? matrix.h:119
-       - Wieso alle Definitionen in Header-files?
+       - Wieso alle Definitionen in Header-files? -> nicht mal längere Kopiliationsdauer?
 
 Jun 14: Piotr und Lars:
 
