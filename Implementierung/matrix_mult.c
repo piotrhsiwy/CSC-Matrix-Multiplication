@@ -47,7 +47,7 @@ void matrix_mult_asc(const void* a, const void* b, void* result){
              *  there is no pair of (column-number, row-number) such that column-number == row-number
              *  (or either the column or the row is empty)
              */
-            struct pair {uint64_t index; float value};
+            struct pair {uint64_t index; float value;};
             struct pair to_be_multiplied_A[matrix_C->length_values]; // TODO is this known before completing the multiplication?
             uint64_t no_to_be_multiplied_A = 0;
             // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run
