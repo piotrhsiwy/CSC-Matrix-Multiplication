@@ -1,25 +1,11 @@
-//
-// Created by lars on 6/20/24.
-//
-
 #include "dynamic_array.h"
 
 
-/**
-     * Frees the given array and clears it's fields to avoid accidental double free bugs.
-     * @param arr The array to destroy
- */
 void dynamic_array_destroy(generic_dynamic_array *const arr) {
     free(arr->data);
     dynamic_array_unbind(arr);
 }
 
-
-/**
-     * Clears all fields of the given array (including als pointers to allocated memory).
-     * This is useful when e. g. transferring ownership of the managed memory but you are on own now to free it.
-     * @param arr The array to clear
- */
 void dynamic_array_unbind(generic_dynamic_array *const arr) {
     arr->data = NULL;
     arr->capacity = arr->length = 0;
