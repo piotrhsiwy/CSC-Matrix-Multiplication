@@ -92,33 +92,52 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return unexpected_end_of_file;
     }
 
-    DYNAMIC_ARRAY(float) values;
-    if (dynamic_array_new(float, 4, &values)) {
+    // count the number of , in the line
+    // length_values will be that + 1
+    size_t num_commas = 0;
+    size_t index_line = 0;
+    while (line[index_line] != '\0') {
+        if (line[index_line] == ',') {
+            num_commas++;
+        }
+        index_line++;
+    }
+    float *values = malloc(num_commas + 1);
+    if (NULL == values) {
         free(line);
         return out_of_memory;
     }
+
+    size_t values_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         float value = strtof(token, NULL);
         if(value == 0.f) { //We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
             free(line);
-            dynamic_array_destroy((generic_dynamic_array*) &values);
+            free(values);
             return invalid_value;
         }
         if((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
             free(line);
-            dynamic_array_destroy((generic_dynamic_array*) &values);
+            free(values);
             return invalid_value;
         }
-        dynamic_array_add(float, &values, value);
+        values[values_index] = value;
+        values_index++;
     }
 
     //TODO: sanity-check on length of values? --> How?
-    data->values = values.data;
-    data->length_values = values.length;
-    dynamic_array_unbind((generic_dynamic_array *) &values);
+    data->values = values;
+    data->length_values = num_commas + 1;
     //endregion
 
-    DYNAMIC_ARRAY(uint64_t) ints;
+    // row_indices hat len = length_values
+
+    uint64_t* ints = malloc(num_commas + 1);
+    if (NULL == ints) {
+        free(line);
+        free(data->values);
+        return out_of_memory;
+    }
 
     // region setting row_indices
     if (getline(&line, &line_length, stream) == -1) {
@@ -127,26 +146,22 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return unexpected_end_of_file;
     }
 
-    if (dynamic_array_new(uint64_t, 4, &ints)) {
-        free(line);
-        free(data->values);
-        return out_of_memory;
-    }
+    size_t ints_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
         //TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
-            dynamic_array_destroy((generic_dynamic_array*) &ints);
+            free(ints);
             return invalid_value;
         }
-        dynamic_array_add(uint64_t, &ints, index);
+        ints[ints_index] = index;
+        ints_index++;
     }
 
     //TODO: sanity-check on length of row_indices?
-    data->row_indices = ints.data;
-    dynamic_array_unbind((generic_dynamic_array*) &ints);
+    data->row_indices = ints;
     // endregion
 
     // region setting col_ptr
@@ -157,11 +172,16 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return unexpected_end_of_file;
     }
 
-    if (dynamic_array_new(uint64_t, 4, &ints)) {
+    uint64_t* cols = malloc(data->no_rows + 1);
+    if (NULL == cols) {
         free(line);
         free(data->values);
-        return out_of_memory;
+        free(data->row_indices);
+        free(cols);
     }
+
+
+    size_t cols_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         uint64_t index = strtoul(token, NULL, 10);
         //TODO: check for invalid format as well
@@ -169,15 +189,15 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
             free(line);
             free(data->values);
             free(data->row_indices);
-            dynamic_array_destroy((generic_dynamic_array*) &ints);
+            free(cols);
             return invalid_value;
         }
-        dynamic_array_add(uint64_t, &ints, index);
+        cols[cols_index] = index;
+        cols_index++;
     }
 
     //TODO: sanity-check on length of col_ptr?
-    data->col_ptr = ints.data;
-    dynamic_array_unbind((generic_dynamic_array*) &ints);
+    data->col_ptr = cols;
     // endregion
 
     free(line);
