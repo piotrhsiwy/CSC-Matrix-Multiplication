@@ -139,10 +139,31 @@ int main(int argc, char** argv)
     if (options.requested_help) {
         // TODO Ernsthafte Help
         printf("hier sollte eine Hilfe sein.\n");
+        return 0;
     }
+    // Did the user pass all required options?
+    // TODO ist das garantiert NULL falls nicht intialisiert
+    if (NULL == options.matrixA_path) {
+        // TODO bessere Fehlermeldung
+        printf("Ein Pfad für die Matrix A muss spezifiziert werden.");
+        // TODO standard unix return codes
+        // TODO cleanup
+        return 4;
+    }
+    if (NULL == options.matrixB_path) {
+        printf("Ein Pfad für die Matrix B muss spezifiziert werden.");
+        return 5;
+    }
+    if (NULL == options.matrix_output_path) {
+        printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.");
+        return 6;
+    }
+
+
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
+
 
     matrix_data a;
     matrix_data b;
