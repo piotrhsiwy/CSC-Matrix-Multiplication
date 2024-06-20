@@ -21,11 +21,6 @@ typedef struct {
 #define dynamic_array_at(T, arr, i) ___dynamic_array_##T##_macro_defined_at(arr, i)
 #define dynamic_array_new(T, capacity, arr) ___dynamic_array_##T##_macro_defined_new(capacity, arr)
 #define DYNAMIC_ARRAY_DECL(T)                                                                                \
-    typedef struct {                                                                                         \
-        T* data;                                                                                             \
-        size_t length;                                                                                       \
-        size_t capacity;                                                                                     \
-    } DYNAMIC_ARRAY(T);                                                                                      \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
         if(arr->capacity < ++arr->length) {                                                                  \
             T* buf = (T*)realloc(arr->data, sizeof(T) * (arr->capacity *= 2));                               \
@@ -50,26 +45,38 @@ typedef struct {
         return NULL;                                                                                         \
     }
 
-    /**
+
+//DYNAMIC_ARRAY_DECL(float)
+//DYNAMIC_ARRAY_DECL(uint64_t)
+
+
+
+#define DYNAMIC_ARRAY_HEADER(T) \
+    typedef struct {                                                                                         \
+        T* data;                                                                                             \
+        size_t length;                                                                                       \
+        size_t capacity;                                                                                     \
+    } DYNAMIC_ARRAY(T);                                                                                      \
+    int __dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v); \
+    T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(                                         \
+      const DYNAMIC_ARRAY(T) *const arr, const size_t index);                      \
+    const char* ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr);
+
+/**
      * Clears all fields of the given array (including als pointers to allocated memory).
      * This is useful when e. g. transferring ownership of the managed memory but you are on own now to free it.
      * @param arr The array to clear
-     */
-    void dynamic_array_unbind(generic_dynamic_array *const arr) {
-        arr->data = NULL;
-        arr->capacity = arr->length = 0;
-    }
-    /**
+ */
+void dynamic_array_unbind(generic_dynamic_array *const arr);
+
+/**
      * Frees the given array and clears it's fields to avoid accidental double free bugs.
      * @param arr The array to destroy
-     */
-    void dynamic_array_destroy(generic_dynamic_array *const arr) {
-        free(arr->data);
-        dynamic_array_unbind(arr);
-    }
+ */
+void dynamic_array_destroy(generic_dynamic_array *const arr);
 
-DYNAMIC_ARRAY_DECL(float)
-DYNAMIC_ARRAY_DECL(uint64_t)
+DYNAMIC_ARRAY_HEADER(float)
+DYNAMIC_ARRAY_HEADER(uint64_t)
 
 
 
