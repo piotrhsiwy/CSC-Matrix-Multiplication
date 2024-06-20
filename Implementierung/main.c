@@ -138,5 +138,13 @@ int main(int argc, char** argv)
         // TODO Ernsthafte Help
         printf("hier sollte eine Hilfe sein.\n");
     }
+    // read the matrixes from the specified paths
+    FILE* matrix_a_file = fopen(options.matrixA_path, "r");
+    FILE* matrix_b_file = fopen(options.matrixB_path, "r");
+
+    matrix_data a;
+    matrix_data b;
+    IO_error err_a = read_matrix_from_fd(matrix_a_file, &a);
+    IO_error err_b = read_matrix_from_fd(matrix_b_file, &b);
     return 10;
 }
