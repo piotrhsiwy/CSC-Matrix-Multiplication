@@ -131,7 +131,7 @@ int main(int argc, char** argv)
     //Replace with file of your liking
     //FILE* f = fopen("/mnt/c/Users/nikpe/Downloads/test.csc", "r");
     //matrix_data m;
-    //enum IO_error err = read_matrix_from_fd(f, &m);
+    //IO_error err = read_matrix_from_fd(f, &m);
 
     config options = parse_arguments(argc, argv);
     if (options.requested_help) {

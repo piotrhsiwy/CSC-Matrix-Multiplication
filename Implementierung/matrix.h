@@ -63,7 +63,7 @@ void destruct_matrix_data(matrix_data* const data) {
     data->col_ptr = NULL;
 }
 
-enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
+IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     errno = 0;
 
     char* line = NULL;
@@ -205,7 +205,7 @@ enum IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 /*
  * Writes the matrix to passed stream in the text representation given by the requirements
  */
-enum IO_error write_matrix_to_fd(FILE* stream, matrix_data data)
+IO_error write_matrix_to_fd(FILE* stream, matrix_data data)
 {
 
     // write the noRows,NoCols
