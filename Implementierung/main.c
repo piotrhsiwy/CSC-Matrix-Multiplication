@@ -145,17 +145,17 @@ int main(int argc, char** argv)
     // TODO ist das garantiert NULL falls nicht intialisiert
     if (NULL == options.matrixA_path) {
         // TODO bessere Fehlermeldung
-        printf("Ein Pfad für die Matrix A muss spezifiziert werden.");
+        printf("Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         // TODO standard unix return codes
         // TODO cleanup
         return 4;
     }
     if (NULL == options.matrixB_path) {
-        printf("Ein Pfad für die Matrix B muss spezifiziert werden.");
+        printf("Ein Pfad für die Matrix B muss spezifiziert werden.\n");
         return 5;
     }
     if (NULL == options.matrix_output_path) {
-        printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.");
+        printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.\n");
         return 6;
     }
 
