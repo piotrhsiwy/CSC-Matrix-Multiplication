@@ -28,4 +28,4 @@ main: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm main *.o
+	rm main
