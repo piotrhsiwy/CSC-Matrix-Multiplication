@@ -169,22 +169,23 @@ int main(int argc, char** argv)
     matrix_data b;
     IO_error err_a = read_matrix_from_fd(matrix_a_file, &a);
     IO_error err_b = read_matrix_from_fd(matrix_b_file, &b);
-    if (ok != err_a) {
+    if (OK != err_a) {
         // TODO proper error handling
         return 1;
     }
-    if (ok != err_b) {
+    if (OK != err_b) {
         return 2;
     }
 
     matrix_data output;
+    if(!init_empty_matrix(a.no_rows, b.no_cols, &output))
     matrix_mult_asc(&a, &b, &output);
 
     // now write the output
     // TODO evtl printen??
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
     IO_error err_output = write_matrix_to_fd(matrix_output_file, output);
-    if (ok != err_output) {
+    if (OK != err_output) {
         // TODO better error handling
         return 3;
     }
