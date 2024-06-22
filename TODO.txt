@@ -1,14 +1,15 @@
 Sachen die alle Noch gemacht werden müssen:
 - Rahmenprogramm
    [x] read_matrix 
-    fur A, B: read_matrix_from_fd
-    fur C: init
+    [x] read_matrix_from_fd
+    [x] init_empty_matrix
     ...
    [x] write_matrix
-    fur A, B: write_matrix_to_fd
-    fur A, B, C: destruct
+    [x] write_matrix_to_fd
+      [ ] how do we format floats in the output? (field sizes with %1.2f, significant places with %.2g, or we writing morphing function ourselves), see: https://stackoverflow.com/questions/277772/avoid-trailing-zeroes-in-printf
+    [x] destruct
 - Matrix Multiplikation
-  [x] Naives Verfahren
+  [x] Naives Verfahren - works on the example matrices A, B, use: 'make testABC' to see the result in C.txt
   [ ] SIMD?
   [ ] heuristic?
 - Tests
