@@ -19,7 +19,7 @@ IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matri
     data->values = NULL;
     data->row_indices = NULL;
 
-    if (!(data->col_ptr = malloc((no_rows + 1) * sizeof(*data->col_ptr)))) {
+    if (!(data->col_ptr = malloc((no_cols + 1) * sizeof(*data->col_ptr)))) {
         return OUT_OF_MEMORY;
     }
 
