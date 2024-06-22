@@ -24,6 +24,7 @@ release_with_symbols: main
 main: $(OBJS)
 	@echo "------------------------------ Linking: " $^
 	$(CC) $(CFLAGS) -o main $(OBJS)
+	@echo "------------------------------ Cleaning up object files: " $^
 	rm *.o
 
 .PHONY: testABC
