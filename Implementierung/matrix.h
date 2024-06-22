@@ -27,11 +27,12 @@ typedef struct {
  * EXCEPT
  *  values-array, which size is not yet known
  *  row_indices-array, which size is not yet known
- * those two are handled using the dynamic_array
+ * those two are NOT allocated at all and need to handled deeper: in matrix_mult (in the call hierarchy)
  * 
- * Returns an error as c-string or NULL on success.
+ * Returns an IO_error, see errors.h
  */
 IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, matrix_data* data);
+
 /**
  * Frees the memory used by the arrays of the given matrix_data.
  */
@@ -44,6 +45,7 @@ void destruct_matrix_data(matrix_data* data);
  * @return The IO_error that occurred during reading or ok if reading was successful.
  */
 IO_error read_matrix_from_fd(FILE* stream, matrix_data* data);
+
 /*
  * Writes the matrix to passed stream in the text representation given by the requirements
  */

@@ -1,9 +1,7 @@
 #include "matrix.h"
 
 #include "util/format.h"
-// I use dynamic_array to allocate the values and row_indices arrays in result matrix
-// this can also be left out of the init-function and allocated in matrix_mult_csc, when the size of the arrays is known
-#include "util/dynamic_array.h"
+// #include "util/dynamic_array.h"
 
 
 #include <errno.h>
@@ -17,30 +15,11 @@ IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matri
     data->no_cols = no_cols;
     data->length_values = 0;
 
-    void* values_dynamic;
-    { // to avoid variable name ("err_msg") collisions 
-        // TODO one can think about what the optimal initial size is (depends on how sparse the matrices in testcases are)
-        const char* err_msg = ___dynamic_array_float_macro_defined_new(4, values_dynamic);
-        if(err_msg){
-            dynamic_array_destroy(values_dynamic);
-            return OUT_OF_MEMORY;
-        }
-        data->values = ( (generic_dynamic_array*)values_dynamic )->data;
-    }
-
-    void* row_indices_dynamic;
-    { // to avoid variable name ("err_msg") collisions 
-        const char* err_msg = ___dynamic_array_uint64_t_macro_defined_new(4, row_indices_dynamic);
-        if(err_msg){
-            dynamic_array_destroy(row_indices_dynamic);
-            return OUT_OF_MEMORY;
-        }
-        data->values = ( (generic_dynamic_array*)row_indices_dynamic )->data;
-    }
+    // see func description in matrix.h
+    data->values = NULL;
+    data->row_indices = NULL;
 
     if (!(data->col_ptr = malloc((no_rows + 1) * sizeof(*data->col_ptr)))) {
-        dynamic_array_destroy(values_dynamic);
-        dynamic_array_destroy(row_indices_dynamic);
         return OUT_OF_MEMORY;
     }
 
