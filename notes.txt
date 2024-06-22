@@ -1,12 +1,12 @@
 Jun 20: Piotr
 
 Ich habe den Code gelesen.
-       - Cool and all, aber wofur brauchen wir das dynamisches Array, wenn wir die Groesse des Arrays nach Einlesen vom noRows, noCols genau kennen?
+       [x] Cool and all, aber wofur brauchen wir das dynamisches Array, wenn wir die Groesse des Arrays nach Einlesen vom noRows, noCols genau kennen?
        (vielleicht besser weglassen nachdem je weniger, simpler Code desto weniger Abzugmoeglichkeiten)
-       - buffer zu kurz in main.c:40, 0-Byte fehlt
+       [x] buffer zu kurz in main.c:40, 0-Byte fehlt
        [x] InitMatrix und read_matrix_from_fd name consistency?
-       - Wieso kann value nicht 0.f sein? matrix.h:119
-       - Wieso alle Definitionen in Header-files? -> nicht mal längere Kopiliationsdauer?
+       [x] Wieso kann value nicht 0.f sein? matrix.h:119
+       [x] Wieso alle Definitionen in Header-files? -> nicht mal längere Kopiliationsdauer?
 
 Lars:
 	- Wir wissen bevor wir die multiplikation durchgeführt haben nicht, wie viele nicht-nulle Werte es im Resultat gibt. Einfach a->length_values * b->length_values zu allokieren geht, aber verschwendet platz.
