@@ -23,11 +23,15 @@ typedef struct {
 
 
 /**
- * Constructs a struct of type matrix_data with the arrays allocated correctly.
- *
+ * Constructs a struct of type matrix_data with the arrays of appropriate sizes
+ * EXCEPT
+ *  values-array, which size is not yet known
+ *  row_indices-array, which size is not yet known
+ * those two are handled using the dynamic_array
+ * 
  * Returns an error as c-string or NULL on success.
  */
-IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, size_t length_values, matrix_data* data);
+IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, matrix_data* data);
 /**
  * Frees the memory used by the arrays of the given matrix_data.
  */
