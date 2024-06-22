@@ -29,7 +29,7 @@ typedef struct {
 
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).
- * This is useful when e. g. transferring ownership of the managed memory but you are on own now to free it.
+ * This is useful when e. g. transferring ownership of the managed memory but you are on your own now to free it.
  * @param arr The array to clear
  */
 void dynamic_array_unbind(generic_dynamic_array* arr);
