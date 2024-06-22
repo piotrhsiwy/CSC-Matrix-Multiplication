@@ -221,7 +221,7 @@ IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
     }
     fprintf(stream, "\n");
     // col_ptr
-    for (int i = 0; i < (data.no_rows + 1); ++i) {
+    for (int i = 0; i < (data.no_cols + 1); ++i) {
         // TODO error handling
         if (0 != i) {
             int ret = fprintf(stream, ",");
