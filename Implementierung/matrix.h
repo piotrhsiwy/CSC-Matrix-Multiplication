@@ -28,6 +28,7 @@ typedef struct {
  *  values-array, which size is not yet known
  *  row_indices-array, which size is not yet known
  * those two are NOT allocated at all and need to handled deeper: in matrix_mult (in the call hierarchy)
+ * hence length_values is initialized to 0
  * 
  * Returns an IO_error, see errors.h
  */

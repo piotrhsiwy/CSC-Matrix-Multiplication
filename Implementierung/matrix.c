@@ -13,9 +13,9 @@
 IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const data) {
     data->no_rows = no_rows;
     data->no_cols = no_cols;
-    data->length_values = 0;
 
     // see func description in matrix.h
+    data->length_values = 0;
     data->values = NULL;
     data->row_indices = NULL;
 
@@ -198,7 +198,6 @@ IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
 {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
-    fflush(stream);
     // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
     // TODO macros???
     // values

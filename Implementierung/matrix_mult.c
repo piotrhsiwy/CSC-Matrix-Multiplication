@@ -7,11 +7,11 @@
  *  b is a pointer to matrix_data containing metadata of the matrix B
  *  results is a pointer to matrix_data containing metadata of the resulting matrix after the fuction is executed
  */
-void matrix_mult_asc(const void* a, const void* b, void* result){
+void matrix_mult_asc(const void* const a, const void* const b, void* const result){
     // voids are kept in the signature so that the functions fits the project's specifications
-    const matrix_data* matrix_A = a;
-    const matrix_data* matrix_B = b;
-    matrix_data* matrix_C = result;
+    const matrix_data* const matrix_A = a;
+    const matrix_data* const matrix_B = b;
+    matrix_data* const matrix_C = result;
 
     // CATCH ERORRS
     // size mismatch
@@ -20,10 +20,16 @@ void matrix_mult_asc(const void* a, const void* b, void* result){
         return;
     }
 
-    // INIT RESULTS MATRIX
-    const char* error_message = init_empty_matrix(matrix_A->no_rows, matrix_B->no_cols, /* TODO*/ matrix_B->length_values*matrix_A->length_values, matrix_C);
-    if(error_message){
-        fprintf(stderr, error_message);
+    // INIT THE UKNOWN-SIZE ARRAYS OF C
+    // TODO maybe move whole init_empty matrix method in here (only used here?)
+    // TODO alloc either statically array of proper size or use dynamic allocation
+    matrix_C->length_values = matrix_A->length_values * matrix_B->length_values;
+    if(!( matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values) )){
+        fprintf(stderr, "Out of memory\n");
+        return;
+    }
+    if(!( matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * matrix_C->length_values) )){
+        fprintf(stderr, "Out of memory\n");
         return;
     }
     
