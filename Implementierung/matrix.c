@@ -48,34 +48,34 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     size_t line_length;
 
     if (getline(&line, &line_length, stream) == -1)
-        return unexpected_end_of_file;
+        return UNEXPECTED_END_OF_FILE;
 
-    char* token;
+    char* tOKen;
 
     // region setting no_rows
-    token = strtok(line, ",");
-    if (!token) {
+    tOKen = strtOK(line, ",");
+    if (!tOKen) {
         free(line);
-        return unexpected_end_of_line;
+        return UNEXPECTED_END_OF_LINE;
     }
     //TODO: check whether to use strtoull
-    data->no_rows = strtoul(token, NULL, 10);
+    data->no_rows = strtoul(tOKen, NULL, 10);
     if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
-        return invalid_value;
+        return INVALID_VALUE;
     }
     // endregion
 
     // region setting no_cols
-    token = strtok(NULL, ",");
-    if (!token) {
+    tOKen = strtOK(NULL, ",");
+    if (!tOKen) {
         free(line);
-        return unexpected_end_of_line;
+        return UNEXPECTED_END_OF_LINE;
     }
-    data->no_cols = strtoul(token, NULL, 10);
+    data->no_cols = strtoul(tOKen, NULL, 10);
     if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
-        return invalid_value;
+        return INVALID_VALUE;
     }
     //endregion
 
@@ -84,7 +84,7 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     // region setting values
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
-        return unexpected_end_of_file;
+        return UNEXPECTED_END_OF_FILE;
     }
 
     // count the number of , in the line
@@ -97,24 +97,24 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         }
         index_line++;
     }
-    float *values = malloc(num_commas + 1);
+    float *values = malloc(sizeof(*values) * ( num_commas + 1 ));
     if (NULL == values) {
         free(line);
-        return out_of_memory;
+        return OUT_OF_MEMORY;
     }
 
     size_t values_index = 0;
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        float value = strtof(token, NULL);
+    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
+        float value = strtof(tOKen, NULL);
         if(value == 0.f) { //We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
             free(line);
             free(values);
-            return invalid_value;
+            return INVALID_VALUE;
         }
         if((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
             free(line);
             free(values);
-            return invalid_value;
+            return INVALID_VALUE;
         }
         values[values_index] = value;
         values_index++;
@@ -127,29 +127,29 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 
     // row_indices hat len = length_values
 
-    uint64_t* ints = malloc(num_commas + 1);
+    uint64_t* ints = malloc(sizeof((*ints)) * ( num_commas + 1 ));
     if (NULL == ints) {
         free(line);
         free(data->values);
-        return out_of_memory;
+        return OUT_OF_MEMORY;
     }
 
     // region setting row_indices
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
         free(data->values);
-        return unexpected_end_of_file;
+        return UNEXPECTED_END_OF_FILE;
     }
 
     size_t ints_index = 0;
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        uint64_t index = strtoul(token, NULL, 10);
+    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
+        uint64_t index = strtoul(tOKen, NULL, 10);
         //TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             free(ints);
-            return invalid_value;
+            return INVALID_VALUE;
         }
         ints[ints_index] = index;
         ints_index++;
@@ -164,10 +164,10 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         free(line);
         free(data->values);
         free(data->row_indices);
-        return unexpected_end_of_file;
+        return UNEXPECTED_END_OF_FILE;
     }
 
-    uint64_t* cols = malloc(data->no_rows + 1);
+    uint64_t* cols = malloc(sizeof(*cols) * ( data->no_rows + 1 ));
     if (NULL == cols) {
         free(line);
         free(data->values);
@@ -177,15 +177,15 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 
 
     size_t cols_index = 0;
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        uint64_t index = strtoul(token, NULL, 10);
+    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
+        uint64_t index = strtoul(tOKen, NULL, 10);
         //TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
             free(data->row_indices);
             free(cols);
-            return invalid_value;
+            return INVALID_VALUE;
         }
         cols[cols_index] = index;
         cols_index++;
@@ -196,13 +196,14 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     // endregion
 
     free(line);
-    return ok;
+    return OK;
 }
 
 IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
 {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
+    fflush(stream);
     // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
     // TODO macros???
     // values
@@ -235,6 +236,7 @@ IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
         int ret = fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
     fprintf(stream, "\n");
+    return OK;
 }
 
 

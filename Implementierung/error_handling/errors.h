@@ -2,12 +2,12 @@
 #define ERRORS_H
 
 typedef enum {
-    ok = 0,
+    OK = 0,
 
-    out_of_memory = -1,
-    unexpected_end_of_file = 1,
-    unexpected_end_of_line = 2,
-    invalid_value = 3,
+    OUT_OF_MEMORY = -1,
+    UNEXPECTED_END_OF_FILE = 1,
+    UNEXPECTED_END_OF_LINE = 2,
+    INVALID_VALUE = 3,
 } IO_error;
 
 #endif // ERRORS_H
