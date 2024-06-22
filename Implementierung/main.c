@@ -179,7 +179,7 @@ int main(int argc, char** argv)
 
     matrix_data output;
     if(!init_empty_matrix(a.no_rows, b.no_cols, &output))
-    matrix_mult_asc(&a, &b, &output);
+    matrix_mult_csc(&a, &b, &output);
 
     // now write the output
     // TODO evtl printen??
