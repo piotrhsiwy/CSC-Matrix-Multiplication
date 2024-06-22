@@ -16,7 +16,7 @@ void matrix_mult_asc(const void* const a, const void* const b, void* const resul
     // CATCH ERORRS
     // size mismatch
     if(matrix_A->no_rows != matrix_B->no_cols){
-        fprintf(stderr, "matrix size mismatch");
+        fprintf(stderr, "Matrix size mismatch\n");
         return;
     }
 
@@ -28,7 +28,7 @@ void matrix_mult_asc(const void* const a, const void* const b, void* const resul
         fprintf(stderr, "Out of memory\n");
         return;
     }
-    if(!( matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * matrix_C->length_values) )){
+    if(!( matrix_C->values = malloc(sizeof(*matrix_C->values) * ( matrix_A->length_values * matrix_B->length_values )) )){
         fprintf(stderr, "Out of memory\n");
         return;
     }
