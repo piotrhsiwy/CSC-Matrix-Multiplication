@@ -50,16 +50,16 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     if (getline(&line, &line_length, stream) == -1)
         return UNEXPECTED_END_OF_FILE;
 
-    char* tOKen;
+    char* token;
 
     // region setting no_rows
-    tOKen = strtOK(line, ",");
-    if (!tOKen) {
+    token = strtok(line, ",");
+    if (!token) {
         free(line);
         return UNEXPECTED_END_OF_LINE;
     }
     //TODO: check whether to use strtoull
-    data->no_rows = strtoul(tOKen, NULL, 10);
+    data->no_rows = strtoul(token, NULL, 10);
     if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return INVALID_VALUE;
@@ -67,12 +67,12 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     // endregion
 
     // region setting no_cols
-    tOKen = strtOK(NULL, ",");
-    if (!tOKen) {
+    token = strtok(NULL, ",");
+    if (!token) {
         free(line);
         return UNEXPECTED_END_OF_LINE;
     }
-    data->no_cols = strtoul(tOKen, NULL, 10);
+    data->no_cols = strtoul(token, NULL, 10);
     if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return INVALID_VALUE;
@@ -104,8 +104,8 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
 
     size_t values_index = 0;
-    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
-        float value = strtof(tOKen, NULL);
+    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
+        float value = strtof(token, NULL);
         if(value == 0.f) { //We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
             free(line);
             free(values);
@@ -142,8 +142,8 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     }
 
     size_t ints_index = 0;
-    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
-        uint64_t index = strtoul(tOKen, NULL, 10);
+    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
+        uint64_t index = strtoul(token, NULL, 10);
         //TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
@@ -177,8 +177,8 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 
 
     size_t cols_index = 0;
-    for (tOKen = strtOK(line, ","); tOKen; tOKen = strtOK(NULL, ",")) {
-        uint64_t index = strtoul(tOKen, NULL, 10);
+    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
+        uint64_t index = strtoul(token, NULL, 10);
         //TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
