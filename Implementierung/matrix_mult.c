@@ -28,7 +28,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
         fprintf(stderr, "Out of memory\n");
         return;
     }
-    if(!( matrix_C->values = malloc(sizeof(*matrix_C->values) * ( matrix_A->length_values * matrix_B->length_values )) )){
+    if(!( matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * ( matrix_A->length_values * matrix_B->length_values )) )){
         fprintf(stderr, "Out of memory\n");
         return;
     }
@@ -54,7 +54,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
              *  (or either the column or the row is empty)
              */
             struct pair {uint64_t index; float value;};
-            struct pair to_be_multiplied_A[matrix_A->no_rows]; // TODO is this known before completing the multiplication?
+            struct pair to_be_multiplied_A[matrix_A->no_rows];
             uint64_t no_to_be_multiplied_A = 0;
             // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run
             for(uint64_t j = 0; j < matrix_A->length_values; j++){
@@ -72,10 +72,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
             if(!no_to_be_multiplied_A){
                 continue;
             }
-            for(uint64_t j = matrix_B->col_ptr[k]; j < matrix_B->col_ptr[k+1]; j++){
-
-            }
-            struct pair to_be_multiplied_B[matrix_A->no_rows]; // TODO is this known before completing the multiplication?
+            struct pair to_be_multiplied_B[matrix_A->no_rows];
             uint64_t no_to_be_multiplied_B = 0;
             // TODO this 'for' can be moved out of the row-loop
             for(uint64_t j = matrix_B->col_ptr[k]; j < matrix_B->col_ptr[k+1]; j++){
@@ -97,12 +94,20 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
                     continue;
                 } else {
                     acc += to_be_multiplied_A[i].value * to_be_multiplied_B[j].value;
+                    i++;
+                    j++;
                 }
             }
-            matrix_C->values[values_index] = acc;
-            matrix_C->row_indices[values_index] = i;
+            if(acc != 0.0f){
+                matrix_C->values[values_index] = acc;
+                matrix_C->row_indices[values_index] = i;
+                values_index++;
+            }
         }
         *col_ptr_writer++ = values_index;
     }
+    matrix_C->length_values = values_index;
+    matrix_C->values = realloc(matrix_C->values, sizeof(*matrix_C->values) * matrix_C->length_values);
+    matrix_C->row_indices = realloc(matrix_C->row_indices, sizeof(*matrix_C->row_indices) * matrix_C->length_values);
     return;
 }
