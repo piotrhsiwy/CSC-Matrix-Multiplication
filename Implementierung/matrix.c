@@ -9,26 +9,26 @@
 #include <math.h>
 
 
-const char* init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, const size_t length_values, matrix_data* const data) {
+IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, const size_t length_values, matrix_data* const data) {
     data->no_rows = no_rows;
     data->no_cols = no_cols;
     data->length_values = length_values;
 
     if (!(data->values = malloc(length_values * sizeof(*data->values))))
-        return "Out of memory";
+        return OUT_OF_MEMORY;
 
     if (!(data->row_indices = malloc(length_values * sizeof(*data->row_indices)))) {
         free(data->values);
-        return "Out of memory";
+        return OUT_OF_MEMORY;
     }
 
     if (!(data->col_ptr = malloc((no_rows + 1) * sizeof(*data->col_ptr)))) {
         free(data->values);
         free(data->row_indices);
-        return "Out of memory";
+        return OUT_OF_MEMORY;
     }
 
-    return NULL;
+    return OK;
 }
 
 void destruct_matrix_data(matrix_data* const data) {

@@ -27,7 +27,7 @@ typedef struct {
  *
  * Returns an error as c-string or NULL on success.
  */
-const char* init_empty_matrix(uint64_t no_rows, uint64_t no_cols, size_t length_values, matrix_data* data);
+IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, size_t length_values, matrix_data* data);
 /**
  * Frees the memory used by the arrays of the given matrix_data.
  */
