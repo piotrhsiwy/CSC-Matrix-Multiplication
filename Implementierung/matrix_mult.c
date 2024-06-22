@@ -7,7 +7,7 @@
  *  b is a pointer to matrix_data containing metadata of the matrix B
  *  results is a pointer to matrix_data containing metadata of the resulting matrix after the fuction is executed
  */
-void matrix_mult_asc(const void* const a, const void* const b, void* const result){
+void matrix_mult_csc(const void* const a, const void* const b, void* const result){
     // voids are kept in the signature so that the functions fits the project's specifications
     const matrix_data* const matrix_A = a;
     const matrix_data* const matrix_B = b;
@@ -15,7 +15,7 @@ void matrix_mult_asc(const void* const a, const void* const b, void* const resul
 
     // CATCH ERORRS
     // size mismatch
-    if(matrix_A->no_rows != matrix_B->no_cols){
+    if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
         return;
     }

@@ -3,6 +3,6 @@
 
 #include "matrix.h"
 
-void matrix_mult_asc(const void* a, const void* b, void* result);
+void matrix_mult_csc(const void* a, const void* b, void* result);
 
 #endif // MATRIX_MULT_H
