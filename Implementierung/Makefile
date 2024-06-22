@@ -26,6 +26,10 @@ main: $(OBJS)
 	$(CC) $(CFLAGS) -o main $(OBJS)
 	rm *.o
 
+.PHONY: testABC
+testABC:
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt
+
 .PHONY: clean
 clean:
 	rm main
