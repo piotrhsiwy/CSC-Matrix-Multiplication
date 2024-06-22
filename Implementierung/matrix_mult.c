@@ -54,10 +54,10 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
              *  (or either the column or the row is empty)
              */
             struct pair {uint64_t index; float value;};
-            struct pair to_be_multiplied_A[matrix_C->length_values]; // TODO is this known before completing the multiplication?
+            struct pair to_be_multiplied_A[matrix_A->no_rows]; // TODO is this known before completing the multiplication?
             uint64_t no_to_be_multiplied_A = 0;
             // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run
-            for(uint64_t j = 0; matrix_A->length_values; i++){
+            for(uint64_t j = 0; j < matrix_A->length_values; j++){
                 if(matrix_A->row_indices[j] == i){
                     for(uint64_t l = 0; l < matrix_A->no_rows+1; l++){
                         if(matrix_A->col_ptr[l] <= j && matrix_A->col_ptr[l+1] > j){
@@ -75,7 +75,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
             for(uint64_t j = matrix_B->col_ptr[k]; j < matrix_B->col_ptr[k+1]; j++){
 
             }
-            struct pair to_be_multiplied_B[matrix_C->length_values]; // TODO is this known before completing the multiplication?
+            struct pair to_be_multiplied_B[matrix_A->no_rows]; // TODO is this known before completing the multiplication?
             uint64_t no_to_be_multiplied_B = 0;
             // TODO this 'for' can be moved out of the row-loop
             for(uint64_t j = matrix_B->col_ptr[k]; j < matrix_B->col_ptr[k+1]; j++){
