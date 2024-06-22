@@ -1,3 +1,5 @@
+Jun 22:Piotr
+       [ ] Ich finde die error handling ein bisschen inkosistent: "out of memory error"
 Jun 20: Piotr
 
 Ich habe den Code gelesen.
