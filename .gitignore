@@ -3,4 +3,5 @@ main
 vgcore*
 
 # Piotr
+.vscode/*
 C.txt
