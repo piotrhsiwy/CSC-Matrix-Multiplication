@@ -45,6 +45,7 @@ char* allocate_argument(char* optarg_to_process)
         return NULL;
     }
     memcpy(buffer, optarg_to_process, length);
+    buffer[length] = '\0';
     return buffer;
 }
 
