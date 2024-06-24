@@ -3,14 +3,13 @@
 #include "util/format.h"
 // #include "util/dynamic_array.h"
 
-
 #include <errno.h>
-#include <string.h>
 #include <limits.h>
 #include <math.h>
+#include <string.h>
 
-
-IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const data) {
+IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const data)
+{
     data->no_rows = no_rows;
     data->no_cols = no_cols;
 
@@ -18,15 +17,16 @@ IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matri
     data->length_values = 0;
     data->values = NULL;
     data->row_indices = NULL;
-
-    if (!(data->col_ptr = malloc((no_cols + 1) * sizeof(*data->col_ptr)))) {
+    data->col_ptr = malloc((no_cols + 1) * sizeof(*data->col_ptr));
+    if (!(data->col_ptr)) {
         return OUT_OF_MEMORY;
     }
 
     return OK;
 }
 
-void destruct_matrix_data(matrix_data* const data) {
+void destruct_matrix_data(matrix_data* const data)
+{
     free(data->values);
     data->values = NULL;
     free(data->row_indices);
@@ -35,8 +35,8 @@ void destruct_matrix_data(matrix_data* const data) {
     data->col_ptr = NULL;
 }
 
-
-IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
+IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
+{
     errno = 0;
 
     char* line = NULL;
@@ -53,9 +53,9 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         free(line);
         return UNEXPECTED_END_OF_LINE;
     }
-    //TODO: check whether to use strtoull
+    // TODO: check whether to use strtoull
     data->no_rows = strtoul(token, NULL, 10);
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { // Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return INVALID_VALUE;
     }
@@ -68,13 +68,13 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return UNEXPECTED_END_OF_LINE;
     }
     data->no_cols = strtoul(token, NULL, 10);
-    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { //Zero is unexpected: either trying to enter empty matrix or invalid number format.
+    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { // Zero is unexpected: either trying to enter empty matrix or invalid number format.
         free(line);
         return INVALID_VALUE;
     }
-    //endregion
+    // endregion
 
-    //TODO: fail, if still more characters left in line
+    // TODO: fail, if still more characters left in line
 
     // region setting values
     if (getline(&line, &line_length, stream) == -1) {
@@ -85,14 +85,15 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
     // count the number of , in the line
     // length_values will be that + 1
     size_t num_commas = 0;
-    size_t index_line = 0;
-    while (line[index_line] != '\0') {
-        if (line[index_line] == ',') {
+    size_t index_in_line = 0;
+    // TODO do we have to handle german commas, for example 4,523
+    while (line[index_in_line] != '\0') {
+        if (line[index_in_line] == ',') {
             num_commas++;
         }
-        index_line++;
+        index_in_line++;
     }
-    float *values = malloc(sizeof(*values) * ( num_commas + 1 ));
+    float* values = malloc(sizeof(*values) * (num_commas + 1));
     if (NULL == values) {
         free(line);
         return OUT_OF_MEMORY;
@@ -100,13 +101,15 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 
     size_t values_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        float value = strtof(token, NULL);
-        if(value == 0.f) { //We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
+        const float value = strtof(token, NULL);
+        if (value == 0.f) { // We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
+            // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             free(line);
             free(values);
             return INVALID_VALUE;
         }
-        if((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
+        // over/underflows
+        if ((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
             free(line);
             free(values);
             return INVALID_VALUE;
@@ -115,14 +118,15 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         values_index++;
     }
 
-    //TODO: sanity-check on length of values? --> How?
+    // TODO: sanity-check on length of values? --> How?
+    // is it even possible with noCols noRows
     data->values = values;
     data->length_values = num_commas + 1;
-    //endregion
+    // endregion
 
     // row_indices hat len = length_values
 
-    uint64_t* ints = malloc(sizeof((*ints)) * ( num_commas + 1 ));
+    uint64_t* ints = malloc(sizeof((*ints)) * (num_commas + 1));
     if (NULL == ints) {
         free(line);
         free(data->values);
@@ -138,8 +142,8 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
 
     size_t ints_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        uint64_t index = strtoul(token, NULL, 10);
-        //TODO: check for invalid format as well
+        const uint64_t index = strtoul(token, NULL, 10);
+        // TODO: check for invalid format as well
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
@@ -150,8 +154,9 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         ints_index++;
     }
 
-    //TODO: sanity-check on length of row_indices?
+    // TODO: sanity-check on length of row_indices? is it equal to length_values
     data->row_indices = ints;
+    ints = NULL;
     // endregion
 
     // region setting col_ptr
@@ -162,19 +167,20 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         return UNEXPECTED_END_OF_FILE;
     }
 
-    uint64_t* cols = malloc(sizeof(*cols) * ( data->no_rows + 1 ));
+    uint64_t* cols = malloc(sizeof(*cols) * (data->no_rows + 1));
     if (NULL == cols) {
         free(line);
         free(data->values);
         free(data->row_indices);
         free(cols);
+        return OUT_OF_MEMORY;
     }
-
 
     size_t cols_index = 0;
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        uint64_t index = strtoul(token, NULL, 10);
-        //TODO: check for invalid format as well
+        const uint64_t index = strtoul(token, NULL, 10);
+        // TODO: check for invalid format as well
+        // over/underflows
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             free(data->values);
@@ -186,15 +192,16 @@ IO_error read_matrix_from_fd(FILE *const stream, matrix_data *const data) {
         cols_index++;
     }
 
-    //TODO: sanity-check on length of col_ptr?
+    // TODO: sanity-check on length of col_ptr? is it equal to noCols + 1
     data->col_ptr = cols;
+    cols = NULL;
     // endregion
 
     free(line);
     return OK;
 }
 
-IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
+IO_error write_matrix_to_fd(FILE* const stream, const matrix_data data)
 {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
@@ -230,9 +237,6 @@ IO_error write_matrix_to_fd(FILE *const stream, const matrix_data data)
         int ret = fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
     fprintf(stream, "\n");
+    //TODO: fsync?
     return OK;
 }
-
-
-
-

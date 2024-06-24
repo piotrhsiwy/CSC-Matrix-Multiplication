@@ -29,33 +29,38 @@ typedef struct {
  * allocates a buffer for the argument and copies it there.
  * Return NULL if allocation of the buffer failed
  */
-char* allocate_argument(char* optarg_to_process)
+// TODO make it return IO_ERROR and put the return value in an output parameter
+// TODO also IO_ERROR should be renamed to just ERROR
+char* allocate_argument(const char* const optarg_to_process)
 {
-    size_t length = strlen(optarg_to_process);
+    const size_t length = strlen(optarg_to_process);
     // Danke Piotr
     char* buffer = malloc(length + 1);
     // TODO mehr error handling?
     if (NULL == buffer) {
         return NULL;
     }
+    // TODO use a string function instead
     memcpy(buffer, optarg_to_process, length);
     buffer[length] = '\0';
     return buffer;
 }
-
-int parse_number(char* optarg_to_process)
+// TODO refactor to use long everywhere
+int parse_number(const char* const optarg_to_process)
 {
-    long value = strtol(optarg_to_process, NULL, 10);
+    const long value = strtol(optarg_to_process, NULL, 10);
     errno = 0;
     if (errno) {
         // TODO handle error;
+        // Hier müsste der Error geprintet werden
+        // vgl errno_funktionen
     }
     // TODO do we actually care?
     // we dont care about negative numbers or numbers above INT32_MAX
     return (int)value;
 }
 
-config parse_arguments(int argc, char** argv)
+config parse_arguments(const int argc,const char** const argv)
 {
     // default values
     config program_config = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
@@ -63,7 +68,7 @@ config parse_arguments(int argc, char** argv)
     while (true) {
         // : nach buchstabe -> required_argument, :: -> optional argument
         // nichts nach buchstaben -> kein argument
-        int ret_val = getopt_long(argc, argv, "a:b:o:V:b::h", options_struct, &option_index);
+        const int ret_val = getopt_long(argc, argv, "a:b:o:V:b::h", options_struct, &option_index);
         // TODO check errno maybe?
         if (-1 == ret_val) {
             // alle optionen wurden abgearbeitet
@@ -130,7 +135,7 @@ int main(int argc, char** argv)
     // matrix_data m;
     // IO_error err = read_matrix_from_fd(f, &m);
 
-    config options = parse_arguments(argc, argv);
+    const config options = parse_arguments(argc, argv);
     if (options.requested_help) {
         // TODO Ernsthafte Help
         printf("hier sollte eine Hilfe sein.\n");
@@ -176,11 +181,13 @@ int main(int argc, char** argv)
 
     // now write the output
     // TODO evtl printen??
+    // TODO handle fopen failing (also for matrixA + matrixB)
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
     IO_error err_output = write_matrix_to_fd(matrix_output_file, output);
     if (OK != err_output) {
         // TODO better error handling
         return 3;
     }
+    // TODO close all the files
     return 10;
 }
