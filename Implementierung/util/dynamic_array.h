@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// TODO do we actually want to use that. If yes, write a comment justifying it
 
 /**
  * A DYNAMIC_ARRAY(void) that guarantees to have the same memory layout as any specific DYNAMIC_ARRAY.
