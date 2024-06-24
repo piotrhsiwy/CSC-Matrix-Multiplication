@@ -10,14 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 struct option options_struct[] = {
     // TODO ich glaube davon ist nur help notwendig, der rest sind ein Buchstabe optionen
-    { "a", required_argument, 0, 'a' },
-    { "b", required_argument, 0, 'b' },
-    { "o", required_argument, 0, 'o' },
-    { "V", required_argument, 0, 'v' },
-    { "B", optional_argument, 0, 'b' },
     { "help", no_argument, 0, 'h' }
 };
 
@@ -131,10 +125,10 @@ config parse_arguments(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    //Replace with file of your liking
-    //FILE* f = fopen("/mnt/c/Users/nikpe/Downloads/test.csc", "r");
-    //matrix_data m;
-    //IO_error err = read_matrix_from_fd(f, &m);
+    // Replace with file of your liking
+    // FILE* f = fopen("/mnt/c/Users/nikpe/Downloads/test.csc", "r");
+    // matrix_data m;
+    // IO_error err = read_matrix_from_fd(f, &m);
 
     config options = parse_arguments(argc, argv);
     if (options.requested_help) {
@@ -160,11 +154,9 @@ int main(int argc, char** argv)
         return 6;
     }
 
-
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
-
 
     matrix_data a;
     matrix_data b;
@@ -179,8 +171,8 @@ int main(int argc, char** argv)
     }
 
     matrix_data output;
-    if(!init_empty_matrix(a.no_rows, b.no_cols, &output))
-    matrix_mult_csc(&a, &b, &output);
+    if (!init_empty_matrix(a.no_rows, b.no_cols, &output))
+        matrix_mult_csc(&a, &b, &output);
 
     // now write the output
     // TODO evtl printen??
