@@ -1,0 +1,26 @@
+Hier einfach Informationen/Meinungen/Einschätzung der Algorithmen schreiben
+https://people.eecs.berkeley.edu/~aydin/spgemm_sisc12.pdf
+- erwähnt klassichen Algorithmus von Gustavson, verbessert von MATLAB + CSParse, der CSC Matrizen nutzt
+- Ihr neuer Algorithmus scheint "distributed", also auf mehreren Computern sein. Für uns wohl egal
+- Links aus Paper:
+  - In Matlab: https://www.researchgate.net/publication/2332186_Sparse_matrices_in_MATLAB_Design_and_implementation
+  - Direct Methods for Sparse Linear Systems: https://epubs.siam.org/doi/pdf/10.1137/1.9780898718881.fm
+    - viele Algorithmen für sparse Matrizen
+    - auch Matrix-Multiplikation
+    - gibt auch Matrix-Vektor-Mulitplikation
+      - woolen wir dass special-casen
+    - Finde aber nur die Inhaltsangabe, nicht den Inhalt
+  - Gustafson: https://dl.acm.org/doi/10.1145/355791.355796
+https://www.youtube.com/watch?v=F9ZMiccYo8k
+ - scheint über matrix-vector multiplikationen zu gehen, wir brauchen aber matrix-matrix multiplikation
+
+https://www.diva-portal.org/smash/get/diva2:821031/FULLTEXT01.pdf
+ - Performanceanalyse auf einem Cluster
+ - wir haben nur einen Computer, bringt uns also nicht viel
+
+
+Gustafson: https://dl.acm.org/doi/10.1145/355791.355796
+ - scheint der Klassiche Algorithmus sein, den alle verbesseren
+
+Einfach Decompremmieren und dann multiplizieren
+  - Evtl. Sinnvoll als vergleich, aber nicht effizient
