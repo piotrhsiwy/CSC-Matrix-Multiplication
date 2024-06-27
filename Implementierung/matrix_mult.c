@@ -1,5 +1,7 @@
 #include "matrix_mult.h"
 
+#define NULLCHECK_TO_STDERR(V) if(!(V)){fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);}
+
 /* 
  * Multiples two matrices A and B in Compressed Sparse Column Format and saves the result in result
  * @param
@@ -16,9 +18,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
     matrix_C->col_ptr = malloc(sizeof(uint64_t) * ( matrix_C->no_cols + 1 ));
-    if(!matrix_C->row_indices){
-        fprintf(stderr, "Out of memory\n");
-    }
+    NULLCHECK_TO_STDERR(matrix_C->col_ptr);
 
     // CATCH ERORRS
         // size mismatch
@@ -26,7 +26,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
         fprintf(stderr, "Matrix size mismatch\n");
         return;
     }
-        // one of the matrices has no values == all zeros == all zeros in the resulting matrix
+        // one of the matrices has length_values==0 == all zero values == all zeros in the resulting matrix
     if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
         matrix_C->length_values = 0;
         matrix_C->values = NULL; 
@@ -41,15 +41,10 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     // a better aproximation maybe (maybe length_values * length_values)
     // or just realloc all the time
     matrix_C->length_values = matrix_A->length_values * matrix_B->length_values;
-    if(!( matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values) )){
-        fprintf(stderr, "Out of memory\n");
-        return;
-    }
-    if(!( matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * ( matrix_A->length_values * matrix_B->length_values )) )){
-        fprintf(stderr, "Out of memory\n");
-        free(matrix_C->values);
-        return;
-    }
+    matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values);
+    NULLCHECK_TO_STDERR(matrix_C->values);
+    matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * ( matrix_A->length_values * matrix_B->length_values));
+    NULLCHECK_TO_STDERR(matrix_C->row_indices);
     
     // MULTIPLY
     // indices as on this graphic: https://de.wikipedia.org/wiki/Matrizenmultiplikation#/media/Datei:Matrix_multiplication_qtl2.svg
@@ -129,9 +124,11 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
         *col_ptr_writer++ = values_index;
     }
     matrix_C->length_values = values_index;
-    // TODO handle failure of realloc
     matrix_C->values = realloc(matrix_C->values, sizeof(*matrix_C->values) * matrix_C->length_values);
+    NULLCHECK_TO_STDERR(matrix_C->values);
     matrix_C->row_indices = realloc(matrix_C->row_indices, sizeof(*matrix_C->row_indices) * matrix_C->length_values);
+    NULLCHECK_TO_STDERR(matrix_C->row_indices);
+
 
     return;
 }
