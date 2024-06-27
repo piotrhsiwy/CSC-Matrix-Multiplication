@@ -12,7 +12,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     const matrix_data* const matrix_A = a;
     const matrix_data* const matrix_B = b;
     matrix_data* const matrix_C = result;
-
+ 
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
     matrix_C->col_ptr = malloc(sizeof(uint64_t) * ( matrix_C->no_cols + 1 ));

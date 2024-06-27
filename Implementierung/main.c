@@ -162,7 +162,7 @@ int main(int argc, char** argv)
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
-
+  
     matrix_data a;
     matrix_data b;
     IO_error err_a = read_matrix_from_fd(matrix_a_file, &a);
