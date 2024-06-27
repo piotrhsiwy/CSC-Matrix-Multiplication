@@ -87,6 +87,8 @@ IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
     size_t num_commas = 0;
     size_t index_in_line = 0;
     // TODO do we have to handle german commas, for example 4,523
+    // TODO what if there is no commas and no value
+    // TODO what if there is no commas and 1 value, need to separate those 2
     while (line[index_in_line] != '\0') {
         if (line[index_in_line] == ',') {
             num_commas++;
