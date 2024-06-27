@@ -120,6 +120,8 @@ IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
 
     // TODO: sanity-check on length of values? --> How?
     // is it even possible with noCols noRows
+    // yes, just multiply > ceiling with UINT64_MAX > compare
+    // does it make sense? i don't know but better be safe than sorry
     data->values = values;
     data->length_values = num_commas + 1;
     // endregion

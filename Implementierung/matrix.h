@@ -40,7 +40,13 @@ IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, matrix_data* data
 void destruct_matrix_data(matrix_data* data);
 
 /**
- * Reads a CSC-matrix from the given file
+ * Reads a CSC-matrix from the given file.
+ * if this function executed successfully
+ *  uint64_t no_cols =/= 0
+ *  uint64_t no_rows =/= 0
+ *  values[float] does not contain 0.0f
+ *  length_values == lengthof(values) == lengthof(row_indices)
+ *  lengthof(col_ptr) == no_cols + 1
  * @param stream The file to read from
  * @param data The position to store the matrix data. Make sure to free any memory used by the previous instance!
  * @return The IO_error that occurred during reading or ok if reading was successful.
