@@ -13,16 +13,30 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     const matrix_data* const matrix_B = b;
     matrix_data* const matrix_C = result;
 
+    matrix_C->no_rows = matrix_A->no_rows;
+    matrix_C->no_cols = matrix_B->no_cols;
+    matrix_C->col_ptr = malloc(sizeof(uint64_t) * ( matrix_C->no_cols + 1 ));
+    if(!matrix_C->row_indices){
+        fprintf(stderr, "Out of memory\n");
+    }
+
     // CATCH ERORRS
-    // size mismatch
+        // size mismatch
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
         return;
     }
-    // TODO early return if length_values == 0
+        // one of the matrices has no values == all zeros == all zeros in the resulting matrix
+    if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
+        matrix_C->length_values = 0;
+        matrix_C->values = NULL; 
+        matrix_C->row_indices = NULL;
+        for(int i = 0; i < matrix_C->no_cols + 1; i++){
+            matrix_C->col_ptr[i] = 0;
+        }
+    }
 
     // INIT THE UKNOWN-SIZE ARRAYS OF C
-    // TODO maybe move whole init_empty matrix method in here (only used here?)
     // TODO alloc either statically array of proper size or use dynamic allocation
     // a better aproximation maybe (maybe length_values * length_values)
     // or just realloc all the time

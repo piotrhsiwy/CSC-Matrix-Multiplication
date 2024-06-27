@@ -17,22 +17,9 @@ typedef struct {
     size_t length_values;
     float* values;
     uint64_t* row_indices;
-    // len (*colPtr) = noRows + 1
+    // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 } matrix_data;
-
-
-/**
- * Constructs a struct of type matrix_data with the arrays of appropriate sizes
- * EXCEPT
- *  values-array, which size is not yet known
- *  row_indices-array, which size is not yet known
- * those two are NOT allocated at all and need to handled deeper: in matrix_mult (in the call hierarchy)
- * hence length_values is initialized to 0
- * 
- * Returns an IO_error, see errors.h
- */
-IO_error init_empty_matrix(uint64_t no_rows, uint64_t no_cols, matrix_data* data);
 
 /**
  * Frees the memory used by the arrays of the given matrix_data.

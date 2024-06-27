@@ -8,23 +8,6 @@
 #include <math.h>
 #include <string.h>
 
-IO_error init_empty_matrix(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const data)
-{
-    data->no_rows = no_rows;
-    data->no_cols = no_cols;
-
-    // see func description in matrix.h
-    data->length_values = 0;
-    data->values = NULL;
-    data->row_indices = NULL;
-    data->col_ptr = malloc((no_cols + 1) * sizeof(*data->col_ptr));
-    if (!(data->col_ptr)) {
-        return OUT_OF_MEMORY;
-    }
-
-    return OK;
-}
-
 void destruct_matrix_data(matrix_data* const data)
 {
     free(data->values);

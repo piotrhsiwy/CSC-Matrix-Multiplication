@@ -176,18 +176,25 @@ int main(int argc, char** argv)
     }
 
     matrix_data output;
-    if (!init_empty_matrix(a.no_rows, b.no_cols, &output))
-        matrix_mult_csc(&a, &b, &output);
+    // if (!init_empty_matrix(a.no_rows, b.no_cols, &output))
+    matrix_mult_csc(&a, &b, &output);
 
     // now write the output
     // TODO evtl printen??
     // TODO handle fopen failing (also for matrixA + matrixB)
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
     IO_error err_output = write_matrix_to_fd(matrix_output_file, output);
+
+    destruct_matrix_data(&a);
+    destruct_matrix_data(&b);
+    destruct_matrix_data(&output);
+    fclose(matrix_a_file);
+    fclose(matrix_b_file);
+    fclose(matrix_output_file);
+
     if (OK != err_output) {
         // TODO better error handling
         return 3;
     }
-    // TODO close all the files
     return 10;
 }
