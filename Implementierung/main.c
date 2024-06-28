@@ -149,7 +149,7 @@ int main(int argc, char** argv)
                                      "-h oder --help: Gibt diese Hilfe aus.\n";
 
         printf("%s", help_str);
-        return 0;
+        return EXIT_SUCCESS;
     }
     // Did the user pass all required options?
     // TODO ist das garantiert NULL falls nicht intialisiert
@@ -158,15 +158,15 @@ int main(int argc, char** argv)
         printf("Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         // TODO standard unix return codes
         // TODO cleanup
-        return 4;
+        return EXIT_FAILURE;
     }
     if (NULL == options.matrixB_path) {
         printf("Ein Pfad für die Matrix B muss spezifiziert werden.\n");
-        return 5;
+        return EXIT_FAILURE;
     }
     if (NULL == options.matrix_output_path) {
         printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.\n");
-        return 6;
+        return EXIT_FAILURE;
     }
 
     // read the matrixes from the specified paths
@@ -179,10 +179,10 @@ int main(int argc, char** argv)
     IO_error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_a) {
         // TODO proper error handling
-        return 1;
+        return EXIT_FAILURE;
     }
     if (OK != err_b) {
-        return 2;
+        return EXIT_FAILURE;
     }
 
     matrix_data output;
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 
     if (OK != err_output) {
         // TODO better error handling
-        return 3;
+        return EXIT_FAILURE;
     }
-    return 10;
+    return EXIT_SUCCESS;
 }
