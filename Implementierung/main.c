@@ -138,7 +138,17 @@ int main(int argc, char** argv)
     const config options = parse_arguments(argc, argv);
     if (options.requested_help) {
         // TODO Ernsthafte Help
-        printf("hier sollte eine Hilfe sein.\n");
+        const char* const help_str = "Das Programm unterstützt folgende Optionen:\n"
+                         "-a <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die mulitpliziert werden soll liegt.\n"
+                         "-b <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die multipliziert werden soll liegt.\n"
+                         "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
+                                     "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
+                                     "\t0: der normale Algorithmus. TODO was macht er\n"
+                                     "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrixen. Diese Daten werden dann ausgegeben.\n"
+                                     "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n\n"
+                                     "-h oder --help: Gibt diese Hilfe aus.\n";
+
+        printf("%s", help_str);
         return 0;
     }
     // Did the user pass all required options?
