@@ -37,13 +37,19 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     }
 
     // INIT THE UKNOWN-SIZE ARRAYS OF C
-    // TODO alloc either statically array of proper size or use dynamic allocation
+    // TODO alloc either statically array of proper size (impossible) or use dynamic allocation
     // a better aproximation maybe (maybe length_values * length_values)
-    // or just realloc all the time
-    matrix_C->length_values = matrix_A->length_values * matrix_B->length_values;
+    // i think the fastest solution would be to reallocate dynamically but on stack?
+    // current solution: alloc(max{a*b, MAX})
+    #define MAX_LENGTH_VALUES 1024
+    matrix_C->length_values = MAX_LENGTH_VALUES;
+    if( matrix_A->length_values * matrix_B->length_values > MAX_LENGTH_VALUES ){
+        fprintf(stderr, "Out of memory\n");
+        return;
+    }
     matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->values);
-    matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * ( matrix_A->length_values * matrix_B->length_values));
+    matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->row_indices);
     
     // MULTIPLY
