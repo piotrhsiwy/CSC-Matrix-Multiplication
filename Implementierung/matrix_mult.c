@@ -11,7 +11,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     // fill the fields of the result matrix, all pointers can be passed to free (alloc'd or NULL)
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
-    matrix_C->col_ptr = malloc(sizeof(uint64_t) * ( matrix_C->no_cols + 1 ));
+    matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
     NULLCHECK_TO_STDERR(matrix_C->col_ptr);
     matrix_C->length_values = 0;
     matrix_C->values = NULL; 
@@ -25,9 +25,11 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     }
         // one of the matrices has length_values==0 == all zero values == all zeros in the resulting matrix
     if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
+        // TODO faster with memset
         for(int i = 0; i < matrix_C->no_cols + 1; i++){
             matrix_C->col_ptr[i] = 0;
         }
+        return;
     }
 
     // INIT THE UKNOWN-SIZE ARRAYS OF C
@@ -49,11 +51,11 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     // MULTIPLY
     // indices as on this graphic: https://de.wikipedia.org/wiki/Matrizenmultiplikation#/media/Datei:Matrix_multiplication_qtl2.svg
     // I multiply columns first
+    // TODO why
     uint64_t* col_ptr_writer = matrix_C->col_ptr; // use this to write to col_ptr array
-    // TODO split into multiple lines or at least use parentheses
-    *col_ptr_writer++ = 0; // initialize col_ptr
+    *col_ptr_writer = 0; // initialize col_ptr
+    col_ptr_writer++;
     uint64_t values_index = 0; // use this to write to values and row_indices arrays
-    // TODO longer names than k and i (maybe row/column??)
     for(uint64_t k = 0; k < matrix_C->no_cols; k++){
         for(uint64_t i = 0; i < matrix_C->no_rows; i++){
             float acc = 0.0f;
@@ -68,42 +70,43 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
              *  there is no pair of (column-number, row-number) such that column-number == row-number
              *  (or either the column or the row is empty)
              */
-            // TODO do we want to use structs via typedef or like this??
-            struct pair {uint64_t index; float value;};
-            struct pair to_be_multiplied_A[matrix_A->no_rows];
-            uint64_t no_to_be_multiplied_A = 0;
+            typedef struct {uint64_t index; float value;} pair;
+            pair to_be_multiplied_A[matrix_A->no_rows];
+            uint64_t number_to_be_multiplied_A = 0;
             // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run
             for(uint64_t j = 0; j < matrix_A->length_values; j++){
+                // TODO move the descs here for better understanding
                 if(matrix_A->row_indices[j] == i){
                     for(uint64_t l = 0; l < matrix_A->no_rows+1; l++){
                         if(matrix_A->col_ptr[l] <= j && matrix_A->col_ptr[l+1] > j){
-                            to_be_multiplied_A[no_to_be_multiplied_A].index = l;
+                            to_be_multiplied_A[number_to_be_multiplied_A].index = l;
                             break;
                         }
                     }
-                    to_be_multiplied_A[no_to_be_multiplied_A].value = matrix_A->values[j];
-                    no_to_be_multiplied_A++;
+                    to_be_multiplied_A[number_to_be_multiplied_A].value = matrix_A->values[j];
+                    number_to_be_multiplied_A++;
                 }
             }
-            if(!no_to_be_multiplied_A){
+            if(!number_to_be_multiplied_A){
                 continue;
             }
-            struct pair to_be_multiplied_B[matrix_A->no_rows];
-            uint64_t no_to_be_multiplied_B = 0;
+            pair to_be_multiplied_B[matrix_A->no_rows];
+            uint64_t number_to_be_multiplied_B = 0;
             // TODO this 'for' can be moved out of the row-loop
             for(uint64_t j = matrix_B->col_ptr[k]; j < matrix_B->col_ptr[k+1]; j++){
-                to_be_multiplied_B[no_to_be_multiplied_B].index = matrix_B->row_indices[j];
-                to_be_multiplied_B[no_to_be_multiplied_B].value = matrix_B->values[j];
-                no_to_be_multiplied_B++;
+                to_be_multiplied_B[number_to_be_multiplied_B].index = matrix_B->row_indices[j];
+                to_be_multiplied_B[number_to_be_multiplied_B].value = matrix_B->values[j];
+                number_to_be_multiplied_B++;
             }
-            if(!no_to_be_multiplied_B){
+            if(!number_to_be_multiplied_B){
                 continue;
             }   
             // multiply the values
             // TODO here possibly a SIMD can be used (if no_rows/cols small enough) as follows
             //  reorder -> mult -> horizontal add ( operating on 32bfloats )
             // TODO are we sure we want to shadow a global here. Would be solved by different names in the outer loop anyway
-            for(uint64_t i = 0, j = 0; i < no_to_be_multiplied_A && j < no_to_be_multiplied_B;){
+            // explain
+            for(uint64_t i = 0, j = 0; i < number_to_be_multiplied_A && j < number_to_be_multiplied_B;){
                 // I can use the fact that the incides are increasing in both arrays
                 if(to_be_multiplied_A[i].index > to_be_multiplied_B[j].index){
                     j++;
@@ -123,13 +126,23 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
                 values_index++;
             }
         }
-        *col_ptr_writer++ = values_index;
+        *col_ptr_writer = values_index;
+        col_ptr_writer++;
     }
     matrix_C->length_values = values_index;
-    matrix_C->values = realloc(matrix_C->values, sizeof(*matrix_C->values) * matrix_C->length_values);
+    void* temp = realloc(matrix_C->values, sizeof(*matrix_C->values) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->values);
-    matrix_C->row_indices = realloc(matrix_C->row_indices, sizeof(*matrix_C->row_indices) * matrix_C->length_values);
+    // if realloc suceeded, save the new pointer in the struct
+    if(temp){
+        matrix_C->values = temp;
+    }
+
+    temp = realloc(matrix_C->row_indices, sizeof(*matrix_C->row_indices) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->row_indices);
+    // if realloc suceeded, save the new pointer in the struct
+    if(temp){
+        matrix_C->row_indices = temp;
+    }
 
 
     return;

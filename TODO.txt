@@ -13,6 +13,15 @@ Sachen die alle Noch gemacht werden müssen:
   [ ] SIMD?
   [ ] heuristic?
 - Tests
-  [ ] Performance measurements
-  [ ] Unit-Tests mit Hardcoded werten
+  [ ] Performance measurements (perf to reason and improve mult func)
+  [ ] Unit-Tests mit Hardcoded werten (c testing library)
+   [ ] Rahmenprogramm
+   [ ] mult
+    [ ] python
+    [ ] Randfaelle
+   [ ] valgrind + sanitizers
   [ ] Generic UT?
+- Projektbericht.md schreiben
+- Alternativ-Implementation
+- Presentation
+  [ ] benchmark
