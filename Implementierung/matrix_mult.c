@@ -8,6 +8,7 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
     const matrix_data* const matrix_B = b;
     matrix_data* const matrix_C = result;
  
+    // fill the fields of the result matrix, all pointers can be passed to free (alloc'd or NULL)
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
     matrix_C->col_ptr = malloc(sizeof(uint64_t) * ( matrix_C->no_cols + 1 ));
@@ -99,6 +100,8 @@ void matrix_mult_csc(const void* const a, const void* const b, void* const resul
                 continue;
             }   
             // multiply the values
+            // TODO here possibly a SIMD can be used (if no_rows/cols small enough) as follows
+            //  reorder -> mult -> horizontal add ( operating on 32bfloats )
             // TODO are we sure we want to shadow a global here. Would be solved by different names in the outer loop anyway
             for(uint64_t i = 0, j = 0; i < no_to_be_multiplied_A && j < no_to_be_multiplied_B;){
                 // I can use the fact that the incides are increasing in both arrays
