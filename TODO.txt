@@ -22,6 +22,6 @@ Sachen die alle Noch gemacht werden müssen:
    [ ] valgrind + sanitizers
   [ ] Generic UT?
 - Projektbericht.md schreiben
-- Alternativ-Implementation
+- Alternativ-Implementation!
 - Presentation
   [ ] benchmark
