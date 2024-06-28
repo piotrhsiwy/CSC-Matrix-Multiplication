@@ -31,19 +31,20 @@ typedef struct {
  */
 // TODO make it return IO_ERROR and put the return value in an output parameter
 // TODO also IO_ERROR should be renamed to just ERROR
-char* allocate_argument(const char* const optarg_to_process)
+IO_error allocate_argument(const char* const optarg_to_process, char** target)
 {
     const size_t length = strlen(optarg_to_process);
     // Danke Piotr
     char* buffer = malloc(length + 1);
     // TODO mehr error handling?
     if (NULL == buffer) {
-        return NULL;
+        return OUT_OF_MEMORY;
     }
     // TODO use a string function instead
     memcpy(buffer, optarg_to_process, length);
     buffer[length] = '\0';
-    return buffer;
+    *target = buffer;
+    return OK;
 }
 // TODO refactor to use long everywhere
 int parse_number(const char* const optarg_to_process)
@@ -60,10 +61,9 @@ int parse_number(const char* const optarg_to_process)
     return (int)value;
 }
 
-config parse_arguments(const int argc,const char** const argv)
+
+IO_error parse_arguments(const int argc,const char** const argv, config *program_config)
 {
-    // default values
-    config program_config = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
     int option_index = 0;
     while (true) {
         // : nach buchstabe -> required_argument, :: -> optional argument
@@ -78,54 +78,48 @@ config parse_arguments(const int argc,const char** const argv)
         // ist glaube ich erst mit c23 erlaubt, aber wir nutzen c17
         size_t length_argument;
         char* temp;
+        IO_error  err_return_value;
         // zeigt was gerade geparst wurde
         switch (ret_val) {
         case 'a':
-            temp = allocate_argument(optarg);
+            err_return_value = allocate_argument(optarg, &program_config->matrixA_path);
             // TODO how to handle this?
+            // are there other possible errors
             // Just abort??
-            if (NULL == temp) {
-                break;
-            }
-            program_config.matrixA_path = temp;
+            RETURN_IF_NOT_OK (err_return_value, OUT_OF_MEMORY);
             break;
         case 'b':
-            temp = allocate_argument(optarg);
+            err_return_value = allocate_argument(optarg, &program_config->matrixB_path);
             // TODO how to handle this?
             // Just abort?
-            if (NULL == temp) {
-                break;
-            }
-            program_config.matrixB_path = temp;
+            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
             break;
         case 'o':
-            temp = allocate_argument(optarg);
+            err_return_value = allocate_argument(optarg, &program_config->matrix_output_path);
             // TODO how to handle this?
             // Just abort
-            if (NULL == temp) {
-                break;
-            }
-            program_config.matrix_output_path = temp;
+            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
             break;
         case 'V':
-            program_config.algorithm = parse_number(optarg);
+            // TODO handle invalid arguments (i.e. things that arent a number)
+            program_config->algorithm = parse_number(optarg);
             break;
         case 'B':
-            program_config.is_benchmark = true;
-            program_config.benchmark_repeat_count = parse_number(optarg);
+            program_config->is_benchmark = true;
+            program_config->benchmark_repeat_count = parse_number(optarg);
             // TODO how do optional arguments work??
             // i dont think this works if -B used without argument
             break;
         case 'h':
             // TODO soll checken if requested_help und benchmark gleichzeitig
-            program_config.requested_help = true;
+            program_config->requested_help = true;
             break;
         default:
             // TODO handle all possible return values of getopt_long
             break;
         }
     }
-    return program_config;
+    return OK;
 }
 
 int main(int argc, char** argv)
@@ -135,7 +129,13 @@ int main(int argc, char** argv)
     // matrix_data m;
     // IO_error err = read_matrix_from_fd(f, &m);
 
-    const config options = parse_arguments(argc, argv);
+    config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
+    // TODO write function to deallocate buffers in config
+    IO_error err_parse_config = parse_arguments(argc, argv, &options);
+    if (OK != err_parse_config) {
+        // TODO proper error handling
+        return 234;
+    }
     if (options.requested_help) {
         // TODO Ernsthafte Help
         const char* const help_str = "Das Programm unterstützt folgende Optionen:\n"

@@ -10,4 +10,6 @@ typedef enum {
     INVALID_VALUE = 3,
 } IO_error;
 
+#define RETURN_IF_NOT_OK(value, return_value)  if (OK != value) return return_value
+
 #endif // ERRORS_H
