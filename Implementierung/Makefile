@@ -3,7 +3,7 @@ CC := $(shell command -v gcc || command -v clang)
 
 CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 
-OBJS := main.o matrix.o benchmark.o mul_algorithms.o mul_naive.o
+OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_naive.o
 
 all: main
 	@echo ------------------------------ Program compiled successfully
