@@ -1,29 +1,21 @@
 #include "matrix.h"
-#include "matrix_mult.h"
+#include "config.h"
+#include "algorithms/mul_algorithms.h"
+#include "benchmark.h"
 
 #include <errno.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 struct option options_struct[] = {
     // TODO ich glaube davon ist nur help notwendig, der rest sind ein Buchstabe optionen
     { "help", no_argument, 0, 'h' }
 };
-
-typedef struct {
-    int algorithm;
-    char* matrixA_path;
-    char* matrixB_path;
-    char* matrix_output_path;
-    bool requested_help;
-    bool is_benchmark;
-    int benchmark_repeat_count;
-} config;
 
 /*
  * allocates a buffer for the argument and copies it there.
@@ -186,7 +178,19 @@ int main(int argc, char** argv)
     }
 
     matrix_data output;
-    matrix_mult_csc(&a, &b, &output);
+    matrix_multiplier algorithm = id_to_algorithm(options.algorithm);
+    if(!algorithm) {
+        fprintf(stderr, "Unbekannter algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
+        return EXIT_FAILURE;
+    }
+
+    if(options.is_benchmark) {
+        struct timespec duration = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm);
+
+        printf("%d multiplications took %ld seconds and %ld nano seconds.\n", options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
+    } else {
+        algorithm(&a, &b, &output);
+    }
 
     // now write the output
     // TODO evtl printen??

@@ -3,7 +3,7 @@ CC := $(shell command -v gcc || command -v clang)
 
 CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 
-OBJS := main.o matrix_mult.o matrix.o
+OBJS := main.o matrix.o benchmark.o mul_algorithms.o mul_naive.o
 
 all: main
 	@echo ------------------------------ Program compiled successfully
@@ -17,7 +17,7 @@ release: main
 release_with_symbols: CFLAGS += -O3 -g
 release_with_symbols: main
 
-%.o: %.c %.h
+%.o: **/%.c **/%.h
 	@echo "------------------------------ Compiling: " $@
 	$(CC) $(CFLAGS) -c -o $@ $<
 
@@ -30,6 +30,10 @@ main: $(OBJS)
 .PHONY: testABC
 testABC:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt
+
+.PHONY: benchABC
+benchABC:
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -B 99999
 
 .PHONY: clean
 clean:

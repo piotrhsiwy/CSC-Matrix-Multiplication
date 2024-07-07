@@ -1,4 +1,5 @@
-#include "matrix_mult.h"
+#include "mul_naive.h"
+
 
 #define NULLCHECK_TO_STDERR(V) if(!(V)){fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);}
 
