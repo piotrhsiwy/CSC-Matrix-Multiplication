@@ -17,7 +17,7 @@ struct option options_struct[] = {
  */
 // TODO make it return IO_ERROR and put the return value in an output parameter
 // TODO also IO_ERROR should be renamed to just ERROR
-IO_error allocate_argument(const char* const optarg_to_process, char** target)
+__attribute__((cold)) IO_error allocate_argument(const char* const optarg_to_process, char** target)
 {
     const size_t length = strlen(optarg_to_process);
     // Danke Piotr
@@ -33,7 +33,7 @@ IO_error allocate_argument(const char* const optarg_to_process, char** target)
     return OK;
 }
 // TODO refactor to use long everywhere
-int parse_number(const char* const optarg_to_process)
+__attribute__((cold)) int parse_number(const char* const optarg_to_process)
 {
     const long value = strtol(optarg_to_process, NULL, 10);
     errno = 0;
@@ -48,7 +48,7 @@ int parse_number(const char* const optarg_to_process)
 }
 
 
-IO_error parse_arguments(const int argc,const char** const argv, config *const program_config)
+__attribute__((cold)) IO_error parse_arguments(const int argc,const char** const argv, config *const program_config)
 {
     int option_index = 0;
     while (true) {

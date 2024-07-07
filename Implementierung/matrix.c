@@ -8,7 +8,7 @@
 #include <math.h>
 #include <string.h>
 
-void destruct_matrix_data(matrix_data* const data)
+__attribute__((cold)) void destruct_matrix_data(matrix_data* const data)
 {
     free(data->values);
     data->values = NULL;
@@ -18,7 +18,7 @@ void destruct_matrix_data(matrix_data* const data)
     data->col_ptr = NULL;
 }
 
-IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
+__attribute__((cold)) IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
 {
     errno = 0;
 
@@ -188,7 +188,7 @@ IO_error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
     return OK;
 }
 
-IO_error write_matrix_to_fd(FILE* const stream, const matrix_data data)
+__attribute__((cold)) IO_error write_matrix_to_fd(FILE* const stream, const matrix_data data)
 {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);

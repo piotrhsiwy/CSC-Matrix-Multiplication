@@ -11,11 +11,6 @@
 
 int main(int argc, char** argv)
 {
-    // Replace with file of your liking
-    // FILE* f = fopen("/mnt/c/Users/nikpe/Downloads/test.csc", "r");
-    // matrix_data m;
-    // IO_error err = read_matrix_from_fd(f, &m);
-
     config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
     // TODO write function to deallocate buffers in config
     IO_error err_parse_config = parse_arguments(argc, argv, &options);

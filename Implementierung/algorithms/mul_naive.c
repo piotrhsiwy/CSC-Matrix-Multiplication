@@ -3,7 +3,7 @@
 
 #define NULLCHECK_TO_STDERR(V) if(!(V))fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__)
 
-void matrix_mul_naive(const void* const a, const void* const b, void* const result) {
+__attribute__((hot)) void matrix_mul_naive(const void* const a, const void* const b, void* const result) {
     //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
     //      really a part of this algorithm but rather a necessity.
 
