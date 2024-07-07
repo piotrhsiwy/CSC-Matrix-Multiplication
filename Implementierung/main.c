@@ -180,7 +180,7 @@ int main(int argc, char** argv)
     matrix_data output;
     matrix_multiplier algorithm = id_to_algorithm(options.algorithm);
     if(!algorithm) {
-        fprintf(stderr, "Unbekannter algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
+        fprintf(stderr, "Unbekannter Algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
         return EXIT_FAILURE;
     }
 
