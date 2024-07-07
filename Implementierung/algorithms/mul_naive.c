@@ -30,7 +30,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
         // one of the matrices has length_values==0 == all zero values == all zeros in the resulting matrix
     if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
         // TODO faster with memset
-        for(int i = 0; i < matrix_C->no_cols + 1; i++){
+        for(uint64_t i = 0; i < matrix_C->no_cols + 1; i++){
             matrix_C->col_ptr[i] = 0;
         }
         return;

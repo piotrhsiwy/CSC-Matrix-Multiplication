@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 
-int main(int argc, char** argv)
+int main(const int argc, char** argv)
 {
     config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
     // TODO write function to deallocate buffers in config

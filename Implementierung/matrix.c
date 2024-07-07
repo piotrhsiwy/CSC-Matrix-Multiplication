@@ -195,7 +195,7 @@ __attribute__((cold)) IO_error write_matrix_to_fd(FILE* const stream, const matr
     // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
     // TODO macros???
     // values
-    for (int i = 0; i < data.length_values; ++i) {
+    for (uint64_t i = 0; i < data.length_values; ++i) {
         // TODO error Handling
         if (0 == i) {
             int ret = fprintf(stream, "%f", data.values[i]);
@@ -215,7 +215,7 @@ __attribute__((cold)) IO_error write_matrix_to_fd(FILE* const stream, const matr
     }
     fprintf(stream, "\n");
     // col_ptr
-    for (int i = 0; i < (data.no_cols + 1); ++i) {
+    for (uint64_t i = 0; i < (data.no_cols + 1); ++i) {
         // TODO error handling
         if (0 != i) {
             int ret = fprintf(stream, ",");

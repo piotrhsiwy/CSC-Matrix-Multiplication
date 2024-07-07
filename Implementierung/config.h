@@ -16,6 +16,6 @@ typedef struct {
     unsigned int benchmark_repeat_count;
 } config;
 
-IO_error parse_arguments(int argc,const char** argv, config* program_config);
+IO_error parse_arguments(int argc, char *const * argv, config* program_config);
 
 #endif //GRA24CAPSPROJEKT_T064_CONFIG_H

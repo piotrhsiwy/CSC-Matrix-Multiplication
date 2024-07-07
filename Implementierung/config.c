@@ -48,7 +48,7 @@ __attribute__((cold)) int parse_number(const char* const optarg_to_process)
 }
 
 
-__attribute__((cold)) IO_error parse_arguments(const int argc,const char** const argv, config *const program_config)
+__attribute__((cold)) IO_error parse_arguments(const int argc, char *const * const argv, config *const program_config)
 {
     int option_index = 0;
     while (true) {
