@@ -10,6 +10,6 @@
  *  b is a pointer to matrix_data containing metadata of the matrix B
  *  results is a pointer to matrix_data containing metadata of the resulting matrix after the fuction is executed
  */
-void matrix_mult_csc(const void* a, const void* b, void* result);
+void matrix_mul_naive(const void* a, const void* b, void* result);
 
 #endif // MATRIX_MULT_H

@@ -3,7 +3,7 @@
 
 #define NULLCHECK_TO_STDERR(V) if(!(V)){fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);}
 
-void matrix_mult_csc(const void* const a, const void* const b, void* const result){
+void matrix_mul_naive(const void* const a, const void* const b, void* const result){
     // voids are kept in the signature so that the functions fits the project's specifications
     const matrix_data* const matrix_A = a;
     const matrix_data* const matrix_B = b;
