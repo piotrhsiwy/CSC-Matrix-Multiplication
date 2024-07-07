@@ -79,7 +79,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    if(options.is_benchmark) {
+    if(options.is_benchmark || true) {
         struct timespec duration = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm);
 
         printf("%d multiplications took %ld seconds and %ld nano seconds.\n", options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);

@@ -1,9 +1,12 @@
 #include "mul_naive.h"
 
 
-#define NULLCHECK_TO_STDERR(V) if(!(V)){fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);}
+#define NULLCHECK_TO_STDERR(V) if(!(V))fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__)
 
-void matrix_mul_naive(const void* const a, const void* const b, void* const result){
+void matrix_mul_naive(const void* const a, const void* const b, void* const result) {
+    //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
+    //      really a part of this algorithm but rather a necessity.
+
     // voids are kept in the signature so that the functions fits the project's specifications
     const matrix_data* const matrix_A = a;
     const matrix_data* const matrix_B = b;
@@ -45,10 +48,10 @@ void matrix_mul_naive(const void* const a, const void* const b, void* const resu
         return;
     }
     matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values);
-    NULLCHECK_TO_STDERR(matrix_C->values);
+    NULLCHECK_TO_STDERR(matrix_C->values); //TODO: free matrix_C->col_ptr
     matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * matrix_C->length_values);
-    NULLCHECK_TO_STDERR(matrix_C->row_indices);
-    
+    NULLCHECK_TO_STDERR(matrix_C->row_indices); //TODO: free matrix_C->values and matrix_C->col_ptr
+
     // MULTIPLY
     // indices as on this graphic: https://de.wikipedia.org/wiki/Matrizenmultiplikation#/media/Datei:Matrix_multiplication_qtl2.svg
     // I multiply columns first
