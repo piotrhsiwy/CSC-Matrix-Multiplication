@@ -33,7 +33,7 @@ __attribute__((cold)) error allocate_argument(const char* const optarg_to_proces
     return OK;
 }
 // TODO refactor to use long everywhere
-__attribute__((cold)) int parse_number(const char* const optarg_to_process)
+__attribute__((cold)) long parse_number(const char* const optarg_to_process)
 {
     const long value = strtol(optarg_to_process, NULL, 10);
     errno = 0;
@@ -44,7 +44,7 @@ __attribute__((cold)) int parse_number(const char* const optarg_to_process)
     }
     // TODO do we actually care?
     // we dont care about negative numbers or numbers above INT32_MAX
-    return (int)value;
+    return value;
 }
 
 
@@ -54,7 +54,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char *const * const 
     while (true) {
         // : nach buchstabe -> required_argument, :: -> optional argument
         // nichts nach buchstaben -> kein argument
-        const int ret_val = getopt_long(argc, argv, "a:b:o:V:b::h", options_struct, &option_index);
+        const int ret_val = getopt_long(argc, argv, ":a:b:o:V:B:h", options_struct, &option_index);
         // TODO check errno maybe?
         if (-1 == ret_val) {
             // alle optionen wurden abgearbeitet
@@ -99,6 +99,9 @@ __attribute__((cold)) error parse_arguments(const int argc, char *const * const 
             case 'h':
                 // TODO soll checken if requested_help und benchmark gleichzeitig
                 program_config->requested_help = true;
+                break;
+            case ':':
+                program_config->benchmark_repeat_count = 1;
                 break;
             default:
                 // TODO handle all possible return values of getopt_long

@@ -76,13 +76,13 @@ int main(const int argc, char** argv)
 
     error multiplication_error;
     //TODO: temporary while option -B is not working
-    if(options.is_benchmark || true) {
-        options.benchmark_repeat_count = 1;
+    if(options.is_benchmark) {
+        options.benchmark_repeat_count;
         struct timespec duration;
         multiplication_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);
 
         if (multiplication_error == OK) {
-            printf("%d multiplications took %ld seconds and %ld nano seconds.\n",
+            printf("%ld multiplications took %ld seconds and %ld nano seconds.\n",
                    options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
         }
     } else {

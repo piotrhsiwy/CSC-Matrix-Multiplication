@@ -13,7 +13,7 @@ typedef struct {
     char* matrix_output_path;
     bool requested_help;
     bool is_benchmark;
-    unsigned int benchmark_repeat_count;
+    long benchmark_repeat_count;
 } config;
 
 error parse_arguments(int argc, char *const * argv, config* program_config);
