@@ -101,6 +101,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char *const * const 
                 program_config->requested_help = true;
                 break;
             case ':':
+                program_config->is_benchmark = true;
                 program_config->benchmark_repeat_count = 1;
                 break;
             default:
