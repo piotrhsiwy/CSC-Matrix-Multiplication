@@ -13,7 +13,7 @@ int main(const int argc, char** argv)
 {
     config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
     // TODO write function to deallocate buffers in config
-    IO_error err_parse_config = parse_arguments(argc, argv, &options);
+    error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
         // TODO proper error handling
         return 234;
@@ -57,8 +57,8 @@ int main(const int argc, char** argv)
   
     matrix_data a;
     matrix_data b;
-    IO_error err_a = read_matrix_from_fd(matrix_a_file, &a);
-    IO_error err_b = read_matrix_from_fd(matrix_b_file, &b);
+    error err_a = read_matrix_from_fd(matrix_a_file, &a);
+    error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_a) {
         // TODO proper error handling
         return EXIT_FAILURE;
@@ -74,21 +74,28 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    error multiplication_error;
     //TODO: temporary while option -B is not working
     if(options.is_benchmark || true) {
         options.benchmark_repeat_count = 1;
-        struct timespec duration = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm);
+        struct timespec duration;
+        multiplication_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);
 
-        printf("%d multiplications took %ld seconds and %ld nano seconds.\n", options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
+        if (multiplication_error == OK) {
+            printf("%d multiplications took %ld seconds and %ld nano seconds.\n",
+                   options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
+        }
     } else {
-        algorithm(&a, &b, &output);
+        multiplication_error = algorithm(&a, &b, &output);
     }
+
+    //TODO: handle multiplication_error
 
     // now write the output
     // TODO evtl printen??
     // TODO handle fopen failing (also for matrixA + matrixB)
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
-    IO_error err_output = write_matrix_to_fd(matrix_output_file, output);
+    error err_output = write_matrix_to_fd(matrix_output_file, output);
 
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);

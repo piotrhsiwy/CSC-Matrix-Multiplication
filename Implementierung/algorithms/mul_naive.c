@@ -1,9 +1,10 @@
 #include "mul_naive.h"
 
 
+//TODO: return error out_of_memory
 #define NULLCHECK_TO_STDERR(V) if(!(V))fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__)
 
-__attribute__((hot)) void matrix_mul_naive(const void* const a, const void* const b, void* const result) {
+__attribute__((hot)) error matrix_mul_naive(const void* const a, const void* const b, void* const result) {
     //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
     //      really a part of this algorithm but rather a necessity.
 
@@ -25,7 +26,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
         // size mismatch
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
-        return;
+        return DIMENSION_MISMATCH;
     }
         // one of the matrices has length_values==0 == all zero values == all zeros in the resulting matrix
     if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
@@ -33,7 +34,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
         for(uint64_t i = 0; i < matrix_C->no_cols + 1; i++){
             matrix_C->col_ptr[i] = 0;
         }
-        return;
+        return OK;
     }
 
     // INIT THE UKNOWN-SIZE ARRAYS OF C
@@ -45,7 +46,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
     matrix_C->length_values = MAX_LENGTH_VALUES;
     if( matrix_A->length_values * matrix_B->length_values > MAX_LENGTH_VALUES ){
         fprintf(stderr, "Out of memory\n");
-        return;
+        return OUT_OF_MEMORY;
     }
     matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->values); //TODO: free matrix_C->col_ptr
@@ -134,6 +135,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
         col_ptr_writer++;
     }
     matrix_C->length_values = values_index;
+    //TODO: can't we leak memory here?
     void* temp = realloc(matrix_C->values, sizeof(*matrix_C->values) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->values);
     // if realloc suceeded, save the new pointer in the struct
@@ -141,6 +143,7 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
         matrix_C->values = temp;
     }
 
+    //TODO: can't we leak memory here?
     temp = realloc(matrix_C->row_indices, sizeof(*matrix_C->row_indices) * matrix_C->length_values);
     NULLCHECK_TO_STDERR(matrix_C->row_indices);
     // if realloc suceeded, save the new pointer in the struct
@@ -149,5 +152,5 @@ __attribute__((hot)) void matrix_mul_naive(const void* const a, const void* cons
     }
 
 
-    return;
+    return OK;
 }

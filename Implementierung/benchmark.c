@@ -3,23 +3,24 @@
 #define SEC_IN_NANOS 1000000000l
 
 
-struct timespec execute_benchmark(const matrix_data *const a, const matrix_data *const b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm) {
+error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data* result, uint32_t iterations, matrix_multiplier algorithm, struct timespec* duration) {
     struct timespec start;
-    struct timespec end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    if (clock_gettime(CLOCK_MONOTONIC, &start) == -1)
+        return COULD_NOT_FETCH_TIME;
 
     for(uint32_t i = 0; i < iterations; ++i)
         algorithm(a, b, result);
 
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    if (clock_gettime(CLOCK_MONOTONIC, duration) == -1)
+        return COULD_NOT_FETCH_TIME;
 
-    end.tv_sec -= start.tv_sec;
-    end.tv_nsec -= start.tv_nsec;
+    duration->tv_sec -= start.tv_sec;
+    duration->tv_nsec -= start.tv_nsec;
 
-    if(end.tv_nsec < 0l) {
-        end.tv_nsec += SEC_IN_NANOS;
-        end.tv_sec -= 1l;
+    if(duration->tv_nsec < 0l) {
+        duration->tv_nsec += SEC_IN_NANOS;
+        duration->tv_sec -= 1l;
     }
 
-    return end;
+    return OK;
 }

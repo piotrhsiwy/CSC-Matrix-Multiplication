@@ -17,7 +17,7 @@ struct option options_struct[] = {
  */
 // TODO make it return IO_ERROR and put the return value in an output parameter
 // TODO also IO_ERROR should be renamed to just ERROR
-__attribute__((cold)) IO_error allocate_argument(const char* const optarg_to_process, char** target)
+__attribute__((cold)) error allocate_argument(const char* const optarg_to_process, char** target)
 {
     const size_t length = strlen(optarg_to_process);
     // Danke Piotr
@@ -48,7 +48,7 @@ __attribute__((cold)) int parse_number(const char* const optarg_to_process)
 }
 
 
-__attribute__((cold)) IO_error parse_arguments(const int argc, char *const * const argv, config *const program_config)
+__attribute__((cold)) error parse_arguments(const int argc, char *const * const argv, config *const program_config)
 {
     int option_index = 0;
     while (true) {
@@ -64,7 +64,7 @@ __attribute__((cold)) IO_error parse_arguments(const int argc, char *const * con
         // ist glaube ich erst mit c23 erlaubt, aber wir nutzen c17
         size_t length_argument;
         char* temp;
-        IO_error  err_return_value;
+        error  err_return_value;
         // zeigt was gerade geparst wurde
         switch (ret_val) {
             case 'a':

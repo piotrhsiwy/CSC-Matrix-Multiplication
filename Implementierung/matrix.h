@@ -36,13 +36,13 @@ void destruct_matrix_data(matrix_data* data);
  *  lengthof(col_ptr) == no_cols + 1
  * @param stream The file to read from
  * @param data The position to store the matrix data. Make sure to free any memory used by the previous instance!
- * @return The IO_error that occurred during reading or ok if reading was successful.
+ * @return The error that occurred during reading or ok if reading was successful.
  */
-IO_error read_matrix_from_fd(FILE* stream, matrix_data* data);
+error read_matrix_from_fd(FILE* stream, matrix_data* data);
 
 /*
  * Writes the matrix to passed stream in the text representation given by the requirements
  */
-IO_error write_matrix_to_fd(FILE* stream, matrix_data data);
+error write_matrix_to_fd(FILE* stream, matrix_data data);
 
 #endif // GRA24CAPSPROJEKT_T064_MATRIX_H

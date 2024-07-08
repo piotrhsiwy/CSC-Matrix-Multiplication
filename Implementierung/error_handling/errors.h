@@ -8,7 +8,10 @@ typedef enum {
     UNEXPECTED_END_OF_FILE = 1,
     UNEXPECTED_END_OF_LINE = 2,
     INVALID_VALUE = 3,
-} IO_error;
+    DIMENSION_MISMATCH = 4,
+
+    COULD_NOT_FETCH_TIME = 5,
+} error;
 
 #define RETURN_IF_NOT_OK(value, return_value)  if (OK != value) return return_value
 
