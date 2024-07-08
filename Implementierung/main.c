@@ -8,6 +8,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void deallocate_config_buffers(config *options) {
+    // freeing NULL doesnt do anything, no need to check for it
+    free(options->matrix_output_path);
+    options->matrix_output_path = NULL;
+    free(options->matrixA_path);
+    options->matrixA_path = NULL;
+    free(options->matrixB_path);
+    options->matrixB_path = NULL;
+}
+
 
 int main(const int argc, char** argv)
 {
@@ -16,7 +26,8 @@ int main(const int argc, char** argv)
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
         // TODO proper error handling
-        return 234;
+        deallocate_config_buffers(&options);
+        return EXIT_FAILURE;
     }
     if (options.requested_help) {
         // TODO Ernsthafte Help
@@ -31,6 +42,7 @@ int main(const int argc, char** argv)
                                      "-h oder --help: Gibt diese Hilfe aus.\n";
 
         printf("%s", help_str);
+        deallocate_config_buffers(&options);
         return EXIT_SUCCESS;
     }
     // Did the user pass all required options?
@@ -40,14 +52,17 @@ int main(const int argc, char** argv)
         printf("Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         // TODO standard unix return codes
         // TODO cleanup
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (NULL == options.matrixB_path) {
         printf("Ein Pfad für die Matrix B muss spezifiziert werden.\n");
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (NULL == options.matrix_output_path) {
         printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.\n");
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
 
@@ -61,9 +76,11 @@ int main(const int argc, char** argv)
     error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_a) {
         // TODO proper error handling
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (OK != err_b) {
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
 
@@ -71,6 +88,7 @@ int main(const int argc, char** argv)
     matrix_multiplier algorithm = id_to_algorithm(options.algorithm);
     if(!algorithm) {
         fprintf(stderr, "Unbekannter Algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
 
@@ -103,6 +121,7 @@ int main(const int argc, char** argv)
     fclose(matrix_a_file);
     fclose(matrix_b_file);
     fclose(matrix_output_file);
+    deallocate_config_buffers(&options);
 
     if (OK != err_output) {
         // TODO better error handling
