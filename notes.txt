@@ -2,12 +2,14 @@ Jul 08: alle
 Dominik
        [ ] Signatur zum void
        [ ] Ruckgabefeld im struct
-       [ ] benchmarking beim Fehler
+       [ ] benchmarking beim Fehler (optl. mit WErte Vergleichen)
 Piotr
        [ ] gustavson (evtl SIMD)
        [ ] naive matrix-expand
 Lars
-
+       [ ] manuelle testfaelle in python/make
+       [ ] allgemeines refactoring
+       [ ] multithreaded
 
 
 Jun 27:Piotr
