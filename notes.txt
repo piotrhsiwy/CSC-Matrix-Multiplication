@@ -1,3 +1,17 @@
+Jul 08: alle
+Dominik
+       [ ] Signatur zum void
+       [ ] Ruckgabefeld im struct
+       [ ] benchmarking beim Fehler
+Piotr
+       [ ] gustavson (evtl SIMD)
+       [ ] naive matrix-expand
+Lars
+
+
+
+Jun 27:Piotr
+       [ ] 2 while loops when reading value-array? one for commas and one for values?
 Jun 22:Piotr
        [x] Ich finde die error handling ein bisschen inkosistent: "out of memory error"
 Jun 20: Piotr
