@@ -2,12 +2,12 @@
 #define GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
 
 #include "../error_handling/errors.h"
-
+#include "../matrix.h"
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"
  */
-typedef error (*matrix_multiplier) (const void* a, const void* b, void* result);
+typedef error (*matrix_multiplier) (const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
 
 /**
  * Converts the given id to a pointer to the implementation of the multiplication algorithm
