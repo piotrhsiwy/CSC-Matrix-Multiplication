@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// TODO do we actually want to use that. If yes, write a comment justifying it
+
+// Where do we use this?
+// - in algorithms/mul_scalar.c we use it to allocate unknown-length arrays that are part of the matrix_data: row_indices and values
+// - in matrix_util.c we use it to allocate pair-arrays when extracting compressed rows and columns from matrices
 
 /**
  * A DYNAMIC_ARRAY(void) that guarantees to have the same memory layout as any specific DYNAMIC_ARRAY.
@@ -43,5 +46,6 @@ void dynamic_array_destroy(generic_dynamic_array* arr);
 
 DYNAMIC_ARRAY_HEADER___(float)
 DYNAMIC_ARRAY_HEADER___(uint64_t)
+DYNAMIC_ARRAY_HEADER___(pair)
 
 #endif //DYNAMIC_ARRAY_H
