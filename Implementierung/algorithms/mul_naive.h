@@ -2,6 +2,7 @@
 #define MATRIX_MULT_H
 
 #include "../matrix.h"
+#include "../matrix_util.h"
 
 /* 
  * Multiples two matrices A and B in Compressed Sparse Column Format and saves the result in result

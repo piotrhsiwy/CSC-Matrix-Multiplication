@@ -1,10 +1,6 @@
 #include <string.h> // memset
 #include "mul_naive.h"
 
-
-//TODO: return error out_of_memory
-#define NULLCHECK_TO_STDERR(V)                                          
-
 __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* const b, void* const result) {
     //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
     //      really a part of this algorithm but rather a necessity.
@@ -85,7 +81,6 @@ __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* con
              *  there is no pair of (column-number, row-number) such that column-number == row-number
              *  (or either the column or the row is empty)
              */
-            typedef struct {uint64_t index; float value;} pair;
             pair to_be_multiplied_A[matrix_A->no_rows];
             uint64_t number_to_be_multiplied_A = 0;
             // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run
