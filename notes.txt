@@ -1,4 +1,6 @@
-Jul 08: alle
+Jul 9: Piotr
+       to Dominik How do i "empty" a dynamic array? for now i just set length to 0
+Jul 8: alle
 Dominik
        [ ] Signatur zum void
        [ ] Ruckgabefeld im struct
