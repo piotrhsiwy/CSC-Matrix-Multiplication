@@ -33,7 +33,7 @@ int main(const int argc, char** argv)
         // TODO Ernsthafte Help
         const char* const help_str = "Das Programm unterstützt folgende Optionen:\n"
                          "-a <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die mulitpliziert werden soll liegt.\n"
-                         "-b <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die multipliziert werden soll liegt.\n"
+                         "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
                          "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
                                      "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
                                      "\t0: der normale Algorithmus. TODO was macht er\n"
@@ -50,7 +50,6 @@ int main(const int argc, char** argv)
     if (NULL == options.matrixA_path) {
         // TODO bessere Fehlermeldung
         printf("Ein Pfad für die Matrix A muss spezifiziert werden.\n");
-        // TODO standard unix return codes
         // TODO cleanup
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;

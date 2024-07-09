@@ -17,6 +17,12 @@ release: main
 release_with_symbols: CFLAGS += -O3 -g
 release_with_symbols: main
 
+debug_asan: CFLAGS += -g -Og -fsanitize=address
+debug_asan: main
+
+debug_ubsan: CFLAGS += -g -Og -fsanitize=undefined
+debug_ubsan: main
+
 %.o: **/%.c **/%.h
 	@echo "------------------------------ Compiling: " $@
 	$(CC) $(CFLAGS) -c -o $@ $<

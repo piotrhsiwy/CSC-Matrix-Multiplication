@@ -10,6 +10,7 @@
 
 __attribute__((cold)) void destruct_matrix_data(matrix_data* const data)
 {
+    // freeing NULL doesnt do anything, no need to check for it
     free(data->values);
     data->values = NULL;
     free(data->row_indices);
