@@ -4,12 +4,48 @@
 #include <stdint.h> // uint64_t
 #include "error_handling/errors.h"
 #include "matrix.h"
+#include "util/dynamic_array.h"
+#include "util/pair.h"
 
 /*
- * Represents a (index,value) pair that is very often used to store either row or column of a sparse matrix
+ * Multiplies each value with the corresponding value from the other vector with the same index (if present).
+ * Results of the multiplication are added to one another and returned from the function
  *
+ * @param
+ *  vector_A dynamically sized array of (index,value) pairs. Pairs are sorted by index in an increasing order!
+ *  vector_B as above
+ * @return
+ *  sum of all multiplications' results, as described above
  * */
-typedef struct {uint64_t index; float value;} pair;
+float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___dynamic_array_pair_macro_defined* vector_B);
+
+/*
+ * Extracts a column in a compressed form, from a matrix in CSC.
+ * @param
+ *  matrix - the matrix in Compressed Sparse Column Format (CSC)
+ *  index - index of the column to be extracted
+ *  dynamic_vector - the extracted row will be written here this is
+ *   dynamically sized array of (index,value) where indices are the
+ *   row indices of the values in the matrix
+ * @return
+ *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
+ * 
+ * */
+error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector);
+
+/*
+ * Extracts a row in a compressed form, from a matrix in CSC.
+ * @param
+ *  matrix - the matrix in Compressed Sparse Column Format (CSC)
+ *  index - index of the row to be extracted
+ *  dynamic_vector - the extracted row will be written here this is
+ *   dynamically sized array of (index,value) where indices are the
+ *   columns indices of the values in the matrix
+ * @return
+ *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
+ * 
+ * */
+error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector);
 
 /*
  * expands a sorted array of (i,v)-pairs to an array of values, where
@@ -22,12 +58,12 @@ typedef struct {uint64_t index; float value;} pair;
  * by the upper layer.
  *
  * @param
+ *  length_compressed
  *  compressed - is the array of (i,v)-pairs. They have to be sorted by
  *   index in an increasing order.
- *  length_compressed
+ *  length_extended
  *  extended - is the array of values of appropriate size where
  *   value v is under index i.
- *  length_extended
  *	 
  * @return
  * 	DIMENSION_MISMATCH if extended is too small.
@@ -35,7 +71,7 @@ typedef struct {uint64_t index; float value;} pair;
  * See error_handling/errors.h
  *
  * */
-error expand_row(const pair* const compressed, const uint64_t length_compressed, float* const extended, const uint64_t length_extended);
+error expand_vector(const uint64_t length_compressed, const pair compressed[restrict length_compressed], const uint64_t length_extended, float extended[restrict length_extended]);
 
 /*
  * expands a matrix in Compressed Sparse Column Format (CSC) to a regular matrix
