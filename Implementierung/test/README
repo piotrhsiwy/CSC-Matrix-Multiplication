@@ -1,0 +1,8 @@
+um zu testen:
+export BINARY_TO_TEST='../main' # oder was du testen willst
+./run_tests.bash
+
+um einen Test hinzuzufügen:
+1. einen Ordner erstellen
+2. Matrix A und B im Ordner erstellen. (Müssen A.txt und B.txt heißen)
+3. Die erwarte Ausgabe-Matrix in den Ordner speichern. (Muss expected.txt heißen)
