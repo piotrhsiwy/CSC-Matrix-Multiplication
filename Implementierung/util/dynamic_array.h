@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "../matrix_util.h" // for the dynamic pair-array
+#include "pair.h"
 
 // Where do we use this?
 // - in algorithms/mul_scalar.c we use it to allocate unknown-length arrays that are part of the matrix_data: row_indices and values

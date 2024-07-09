@@ -11,7 +11,6 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
     arr->capacity = arr->length = 0;
 }
 
-
 #define DYNAMIC_ARRAY_DECL(T)                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
         if(arr->capacity < ++arr->length) {                                                                  \
