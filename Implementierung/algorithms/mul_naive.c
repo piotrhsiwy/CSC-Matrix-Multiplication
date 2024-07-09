@@ -1,8 +1,9 @@
+#include <string.h> // memset
 #include "mul_naive.h"
 
 
 //TODO: return error out_of_memory
-#define NULLCHECK_TO_STDERR(V) if(!(V))fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__)
+#define NULLCHECK_TO_STDERR(V)                                          
 
 __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* const b, void* const result) {
     //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
@@ -17,7 +18,10 @@ __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* con
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
     matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
-    NULLCHECK_TO_STDERR(matrix_C->col_ptr);
+    if(!(matrix_C->col_ptr)){                                                           
+        fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);
+        return OUT_OF_MEMORY;
+    }
     matrix_C->length_values = 0;
     matrix_C->values = NULL; 
     matrix_C->row_indices = NULL;
@@ -30,10 +34,7 @@ __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* con
     }
         // one of the matrices has length_values==0 == all zero values == all zeros in the resulting matrix
     if(matrix_A->length_values == 0 || matrix_B->length_values == 0){
-        // TODO faster with memset
-        for(uint64_t i = 0; i < matrix_C->no_cols + 1; i++){
-            matrix_C->col_ptr[i] = 0;
-        }
+        memset(matrix_C->col_ptr, 0, matrix_C->no_cols);
         return OK;
     }
 
@@ -49,13 +50,22 @@ __attribute__((hot)) error matrix_mul_naive(const void* const a, const void* con
         return OUT_OF_MEMORY;
     }
     matrix_C->values = malloc(sizeof(*matrix_C->values) * matrix_C->length_values);
-    NULLCHECK_TO_STDERR(matrix_C->values); //TODO: free matrix_C->col_ptr
+    if(!(matrix_C->values)){                                                           
+        fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        return OUT_OF_MEMORY;
+    }
     matrix_C->row_indices = malloc(sizeof(*matrix_C->row_indices) * matrix_C->length_values);
-    NULLCHECK_TO_STDERR(matrix_C->row_indices); //TODO: free matrix_C->values and matrix_C->col_ptr
+    if(!(matrix_C->values)){                                                           
+        fprintf(stderr, "Out of memory in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        free(matrix_C->values);
+        return OUT_OF_MEMORY;
+    }
 
     // MULTIPLY
     // indices as on this graphic: https://de.wikipedia.org/wiki/Matrizenmultiplikation#/media/Datei:Matrix_multiplication_qtl2.svg
-    // I multiply columns first
+    // I iterate over columns first
     // TODO why
     uint64_t* col_ptr_writer = matrix_C->col_ptr; // use this to write to col_ptr array
     *col_ptr_writer = 0; // initialize col_ptr
