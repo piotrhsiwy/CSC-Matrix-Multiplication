@@ -39,3 +39,4 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
 
 DYNAMIC_ARRAY_DECL(float)
 DYNAMIC_ARRAY_DECL(uint64_t)
+DYNAMIC_ARRAY_DECL(pair)
