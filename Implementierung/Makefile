@@ -5,7 +5,7 @@ CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 
 OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_naive.o
 
-all: main
+all: release
 	@echo ------------------------------ Program compiled successfully
 
 debug: CFLAGS += -g -Og
@@ -37,4 +37,4 @@ benchABC:
 
 .PHONY: clean
 clean:
-	rm main
+	rm main *.o
