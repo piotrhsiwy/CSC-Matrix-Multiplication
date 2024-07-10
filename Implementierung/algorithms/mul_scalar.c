@@ -2,14 +2,7 @@
 
 //TODO add void matrix_mult_csc(void*, void*, void*) interface as per Angabe
 
-__attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const matrix_data* const b, matrix_data* const result) {
-    //TODO: Handle already allocated memory. I think we can get away with just reusing it, since allocating is not
-    //      really a part of this algorithm but rather a necessity.
-
-    // voids are kept in the signature so that the functions fits the project's specifications
-    const matrix_data* const matrix_A = a;
-    const matrix_data* const matrix_B = b;
-    matrix_data* const matrix_C = result;
+__attribute__((hot)) error matrix_mul_scalar(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C) {
  
     // ##################################
     // ALLOCATE THE FIELDS OF THE RESULT MATRIX
