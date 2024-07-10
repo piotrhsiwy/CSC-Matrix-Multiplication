@@ -40,6 +40,8 @@ tabc:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1
 	diff matrices/C0.txt matrices/C1.txt
 	rm matrices/C0.txt matrices/C1.txt
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C0.txt -V 0 -B 10000000
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1 -B 10000000
 
 .PHONY: vg
 vg:
