@@ -2,6 +2,14 @@
 
 #include "matrix_util.h"
 
+float mul_vectors_expanded(size_t size, float* const vector_A, float* const vector_B){
+	float acc = 0.0f;
+	while(size--){
+		acc += vector_A[size] * vector_B[size];
+	}
+	return acc;
+}
+
 float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___dynamic_array_pair_macro_defined* vector_B){
 	float acc = 0.0f;
 	for(uint64_t i = 0, j = 0; i < vector_A->length && j < vector_B->length;){
@@ -23,9 +31,35 @@ float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___d
 	return acc;
 }
 
+size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
+	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
+		if(___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j) == index){
+			size_t index; // even though the type of the index is uint64_t, if it would not fit into size_t, vector could not be allocated. Therefore I can be sure it will always fit
+			for(size_t l = 0; l < matrix->no_rows+1; l++){
+				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
+					index = l;				
+					break;
+				}
+			}
+			float value = ___dynamic_array_float_macro_defined_at(&matrix->dynamic_values, j);
+			vector[index] = value; // note that this array is always large enough
+		}
+	}
+}
+
+size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
+	size_t number_of_elements = 0;
+	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
+		float value = ___dynamic_array_float_macro_defined_at(&matrix->dynamic_values, j);
+		size_t index = ___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j);
+		vector[index] = value; // note that vector is always large enough
+		number_of_elements++;
+	}
+	return number_of_elements;
+}
+
 error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector){
 	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
-		// TODO move the descs here for better understanding
 		if(___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j) == index){
 			pair new_pair;
 			for(uint64_t l = 0; l < matrix->no_rows+1; l++){

@@ -69,7 +69,6 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
     if(___dynamic_array_pair_macro_defined_new(4, &dynamic_vector_A)){
         fprintf(stderr, "Cannot dynamically allocate memory for vector_A field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
-        free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
         return OUT_OF_MEMORY;
@@ -106,6 +105,7 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
         }
 
         // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run, because for now I have to go through the whole value-length array for every row!
+        // note that this comes with limitation by matrix_C->no_cols
         for(uint64_t i = 0; i < matrix_C->no_rows; i++){
             
             // extract row from matrix A. See description of the function in matrix_util.h
