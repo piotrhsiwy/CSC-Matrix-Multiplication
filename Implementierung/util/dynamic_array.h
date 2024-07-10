@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
-#define _GNU_SOURCE // needed if we use reallocarray() instead of realloc
+#define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc
 #include <stdlib.h>
 #include <stdint.h>
 #include "pair.h"
