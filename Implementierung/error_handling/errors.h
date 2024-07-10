@@ -5,12 +5,14 @@ typedef enum {
     OK = 0,
 
     OUT_OF_MEMORY = -1,
+
     UNEXPECTED_END_OF_FILE = 1,
     UNEXPECTED_END_OF_LINE = 2,
-    INVALID_VALUE = 3,
-    DIMENSION_MISMATCH = 4,
+    CANNOT_OPEN_FILE = 3,
+    INVALID_VALUE = 4,
+    DIMENSION_MISMATCH = 5,
 
-    COULD_NOT_FETCH_TIME = 5,
+    COULD_NOT_FETCH_TIME = 101,
 
 } error;
 

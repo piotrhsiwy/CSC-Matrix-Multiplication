@@ -67,7 +67,15 @@ int main(const int argc, char** argv)
 
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
+    if(!matrix_a_file){
+        fprintf(stderr, "Cannot open file %s\n", options.matrixA_path);
+        return CANNOT_OPEN_FILE;
+    }
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
+    if(!matrix_b_file){
+        fprintf(stderr, "Cannot open file %s\n", options.matrixB_path);
+        return CANNOT_OPEN_FILE;
+    }
   
     matrix_data a;
     matrix_data b;
