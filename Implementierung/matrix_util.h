@@ -21,6 +21,10 @@ float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___d
 
 /*
  * Extracts a column in a compressed form, from a matrix in CSC.
+ * Values of column *index* lie as follows:
+ *  - their values in values array under indices col_ptr[index], ..., col_ptr[index+1]
+ *  - their row-number in row_indices array under the same indices
+ * 
  * @param
  *  matrix - the matrix in Compressed Sparse Column Format (CSC)
  *  index - index of the column to be extracted
@@ -36,6 +40,10 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
 
 /*
  * Extracts a row in a compressed form, from a matrix in CSC.
+ * Values of row *index* lie as follows:
+ *  - their values in values array under indices x for which, row_ptr[x] = i
+ *  - their column-number is COL that col_ptr[COL] <= x < col_ptr[COL+1]
+ * 
  * @param
  *  matrix - the matrix in Compressed Sparse Column Format (CSC)
  *  index - index of the row to be extracted
