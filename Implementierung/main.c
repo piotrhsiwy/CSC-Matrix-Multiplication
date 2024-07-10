@@ -21,6 +21,8 @@ void deallocate_config_buffers(config *options) {
 
 int main(const int argc, char** argv)
 {
+    //TODO: switch to start unattended benchmark and configure iterations per run
+
     config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false };
     // TODO write function to deallocate buffers in config
     error err_parse_config = parse_arguments(argc, argv, &options);
