@@ -15,12 +15,12 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
         if(arr->capacity <= arr->length) {                                                                   \
             T* buf = (T*)reallocarray(arr->data, arr->capacity * 2, sizeof(T));                              \
-            if(!buf){                                                                                        \   
+            if(!buf){                                                                                        \
                 return -1; /*TODO: try increasing by only 1*/                                                \
             } else{                                                                                          \
-                arr->data = buf;                                                                             \ 
+                arr->data = buf;                                                                             \
                 arr->capacity *= 2;                                                                          \
-            }                                                                                                \      
+            }                                                                                                \
         }                                                                                                    \
         arr->data[arr->length] = v;                                                                          \
         arr->length++;                                                                                       \
