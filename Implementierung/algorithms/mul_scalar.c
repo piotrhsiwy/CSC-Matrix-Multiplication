@@ -141,7 +141,7 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
                     dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
                     return OUT_OF_MEMORY;
                 }
-                if(___dynamic_array_uint64_t_macro_defined_add(&matrix_C->dynamic_row_indices, value)){
+                if(___dynamic_array_uint64_t_macro_defined_add(&matrix_C->dynamic_row_indices, i)){
                     fprintf(stderr, "Cannot add new element to dynamic_row_indices in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);

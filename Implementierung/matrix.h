@@ -5,6 +5,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include "error_handling/errors.h"
+#include "util/dynamic_array.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,9 +15,10 @@
 typedef struct {
     uint64_t no_rows;
     uint64_t no_cols;
-    size_t length_values;
-    float* values;
-    uint64_t* row_indices;
+    // size_t length_values; <-- this field is now in dynamic_values->length
+    // TODO POSSIBLY MAKE IT EVEN MORE COMPACT WITH DYNAMIC-ARRAY OF PAIRS???
+    ___dynamic_array_float_macro_defined dynamic_values;
+    ___dynamic_array_uint64_t_macro_defined dynamic_row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 } matrix_data;

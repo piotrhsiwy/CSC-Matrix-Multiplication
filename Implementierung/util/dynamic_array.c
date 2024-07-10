@@ -20,9 +20,6 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
             } else{                                                                                          \
                 arr->data = buf;                                                                             \ 
                 arr->capacity *= 2;                                                                          \
-                arr->data[arr->length] = v;                                                                  \
-                arr->length++;                                                                               \
-                return 1;                                                                                    \
             }                                                                                                \      
         }                                                                                                    \
         arr->data[arr->length] = v;                                                                          \
