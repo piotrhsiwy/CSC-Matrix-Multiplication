@@ -1,6 +1,8 @@
 #ifndef GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
 #define GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
 
+#include "mul_scalar.h"
+#include "mul_scalar_expanded.h"
 #include "../error_handling/errors.h"
 #include "../matrix.h"
 
