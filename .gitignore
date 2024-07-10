@@ -1,13 +1,16 @@
 *.o
 main
-vgcore*
 
-# Piotr
-.vscode/*
+vgcore*
+perf.data*
+
 Cdebug.txt
 C0.txt
 C1.txt
 C2.txt
 C3.txt
 Cbench.txt
+
+#Piotr
 *.swp
+.vscode/*
