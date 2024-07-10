@@ -34,9 +34,13 @@ main: $(OBJS)
 	@echo "------------------------------ Cleaning up object files: " $^
 	rm *.o
 
-.PHONY: testABC
-testABC:
+.PHONY: tabc
+tabc:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt
+
+.PHONY: vg
+vg:
+	valgrind ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt
 
 .PHONY: benchABC
 benchABC:
