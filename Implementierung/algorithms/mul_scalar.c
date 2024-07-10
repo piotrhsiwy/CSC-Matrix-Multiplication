@@ -164,21 +164,27 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
             //  reorder -> mult -> horizontal add ( operating on 32bfloats )
             float value = mul_vectors_compressed(&dynamic_vector_A, &dynamic_vector_B);
             if(value != 0.0f){
-                if(___dynamic_array_float_macro_defined_add(&dynamic_values, value)){
-                    fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
-                    return OUT_OF_MEMORY;
+                switch(___dynamic_array_float_macro_defined_add(&dynamic_values, value)){
+                    case -1: // failed to allocate more
+                        fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+                        return OUT_OF_MEMORY;
+                    case 1: // resized (possibly new address)
+                        matrix_C->values = dynamic_values.data;
                 }
-                if(___dynamic_array_uint64_t_macro_defined_add(&dynamic_row_indices, i)){
-                    fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
-                    return OUT_OF_MEMORY;
+                switch(___dynamic_array_uint64_t_macro_defined_add(&dynamic_row_indices, i)){
+                    case -1: // failed to allocate more
+                        fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
+                        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+                        return OUT_OF_MEMORY;
+                    case 1: // resized (possibly new address) <- TODO this is very ugly, as it break the dynamic-array abstraction, solution: maybe change the field tpye in matrix_data to dynamic-array?
+                        matrix_C->row_indices = dynamic_row_indices.data;
                 }
             }
             // else we don't write anything

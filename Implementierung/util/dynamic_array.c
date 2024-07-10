@@ -10,20 +10,23 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
     arr->data = NULL;
     arr->capacity = arr->length = 0;
 }
-
+#include <stdio.h>
 #define DYNAMIC_ARRAY_DECL(T)                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
-        if(arr->capacity < arr->length) {                                                                    \
+        if(arr->capacity <= arr->length) {                                                                   \
             T* buf = (T*)reallocarray(arr->data, arr->capacity * 2, sizeof(T));                              \
             if(!buf){                                                                                        \   
-                arr->capacity *= 2;                                                                          \
-                arr->length++;                                                                               \
                 return -1; /*TODO: try increasing by only 1*/                                                \
             } else{                                                                                          \
                 arr->data = buf;                                                                             \ 
-                arr->data[arr->length-1] = v;                                                                \
+                arr->capacity *= 2;                                                                          \
+                arr->data[arr->length] = v;                                                                  \
+                arr->length++;                                                                               \
+                return 1;                                                                                    \
             }                                                                                                \      
         }                                                                                                    \
+        arr->data[arr->length] = v;                                                                          \
+        arr->length++;                                                                                       \
         return 0;                                                                                            \
     }                                                                                                        \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(                                         \
