@@ -1,6 +1,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
+#define _GNU_SOURCE // needed if we use reallocarray() instead of realloc
 #include <stdlib.h>
 #include <stdint.h>
 #include "pair.h"
@@ -29,7 +30,7 @@ typedef struct {
     } DYNAMIC_ARRAY(T);                                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T)* arr, T v);                                          \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
-    const char* ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
+    int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).

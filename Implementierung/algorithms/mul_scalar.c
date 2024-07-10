@@ -43,24 +43,18 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
     dynamic solution
     */
     ___dynamic_array_uint64_t_macro_defined dynamic_row_indices;
-    {
-        const char* error_string = ___dynamic_array_uint64_t_macro_defined_new(4, &dynamic_row_indices);
-        if(error_string){
-            fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
-            free(matrix_C->col_ptr);
-            return OUT_OF_MEMORY;
-        }
+    if(___dynamic_array_uint64_t_macro_defined_new(4, &dynamic_row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        return OUT_OF_MEMORY;
     }
     matrix_C->row_indices = dynamic_row_indices.data;
     ___dynamic_array_float_macro_defined dynamic_values;
-    {
-        const char* error_string = ___dynamic_array_float_macro_defined_new(4, &dynamic_values);
-        if(error_string){
-            fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
-            return OUT_OF_MEMORY;
-        }
+    if(___dynamic_array_float_macro_defined_new(4, &dynamic_values)){
+        fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
+        return OUT_OF_MEMORY;
     }
     matrix_C->values = dynamic_values.data;
     /*
@@ -95,27 +89,21 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
     uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     ___dynamic_array_pair_macro_defined dynamic_vector_A;
-    {
-        const char* error_string = ___dynamic_array_pair_macro_defined_new(4, &dynamic_vector_A);
-        if(error_string){
-            fprintf(stderr, "Cannot dynamically allocate memory for vector_A field in function %s\n", __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
-            return OUT_OF_MEMORY;
-        }
+    if(___dynamic_array_pair_macro_defined_new(4, &dynamic_vector_A)){
+        fprintf(stderr, "Cannot dynamically allocate memory for vector_A field in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
+        return OUT_OF_MEMORY;
     }
     ___dynamic_array_pair_macro_defined dynamic_vector_B;
-    {
-        const char* error_string = ___dynamic_array_pair_macro_defined_new(4, &dynamic_vector_B);
-        if(error_string){
-            fprintf(stderr, "Cannot dynamically allocate memory for vector_B field in function %s\n", __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
-            dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-            return OUT_OF_MEMORY;
-        }
+    if(___dynamic_array_pair_macro_defined_new(4, &dynamic_vector_B)){
+        fprintf(stderr, "Cannot dynamically allocate memory for vector_B field in function %s\n", __FUNCTION__);
+        free(matrix_C->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_values);
+        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
+        return OUT_OF_MEMORY;
     }
 
     /*
@@ -194,12 +182,12 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
                 }
             }
             // else we don't write anything
+            dynamic_vector_A.length = 0; // "empty" the vector holding the row
         }
         *col_ptr_writer = dynamic_values.length;
         col_ptr_writer++;
-        dynamic_vector_A.length = 0; // "empty" the vector holding the row
+        dynamic_vector_B.length = 0; // "empty" the vector holding the column
     }
-    dynamic_vector_B.length = 0; // "empty" the vector holding the column
     matrix_C->length_values = dynamic_values.length;
 
     return OK;
