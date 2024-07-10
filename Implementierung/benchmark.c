@@ -13,9 +13,9 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data*
     }
 
     for(uint32_t i = 0; i < iterations; ++i) {
-        error err = algorithm(a, b, result);
-        if(err != OK) {
-            return err;
+        algorithm(a, b, result);
+        if(result->mul_error != OK) {
+            return result->mul_error;
         }
     }
 

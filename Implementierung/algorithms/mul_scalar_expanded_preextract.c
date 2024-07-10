@@ -1,6 +1,6 @@
 #include "mul_scalar_expanded_preextract.h"
 
-__attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C) {
+__attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C) {
  
     // ##################################
     // ALLOCATE THE FIELDS OF THE RESULT MATRIX
@@ -12,20 +12,23 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
     matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
     if(!(matrix_C->col_ptr)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
-        return OUT_OF_MEMORY;
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
     }
 
     if(dynamic_array_new(float, 4, &matrix_C->dynamic_values)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
-        return OUT_OF_MEMORY;
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
     }
 
     if(dynamic_array_new(uint64_t, 4, &matrix_C->dynamic_row_indices)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_row_indices field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-        return OUT_OF_MEMORY;
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
     }
 
     // ##################################
@@ -37,12 +40,13 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
         free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
-        return DIMENSION_MISMATCH;
+        matrix_C->mul_error = DIMENSION_MISMATCH;
+        return;
     }
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
     if(matrix_A->dynamic_values.length == 0 || matrix_B->dynamic_values.length == 0){
         memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
-        return OK;
+        return;
     }
 
     // ##################################
@@ -63,7 +67,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
         free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
-        return OUT_OF_MEMORY;
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
     }
     for(size_t i = 0; i < matrix_A->no_rows; i++){
         float* vector = malloc(sizeof(*vector) * vector_size);
@@ -73,7 +78,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
             dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
             dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
             nested_free(i, all_vectors_A);
-            return OUT_OF_MEMORY;
+            matrix_C->mul_error = OUT_OF_MEMORY;
+            return;
         }
         memset(vector, 0, sizeof(*vector) * vector_size);
         all_vectors_A[i] = vector;
@@ -87,7 +93,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
         nested_free(matrix_A->no_rows, all_vectors_A);
-        return OUT_OF_MEMORY;
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
     }
     memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
@@ -119,7 +126,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
                     nested_free(matrix_A->no_rows, all_vectors_A);
                     free(vector_B);
-                    return OUT_OF_MEMORY;
+                    matrix_C->mul_error = OUT_OF_MEMORY;
+                    return;
                 }
                 if(dynamic_array_add(uint64_t, &matrix_C->dynamic_row_indices, i)){
                     fprintf(stderr, "Cannot add new element to dynamic_row_indices in function %s\n", __FUNCTION__);
@@ -128,7 +136,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
                     nested_free(matrix_A->no_rows, all_vectors_A);
                     free(vector_B);
-                    return OUT_OF_MEMORY;
+                    matrix_C->mul_error = OUT_OF_MEMORY;
+                    return;
                 }
             }
             // else we don't write anything
@@ -140,5 +149,4 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
 
     nested_free(matrix_A->no_rows, all_vectors_A);
     free(vector_B);
-    return OK;
 }

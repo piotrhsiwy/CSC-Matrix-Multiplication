@@ -12,7 +12,7 @@
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"
  */
-typedef error (*matrix_multiplier) (const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
+typedef void (*matrix_multiplier) (const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
 
 /**
  * Converts the given id to a pointer to the implementation of the multiplication algorithm

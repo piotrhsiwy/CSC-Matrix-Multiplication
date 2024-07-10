@@ -99,20 +99,19 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    error multiplication_error;
     if(options.is_benchmark) {
         struct timespec duration;
-        multiplication_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);
+        output.mul_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);
 
-        if (multiplication_error == OK) {
+        if (output.mul_error == OK) {
             printf("%ld multiplications took %ld seconds and %ld nano seconds.\n",
                    options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
         }
     } else {
-        multiplication_error = algorithm(&a, &b, &output);
+        algorithm(&a, &b, &output);
     }
 
-    //TODO: handle multiplication_error
+    //TODO: handle mul_error
 
     // now write the output
     // TODO evtl printen??
@@ -137,11 +136,11 @@ int main(const int argc, char** argv)
         return CANNOT_CLOSE_FILE;   
     }
 
-    // funilly enough, the data is written to the files with fflush() only after the files are close, so I have to wait with freeing any memory until then
+    // funnily enough, the data is written to the files with fflush() only after the files are close, so I have to wait with freeing any memory until then
     deallocate_config_buffers(&options);
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
-    if(multiplication_error == OK){
+    if(output.mul_error == OK){
         destruct_matrix_data(&output);
     }
 

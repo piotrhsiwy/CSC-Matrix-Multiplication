@@ -21,6 +21,12 @@ typedef struct {
     DYNAMIC_ARRAY(uint64_t) dynamic_row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
+
+    /**
+     * An error that occurred while trying to multiply two matrices with this matrix as the destination.
+     * (We are sadly not allowed to change the method signature, so we can't just return errors.)
+     */
+    error mul_error;
 } matrix_data;
 
 /**
