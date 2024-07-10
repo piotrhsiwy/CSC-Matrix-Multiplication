@@ -1,7 +1,4 @@
-#include <string.h> // memset
 #include "mul_scalar.h"
-#include "../matrix_util.h" // extracting rows, cols, multiplying vectors
-#include "../util/dynamic_array.h"
 
 //TODO add void matrix_mult_csc(void*, void*, void*) interface as per Angabe
 

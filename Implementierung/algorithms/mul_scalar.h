@@ -1,7 +1,9 @@
 #ifndef MUL_SCALAR_H
 #define MUL_SCALAR_H
 
-#include "../matrix_util.h"
+#include <string.h> // memset
+#include "../matrix_util.h" // extracting rows, cols, multiplying vectors
+#include "../util/dynamic_array.h"
 
 /* 
  * Multiples two matrices A and B in Compressed Sparse Column Format and saves the result in result
