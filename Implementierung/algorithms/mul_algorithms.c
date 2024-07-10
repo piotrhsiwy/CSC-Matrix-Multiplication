@@ -15,3 +15,7 @@ __attribute__((cold)) matrix_multiplier id_to_algorithm(const unsigned int algor
 
     return matrix_mul_algorithms[algorithm_id];
 }
+
+__attribute__((always_inline)) void matr_mult_csc(const void *a, const void *b, void *result) {
+    matrix_mul_algorithms[0](a, b, result);
+}

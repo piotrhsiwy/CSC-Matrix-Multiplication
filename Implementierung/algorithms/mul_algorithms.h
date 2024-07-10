@@ -30,4 +30,12 @@ extern matrix_multiplier matrix_mul_algorithms[];
  */
 extern size_t matrix_mul_algorithm_count;
 
+/**
+ * The default multiplication algorithm. (This is just an alias for the default algorithm.)
+ * @param a The first matrix
+ * @param b The second matrix
+ * @param result The matrix to store the result and possible errors in
+ */
+void matr_mult_csc(const void* a, const void* b, void* result);
+
 #endif //GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
