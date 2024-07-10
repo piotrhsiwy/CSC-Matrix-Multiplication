@@ -21,4 +21,13 @@ typedef error (*matrix_multiplier) (const matrix_data* const a, const matrix_dat
  */
 matrix_multiplier id_to_algorithm(unsigned int algorithm_id);
 
+/**
+ * All implemented algorithms for multiplying two csc-matrices, ordered by id
+ */
+extern matrix_multiplier matrix_mul_algorithms[];
+/**
+ * The amount of elements stored in matrix_mul_algorithms
+ */
+extern size_t matrix_mul_algorithm_count;
+
 #endif //GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H

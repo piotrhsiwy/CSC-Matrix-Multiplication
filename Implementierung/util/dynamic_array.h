@@ -9,7 +9,7 @@
 #include "pair.h"
 
 // Where do we use this?
-// - in algorithms/mul_scalar.c we use it to allocate unknown-length arrays that are part of the matrix_data: row_indices and values
+// - in matrix_mul_algorithms/mul_scalar.c we use it to allocate unknown-length arrays that are part of the matrix_data: row_indices and values
 // - in matrix_util.c we use it to allocate pair-arrays when extracting compressed rows and columns from matrices
 
 /**

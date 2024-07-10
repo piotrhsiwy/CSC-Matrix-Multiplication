@@ -34,8 +34,11 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
         return arr->data[index];                                                                             \
     }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {             \
-        if(!(arr->data = (T*)reallocarray(NULL, capacity, sizeof(T))))                                       \
-            return errno;                                                                                    \
+        if(!(arr->data = (T*)reallocarray(NULL, capacity, sizeof(T)))) {                                     \
+            int err = errno;                                                                                 \
+            errno = 0;                                                                                       \
+            return err;                                                                                      \
+        }                                                                                                    \
         memset(arr->data, 0, capacity * sizeof(T));                                                          \
         arr->length = 0;                                                                                     \
         arr->capacity = capacity;                                                                            \

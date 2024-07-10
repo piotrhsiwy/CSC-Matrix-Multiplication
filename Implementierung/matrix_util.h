@@ -126,7 +126,7 @@ error extract_compressed_col_csc(const matrix_data* matrix, uint64_t index, DYNA
  * each value is under index i in the array. The former is a direct
  * result of extracting values from a matrix in the Compressed Sparse
  * Column Format (CSC). The latter can be useful e.g. when optimizing
- * matrix-algorithms for performance. Writes the resulting array to
+ * matrix-matrix_mul_algorithms for performance. Writes the resulting array to
  * extended. See picture below.
  * Memory management of both compressed and extended has to be handled
  * by the upper layer.
