@@ -15,13 +15,13 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const m
         return OUT_OF_MEMORY;
     }
 
-    if(___dynamic_array_float_macro_defined_new(4, &matrix_C->dynamic_values)){
+    if(dynamic_array_new(float, 4, &matrix_C->dynamic_values)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
         return OUT_OF_MEMORY;
     }
 
-    if(___dynamic_array_uint64_t_macro_defined_new(4, &matrix_C->dynamic_row_indices)){
+    if(dynamic_array_new(uint64_t, 4, &matrix_C->dynamic_row_indices)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_row_indices field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
@@ -101,7 +101,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const m
             // ##################################
             float value = mul_vectors_expanded(vector_size, vector_A, vector_B);
             if(value != 0.0f){
-                if(___dynamic_array_float_macro_defined_add(&matrix_C->dynamic_values, value)){
+                if(dynamic_array_add(float, &matrix_C->dynamic_values, value)){
                     fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
@@ -110,7 +110,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const m
                     free(vector_B);
                     return OUT_OF_MEMORY;
                 }
-                if(___dynamic_array_uint64_t_macro_defined_add(&matrix_C->dynamic_row_indices, i)){
+                if(dynamic_array_add(uint64_t, &matrix_C->dynamic_row_indices, i)){
                     fprintf(stderr, "Cannot add new element to dynamic_row_indices in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);

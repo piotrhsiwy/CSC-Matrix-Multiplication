@@ -23,6 +23,9 @@ typedef struct {
 
 /// A poor man's std::vector<T>. "Poor man" as in "C developer".
 #define DYNAMIC_ARRAY(T) ___dynamic_array_##T##_macro_defined
+#define dynamic_array_add(T, arr, v) ___dynamic_array_##T##_macro_defined_add(arr, v)
+#define dynamic_array_at(T, arr, i) ___dynamic_array_##T##_macro_defined_at(arr, i)
+#define dynamic_array_new(T, capacity, arr) ___dynamic_array_##T##_macro_defined_new(capacity, arr)
 
 #define DYNAMIC_ARRAY_HEADER___(T)                                                                                     \
     typedef struct {                                                                                                   \

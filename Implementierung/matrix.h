@@ -17,8 +17,8 @@ typedef struct {
     uint64_t no_cols;
     // size_t length_values; <-- this field is now in dynamic_values->length
     // TODO POSSIBLY MAKE IT EVEN MORE COMPACT WITH DYNAMIC-ARRAY OF PAIRS???
-    ___dynamic_array_float_macro_defined dynamic_values;
-    ___dynamic_array_uint64_t_macro_defined dynamic_row_indices;
+    DYNAMIC_ARRAY(float) dynamic_values;
+    DYNAMIC_ARRAY(uint64_t) dynamic_row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 } matrix_data;

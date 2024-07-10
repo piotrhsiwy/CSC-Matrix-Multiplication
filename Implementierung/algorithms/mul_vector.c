@@ -13,12 +13,12 @@ __attribute__((hot)) error matrix_mul_vector(const matrix_data* const matrix_A, 
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         return OUT_OF_MEMORY;
     }
-    if(___dynamic_array_float_macro_defined_new(4, &matrix_C->dynamic_values)){
+    if(dynamic_array_new(float, 4, &matrix_C->dynamic_values)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
         return OUT_OF_MEMORY;
     }
-    if(___dynamic_array_uint64_t_macro_defined_new(4, &matrix_C->dynamic_row_indices)){
+    if(dynamic_array_new(uint64_t, 4, &matrix_C->dynamic_row_indices)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_row_indices field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
@@ -114,7 +114,7 @@ __attribute__((hot)) error matrix_mul_vector(const matrix_data* const matrix_A, 
         for(size_t index_in_vector = 0; index_in_vector <= how_many_vectors; index_in_vector++){
             float value = vector_B[index_in_vector];
             if(value != 0.0f){
-                if(___dynamic_array_float_macro_defined_add(&matrix_C->dynamic_values, value)){
+                if(dynamic_array_add(float, &matrix_C->dynamic_values, value)){
                     fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
@@ -123,7 +123,7 @@ __attribute__((hot)) error matrix_mul_vector(const matrix_data* const matrix_A, 
                     free(vector_B);
                     return OUT_OF_MEMORY;
                 }
-                if(___dynamic_array_uint64_t_macro_defined_add(&matrix_C->dynamic_row_indices, index_in_vector)){
+                if(dynamic_array_add(uint64_t, &matrix_C->dynamic_row_indices, index_in_vector)){
                     fprintf(stderr, "Cannot add new element to dynamic_row_indices in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
                     dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
