@@ -34,15 +34,18 @@ main: $(OBJS)
 	@echo "------------------------------ Cleaning up object files: " $^
 	rm *.o
 
+# matrices/C.txt is a reference solution
 .PHONY: tabc
 tabc:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C0.txt -V 0
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C2.txt -V 2
 	@echo "----------------------------------------"
-	diff matrices/C0.txt matrices/C1.txt
+	diff matrices/C.txt matrices/C0.txt
 	@echo "----------------------------------------"
-	diff matrices/C0.txt matrices/C2.txt
+	diff matrices/C.txt matrices/C1.txt
+	@echo "----------------------------------------"
+	diff matrices/C.txt matrices/C2.txt
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C0.txt -V 0 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 2 -B 4000000
