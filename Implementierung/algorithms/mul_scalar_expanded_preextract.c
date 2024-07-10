@@ -104,6 +104,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
         nested_free(matrix_A->no_rows, all_vectors_A);
         return OUT_OF_MEMORY;
     }
+    memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
     // TODO this stil runs n times through all values!!!2
     // extract all rows from matrix A. See description of the function in matrix_util.h

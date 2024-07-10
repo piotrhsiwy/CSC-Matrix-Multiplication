@@ -50,13 +50,13 @@ tabc:
 
 .PHONY: vg0
 vg0:
-	valgrind ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 0
+	valgrind --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 0
 .PHONY: vg1
 vg1:
-	valgrind ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 1
+	valgrind --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 1
 .PHONY: vg2
 vg2:
-	valgrind ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 2
+	valgrind --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt -V 2
 
 .PHONY: benchABC
 benchABC:

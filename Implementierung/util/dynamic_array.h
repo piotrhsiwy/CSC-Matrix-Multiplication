@@ -2,8 +2,10 @@
 #define DYNAMIC_ARRAY_H
 
 #define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc
-#include <stdlib.h>
-#include <stdint.h>
+#include <string.h> // memset
+#include <stdint.h> // size_t, uint64_t
+#include <errno.h> // errno
+#include <stdlib.h> // reallocarray, free
 #include "pair.h"
 
 // Where do we use this?

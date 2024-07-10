@@ -72,6 +72,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
         dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
         return OUT_OF_MEMORY;
     }
+    memset(vector_A, 0, sizeof(*vector_A) * vector_size);
     // this is vector for the col extracted from matrix B
     float* vector_B = malloc(sizeof(*vector_B) * vector_size);
     if(!vector_B){
@@ -82,6 +83,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
         free(vector_A);
         return OUT_OF_MEMORY;
     }
+    memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
     /*
      * iterator names *k* and *i* as on the graphic linked above. Short indices became more
@@ -134,6 +136,9 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
         col_ptr_writer++;
         memset(vector_A, 0, sizeof(*vector_A) * vector_size); // reset vector_A
     }
+
+    free(vector_A);
+    free(vector_B);
 
     return OK;
 }

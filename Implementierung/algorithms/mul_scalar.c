@@ -157,5 +157,8 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const a, const m
         dynamic_vector_B.length = 0; // "empty" the vector holding the column
     }
 
+    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
+    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+    
     return OK;
 }
