@@ -116,7 +116,9 @@ int main(const int argc, char** argv)
 
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
-    destruct_matrix_data(&output);
+    if(multiplication_error == OK){
+        destruct_matrix_data(&output);
+    }
     fclose(matrix_a_file);
     fclose(matrix_b_file);
     fclose(matrix_output_file);

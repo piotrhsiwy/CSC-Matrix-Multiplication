@@ -41,6 +41,7 @@ error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t
 			}
 		}
 	}
+	return OK;
 }
 
 error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector){
@@ -51,6 +52,7 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
 			return OUT_OF_MEMORY;
 		}
 	}
+	return OK;
 }
 
 error expand_vector(const uint64_t length_compressed, const pair compressed[restrict length_compressed], const uint64_t length_extended, float extended[restrict length_extended]){

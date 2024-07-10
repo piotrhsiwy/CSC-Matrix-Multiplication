@@ -29,6 +29,7 @@ float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___d
  *   row indices of the values in the matrix
  * @return
  *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
+ *  OK else
  * 
  * */
 error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector);
@@ -43,6 +44,7 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
  *   columns indices of the values in the matrix
  * @return
  *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
+ *  OK else
  * 
  * */
 error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t index, ___dynamic_array_pair_macro_defined* dynamic_vector);
