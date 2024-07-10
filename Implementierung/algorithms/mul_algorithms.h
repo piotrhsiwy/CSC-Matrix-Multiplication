@@ -3,6 +3,7 @@
 
 #include "mul_scalar.h"
 #include "mul_scalar_expanded.h"
+#include "mul_scalar_expanded_preextract.h"
 #include "../error_handling/errors.h"
 #include "../matrix.h"
 

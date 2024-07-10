@@ -64,7 +64,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
 
     // this is vector for the row extracted from matrix A
     size_t vector_size = matrix_C-> no_rows;
-    float* vector_A = malloc(sizeof(*matrix_C->dynamic_values.data) * vector_size);
+    float* vector_A = malloc(sizeof(*vector_A) * vector_size);
     if(!vector_A){
         fprintf(stderr, "Cannot allocate memory for vector_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
         free(matrix_C->col_ptr);
@@ -73,7 +73,7 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
         return OUT_OF_MEMORY;
     }
     // this is vector for the col extracted from matrix B
-    float* vector_B = malloc(sizeof(*matrix_C->dynamic_values.data) * vector_size);
+    float* vector_B = malloc(sizeof(*vector_B) * vector_size);
     if(!vector_B){
         fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
@@ -94,7 +94,6 @@ __attribute__((hot)) error matrix_mul_scalar_expanded(const matrix_data* const a
             continue;  
         }
 
-        // TODO optimization idea: map all the pairs from matrix A (for all row-numbers) with one run, because for now I have to go through the whole value-length array for every row!
         for(uint64_t i = 0; i < matrix_C->no_rows; i++){
             
             // extract row from matrix A. See description of the function in matrix_util.h

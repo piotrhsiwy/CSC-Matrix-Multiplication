@@ -120,17 +120,32 @@ int main(const int argc, char** argv)
     // TODO evtl printen??
     // TODO handle fopen failing (also for matrixA + matrixB)
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
+    if(!matrix_output_file){
+        fprintf(stderr, "Cannot open file %s\n", options.matrix_output_path);
+        return CANNOT_OPEN_FILE;
+    }
     error err_output = write_matrix_to_fd(matrix_output_file, output);
 
+    if(fclose(matrix_a_file)){
+        fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+        return CANNOT_CLOSE_FILE;   
+    }
+    if(fclose(matrix_b_file)){
+        fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+        return CANNOT_CLOSE_FILE;   
+    }
+    if(fclose(matrix_output_file)){
+        fprintf(stderr, "Cannot close file %s\n", options.matrix_output_path);
+        return CANNOT_CLOSE_FILE;   
+    }
+
+    // funilly enough, the data is written to the files with fflush() only after the files are close, so I have to wait with freeing any memory until then
+    deallocate_config_buffers(&options);
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
     if(multiplication_error == OK){
         destruct_matrix_data(&output);
     }
-    fclose(matrix_a_file);
-    fclose(matrix_b_file);
-    fclose(matrix_output_file);
-    deallocate_config_buffers(&options);
 
     if (OK != err_output) {
         // TODO better error handling
