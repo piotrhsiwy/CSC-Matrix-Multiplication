@@ -4,5 +4,7 @@ vgcore*
 
 # Piotr
 .vscode/*
-C.txt
+Cdebug.txt
+C0.txt
+C1.txt
 *.swp

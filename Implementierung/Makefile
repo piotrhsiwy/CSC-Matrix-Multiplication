@@ -4,7 +4,7 @@ CC := $(shell command -v gcc || command -v clang)
 CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 
 #TODO this is a mess
-OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_scalar.o matrix_util.o dynamic_array.o
+OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_scalar.o mul_scalar_expanded.o matrix_util.o dynamic_array.o
 
 all: release
 	@echo ------------------------------ Program compiled successfully
@@ -36,7 +36,8 @@ main: $(OBJS)
 
 .PHONY: tabc
 tabc:
-	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C.txt
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C0.txt -V 0
+	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1
 
 .PHONY: vg
 vg:
