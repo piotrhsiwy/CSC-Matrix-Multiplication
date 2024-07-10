@@ -32,6 +32,7 @@ float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___d
 }
 
 size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
+	size_t number_of_elements = 0;
 	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
 		if(___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j) == index){
 			size_t row_index = 0; // even though the type of the index is uint64_t, if it would not fit into size_t, vector could not be allocated. Therefore I can be sure it will always fit
@@ -43,8 +44,10 @@ size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t 
 			}
 			float value = ___dynamic_array_float_macro_defined_at(&matrix->dynamic_values, j);
 			vector[row_index] = value; // note that this array is always large enough
+			number_of_elements++;
 		}
 	}
+	return number_of_elements;
 }
 
 size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
