@@ -27,6 +27,12 @@ float mul_vectors_expanded(size_t size, float* const vector_A, float* const vect
 float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___dynamic_array_pair_macro_defined* vector_B);
 
 /**
+ * extracts all rows from a CSC matrix in the same way that extract_expanded_row_csc does, but runs
+ * over values array only once and hence promises performance improvements at the cost of storage requirements
+ */
+void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors);
+
+/**
  * See extract_compressed_row_csc() below to inspect functionality. Difference is that
  * in this function we return fully-sized (expanded) row (vector) instead of
  * compressed one, which makes some potential optimizations possible.

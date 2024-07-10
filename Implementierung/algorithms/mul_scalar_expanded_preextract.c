@@ -106,16 +106,8 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
     }
     memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
-    // TODO this stil runs n times through all values!!!2
-    // extract all rows from matrix A. See description of the function in matrix_util.h
-    for(size_t index = 0; index < matrix_A->no_rows; index++){
-        if(!extract_expanded_row_csc(matrix_A, index, all_vectors_A[index])){ // the row is empty
-            free(all_vectors_A[index]);
-            all_vectors_A[index] = NULL;
-            // free() will be called upon this NULL again, in nested_free() call
-            // NULL here is used to signal an empty row without the need to traverse it and improve performance
-        }
-    }
+    // extract all rows from matrix A. Iterates over both values and col_ptr array only once. See description of the function in matrix_util.h
+    extract_expanded_all_rows_csc(matrix_A, all_vectors_A);
         
     /*
      * iterator names *i* and *k* as on the graphic linked above. Short indices became more

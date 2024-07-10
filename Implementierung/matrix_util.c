@@ -31,19 +31,33 @@ float mul_vectors_compressed(___dynamic_array_pair_macro_defined* vector_A, ___d
 	return acc;
 }
 
+void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors){	
+	// TODO it is impossible to build in the "is-the-row-empty?"-check here, unless I use some other bool field or sth
+	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
+		size_t which_vector;
+		size_t index_in_vector = 0;
+		which_vector = ___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j);
+		while(j >= matrix->col_ptr[index_in_vector+1]){
+			index_in_vector++; // scroll to the corect column
+		}
+		float value = ___dynamic_array_float_macro_defined_at(&matrix->dynamic_values, j);
+		all_vectors[which_vector][index_in_vector] = value; // note that this array is always large enough
+	}
+}
+
 size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
 	size_t number_of_elements = 0;
 	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
 		if(___dynamic_array_uint64_t_macro_defined_at(&matrix->dynamic_row_indices, j) == index){
-			size_t row_index = 0; // even though the type of the index is uint64_t, if it would not fit into size_t, vector could not be allocated. Therefore I can be sure it will always fit
+			size_t index_in_vector = 0;
 			for(size_t l = 0; l < matrix->no_rows+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
-					row_index = l;				
+					index_in_vector = l;				
 					break;
 				}
 			}
 			float value = ___dynamic_array_float_macro_defined_at(&matrix->dynamic_values, j);
-			vector[row_index] = value; // note that this array is always large enough
+			vector[index_in_vector] = value; // note that this array is always large enough
 			number_of_elements++;
 		}
 	}
