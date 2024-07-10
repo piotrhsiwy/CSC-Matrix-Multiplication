@@ -119,8 +119,6 @@ __attribute__((hot)) error matrix_mul_scalar(const matrix_data* const matrix_A, 
             // ##################################
             // MULTIPLY THE ROW WITH THE COLUMN AND WRITE THE RESULTS
             // ##################################
-            // TODO here possibly a SIMD can be used (if no_rows/cols small enough) as follows
-            //  reorder -> mult -> horizontal add ( operating on 32bfloats )
             float value = mul_vectors_compressed(&dynamic_vector_A, &dynamic_vector_B);
             if(value != 0.0f){
                 if(___dynamic_array_float_macro_defined_add(&matrix_C->dynamic_values, value)){

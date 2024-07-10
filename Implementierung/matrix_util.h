@@ -2,10 +2,46 @@
 #define MATRIX_UTIL_H
 
 #include <stdint.h> // uint64_t
+#include <string.h> // memccpy
+
 #include "error_handling/errors.h"
 #include "matrix.h"
 #include "util/dynamic_array.h"
 #include "util/pair.h"
+
+/**
+ * recursively frees a 2D array of size elements:
+ *      free( float* array [size] )
+ * note that the array can be bigger but only first size elements will be freed
+ */
+void nested_free(size_t size, float** vectors);
+
+/**
+ * foreach i in [0,m-1]
+ * element *i* of vector is the sum of all elements in the row *i* in the matrix
+ * vector gets overwritten
+ */
+void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix);
+
+/**
+ * A = A *horizontal-multiply* B
+ */
+void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B);
+
+/**
+ * Multiplies a vector with an array of vectors. An array of rows of Matrix A and 1 column of Matrix B
+ * yield 1 column of the resulting Matrix C. This function computes this column.
+ * 
+ * @param how_many_vectors is the number of row in the all_vectors matrix
+ * @param vector_size is the number of cols in the all_vectors matrix and size of vector vector
+ * @param vector is the vector containing one column form matrix B in the multiplication. Here will the resulting column be written.
+ * @param all_vectors is the matrix containing all rows from matrix A in the multiplication
+ */
+error mul_vector_transposed_w_matrix(
+	const size_t how_many_vectors,
+	const size_t vector_size,
+	float* const vector,
+	float** const all_vectors);
 
 /**
  * Multiplies each value with the corresponsing value from the other vector under the same index.
@@ -135,4 +171,5 @@ void expand_matrix(const matrix_data* const compressed, float* const * const exp
  * 
  */
 error compress_matrix(const uint64_t no_rows, const uint64_t no_cols, const float expanded[no_rows][no_cols], matrix_data* const compressed);
+
 #endif // MATRIX_UTIL_H

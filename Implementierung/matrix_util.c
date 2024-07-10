@@ -2,6 +2,67 @@
 
 #include "matrix_util.h"
 
+void nested_free(size_t size, float** vectors){
+    while(--size){
+        free(vectors[size]);
+    }
+    free(vectors[0]);
+    free(vectors);
+}
+
+// TODO this can be done with SIMD faster?
+// TODO should we return any erorrs here?
+void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix){
+	// note the order of for-loops
+	memset(vector, 0, n * sizeof(*vector));
+	for(size_t i = 0; i < m; i++){
+		for(size_t j = 0; j < n; j++){
+			vector[i] += matrix[i][j];
+		}
+	}
+}
+
+// TODO this can be done with SIMD faster?
+// TODO should we return any erorrs here?
+void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B){
+	// note the order of for-loops
+	for(size_t i = 0; i < m; i++){
+		for(size_t j = 0; j < n; j++){
+			A[i][j] *= B[i][j];
+		}
+	}
+}
+
+error mul_vector_transposed_w_matrix(
+	const size_t how_many_vectors,
+	const size_t vector_size,
+	float* const vector,
+	float** const all_vectors)
+{
+	// copied_vectors is a matrix where every row is equal to *vector*. One can think about it as single transposed and copied column from matrix B
+    float** copied_vector = malloc(sizeof(*copied_vector)* how_many_vectors);
+    if(!copied_vector){
+        fprintf(stderr, "Cannot allocate memory for copied_vector in function %s.\n", __FUNCTION__);
+        return OUT_OF_MEMORY;
+    }
+    for(size_t i = 0; i < how_many_vectors; i++){
+        float* new_vector = malloc(sizeof(*vector) * vector_size);
+        if(!new_vector){
+            fprintf(stderr, "Cannot allocate memory for copied_vector[%lu] vector field in function %s.\n", i, __FUNCTION__);
+            nested_free(i, copied_vector);
+            return OUT_OF_MEMORY;
+        }
+        memmove(new_vector, vector, sizeof(*vector) * vector_size); // TODO should/can we use memcpy here?
+        copied_vector[i] = new_vector;
+    }
+
+	// multiply the created matrix with *all_vectors* "horizontally" = so matrix "x" multiplication
+	mul_matrix_horizontal(how_many_vectors, vector_size, copied_vector, all_vectors);
+	collapse_matrix_horizontal(how_many_vectors, vector_size, vector, copied_vector);
+	nested_free(how_many_vectors, copied_vector);
+	return OK;
+}
+
 float mul_vectors_expanded(size_t size, float* const vector_A, float* const vector_B){
 	float acc = 0.0f;
 	for(size_t i = 0; i < size; i++){

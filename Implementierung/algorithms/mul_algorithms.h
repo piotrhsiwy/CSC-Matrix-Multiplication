@@ -1,11 +1,13 @@
 #ifndef GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
 #define GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
 
+#include "../error_handling/errors.h"
+#include "../matrix.h"
+
 #include "mul_scalar.h"
 #include "mul_scalar_expanded.h"
 #include "mul_scalar_expanded_preextract.h"
-#include "../error_handling/errors.h"
-#include "../matrix.h"
+#include "mul_vector.h"
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"

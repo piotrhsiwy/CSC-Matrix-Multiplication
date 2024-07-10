@@ -1,13 +1,5 @@
 #include "mul_scalar_expanded_preextract.h"
 
-void nested_free(size_t size, float** vectors){
-    while(--size){
-        free(vectors[size]);
-    }
-    free(vectors[0]);
-    free(vectors);
-}
-
 __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C) {
  
     // ##################################
@@ -118,11 +110,6 @@ __attribute__((hot)) error matrix_mul_scalar_expanded_preextract(const matrix_da
             // ##################################
             // MULTIPLY THE ROW WITH THE COLUMN AND WRITE THE RESULTS
             // ##################################
-            // TODO here possibly a SIMD can be used (if no_rows/cols small enough) as follows
-            //  reorder -> mult -> horizontal add ( operating on 32bfloats )
-            if(!all_vectors_A[i]){ // the row is empty
-                continue;
-            }
             float value = mul_vectors_expanded(vector_size, all_vectors_A[i], vector_B);
             if(value != 0.0f){
                 if(___dynamic_array_float_macro_defined_add(&matrix_C->dynamic_values, value)){
