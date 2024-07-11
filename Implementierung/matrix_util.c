@@ -22,6 +22,14 @@ void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vec
 	}
 }
 
+float mul_collapse_vector_expanded_w_scalar(DYNAMIC_ARRAY(float)* vector, float scalar){
+	float acc = 0.0f;
+	for(size_t i = 0; i < vector->length; i++){
+		float value = dynamic_array_at(float, vector, i);
+		acc += value * scalar;
+	}
+}
+
 // TODO this can be done with SIMD faster?
 // TODO should we return any erorrs here?
 void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B){
@@ -90,6 +98,19 @@ float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)*
 		}
 	}
 	return acc;
+}
+
+error extract_vcol_csc(const matrix_data* matrix, const uint64_t index, DYNAMIC_ARRAY(float)* vector){
+	size_t number_of_elements = 0;
+	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
+		float value = dynamic_array_at(float, &matrix->dynamic_values, j);
+		
+		if(dynamic_array_add(float, vector, value)){
+			fprintf(stderr, "Cannot add element to dynamic array vector in function %s\n", __FUNCTION__);
+			return OUT_OF_MEMORY;
+		}
+	}
+	return OK;
 }
 
 void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors){	

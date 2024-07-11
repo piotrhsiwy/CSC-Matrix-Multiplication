@@ -24,6 +24,7 @@ typedef struct {
 /// A poor man's std::vector<T>. "Poor man" as in "C developer".
 #define DYNAMIC_ARRAY(T) ___dynamic_array_##T##_macro_defined
 #define dynamic_array_add(T, arr, v) ___dynamic_array_##T##_macro_defined_add(arr, v)
+//#define dynamic_array_set(T, arr, i, v) __dynamic_array_##T##_macro_defined_set(arr, i, v)
 #define dynamic_array_at(T, arr, i) ___dynamic_array_##T##_macro_defined_at(arr, i)
 #define dynamic_array_new(T, capacity, arr) ___dynamic_array_##T##_macro_defined_new(capacity, arr)
 
@@ -34,6 +35,7 @@ typedef struct {
         size_t capacity;                                                                                               \
     } DYNAMIC_ARRAY(T);                                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T)* arr, T v);                                          \
+    /*void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v);*/     \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 

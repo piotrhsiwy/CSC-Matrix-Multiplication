@@ -31,6 +31,10 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
         arr->length++;                                                                                       \
         return 0;                                                                                            \
     }                                                                                                        \
+    /*void ___dynamic_array_##T##_macro_defined_set(                                                         \
+        const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v){                                         \
+       arr->data[index] = v;                                                                                 \
+    }*/                                                                                                      \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(                                         \
       const DYNAMIC_ARRAY(T) *const arr, const size_t index) {                                               \
         return arr->data[index];                                                                             \
