@@ -8,6 +8,6 @@
 /**
  *https://people.csail.mit.edu/sanchez/papers/2021.gamma.asplos.pdf 
  */
-__attribute__((hot)) void matrix_vector(const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
+__attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
 
 #endif //MUL_GUSTAFSON_H

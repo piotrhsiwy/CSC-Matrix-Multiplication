@@ -23,6 +23,11 @@ void nested_free(size_t size, float** vectors);
  */
 void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matrix);void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix);
 
+/**
+ * concat & sort
+ * TODO
+ */
+error sum_compressed_matrix(DYNAMIC_ARRAY(DYNAMIC_ARRAY(pair))* const vector_2d, DYNAMIC_ARRAY(pair)* const result);
 
 /**
  * mutiply each value in (dynamic array of floats) vector with a scalar
@@ -34,6 +39,11 @@ float mul_collapse_vector_expanded_w_scalar(DYNAMIC_ARRAY(float)* vector, float 
  * A = A *horizontal-multiply* B
  */
 void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B);
+
+/**
+ * multiply in place each value in the vector (pair.value) with sclar. pair.index stay the same
+ */
+void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float scalar);
 
 /**
  * Multiplies a vector with an array of vectors. An array of rows of Matrix A and 1 column of Matrix B

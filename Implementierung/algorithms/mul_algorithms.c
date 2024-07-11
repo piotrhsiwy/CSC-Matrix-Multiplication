@@ -6,6 +6,7 @@ matrix_multiplier matrix_mul_algorithms[] = {
         matrix_mul_scalar_expanded,
         matrix_mul_scalar_expanded_preextract,
         matrix_mul_vector,
+        matrix_mul_gustavson,
 };
 size_t matrix_mul_algorithm_count = sizeof matrix_mul_algorithms / sizeof *matrix_mul_algorithms;
 

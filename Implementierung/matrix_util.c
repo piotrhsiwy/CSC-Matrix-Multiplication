@@ -22,6 +22,27 @@ void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vec
 	}
 }
 
+error sum_compressed_matrix(DYNAMIC_ARRAY(DYNAMIC_ARRAY(pair))* const vector_2d, DYNAMIC_ARRAY(pair)* const result){
+	/* concat all */
+	if(!vector_2d->length){
+		// no vectors to sum, return empty array
+		result->length = 0;
+		return OK;
+	}
+	DYNAMIC_ARRAY(pair) first_vector = dynamic_array_at(DYNAMIC_ARRAY(pair), vector_2d, 0);
+	for (size_t i = 1; i < vector_2d->length; i++){
+		// concat all vectors into the first one
+		error error dynamic_array_concat(pair, first_vector, dynamic_array_at(DYNAMIC_ARRAY(pair), vector_2d, i));
+		if(erorr != OK){
+			fprintf(stderr, "Cannot concat dynamic vector_2d[%lu] into the first vector in function %s\n", __FUNCTION__);
+			return OUT_OF_MEMORY;
+		}
+	}
+	/* sort by increasing index */
+	/* TODO */
+	return OK;
+}
+
 float mul_collapse_vector_expanded_w_scalar(DYNAMIC_ARRAY(float)* vector, float scalar){
 	float acc = 0.0f;
 	for(size_t i = 0; i < vector->length; i++){
@@ -39,6 +60,15 @@ void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, floa
 			A[i][j] *= B[i][j];
 		}
 	}
+}
+
+void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float scalar){
+	for (size_t i = 0; i < vector->length; i++)
+	{
+		float value = dynamic_array_at(pair, &vector, i).value;
+		dynamic_array_set(pair, &vector, i, value*scalar);
+	}
+	
 }
 
 error mul_vector_transposed_w_matrix(

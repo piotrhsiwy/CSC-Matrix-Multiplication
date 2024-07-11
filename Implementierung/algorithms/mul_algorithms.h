@@ -8,6 +8,7 @@
 #include "mul_scalar_expanded.h"
 #include "mul_scalar_expanded_preextract.h"
 #include "mul_vector.h"
+#include "mul_gustavson.h"
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"

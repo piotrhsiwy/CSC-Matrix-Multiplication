@@ -24,7 +24,8 @@ typedef struct {
 /// A poor man's std::vector<T>. "Poor man" as in "C developer".
 #define DYNAMIC_ARRAY(T) ___dynamic_array_##T##_macro_defined
 #define dynamic_array_add(T, arr, v) ___dynamic_array_##T##_macro_defined_add(arr, v)
-//#define dynamic_array_set(T, arr, i, v) __dynamic_array_##T##_macro_defined_set(arr, i, v)
+#define dynamic_array_set(T, arr, i, v) __dynamic_array_##T##_macro_defined_set(arr, i, v)
+#define dynamic_array_concat(T, dest, src) ___dynamic_array_##T##_macro_defined_concat(dest, src)
 #define dynamic_array_at(T, arr, i) ___dynamic_array_##T##_macro_defined_at(arr, i)
 #define dynamic_array_new(T, capacity, arr) ___dynamic_array_##T##_macro_defined_new(capacity, arr)
 
@@ -35,7 +36,8 @@ typedef struct {
         size_t capacity;                                                                                               \
     } DYNAMIC_ARRAY(T);                                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T)* arr, T v);                                          \
-    /*void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v);*/     \
+    void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v);         \
+    int ___dynamic_array_##T##_macro_defined_concat(DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src);       \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 
@@ -52,8 +54,19 @@ void dynamic_array_unbind(generic_dynamic_array* arr);
  */
 void dynamic_array_destroy(generic_dynamic_array* arr);
 
+/**
+ * Recursivels calls dynamic_array_destroy on a 2D dynamic array
+ */
+void dynamic_array_recursive_destroy(generic_dynamic_array *const arr);
+
+/**
+ * calls dynamic_array_destroy on a all elements of a 2D dynamic array and sets its length to 0
+ */
+void dynamic_array_destroy_top_layer(generic_dynamic_array *const arr);
+
 DYNAMIC_ARRAY_HEADER___(float)
 DYNAMIC_ARRAY_HEADER___(uint64_t)
 DYNAMIC_ARRAY_HEADER___(pair)
+DYNAMIC_ARRAY_HEADER___(DYNAMIC_ARRAY(pair))
 
 #endif //DYNAMIC_ARRAY_H
