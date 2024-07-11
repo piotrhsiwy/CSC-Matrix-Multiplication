@@ -41,6 +41,7 @@
         size_t how_many_copy = src->length * sizeof(T);                                                      \
         memmove(uninitialized_from, src->data, how_many_copy);                                               \
         dest->length = dest->length + src->length;                                                           \
+        return 0;                                                                                            \
     }                                                                                                        \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(                                         \
       const DYNAMIC_ARRAY(T) *const arr, const size_t index) {                                               \

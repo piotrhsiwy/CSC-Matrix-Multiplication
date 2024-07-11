@@ -32,9 +32,10 @@ error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pai
 	DYNAMIC_ARRAY(pair) first_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, 0);
 	for (size_t i = 1; i < vector_2d->length; i++){
 		// concat all vectors into the first one
-		error error dynamic_array_concat(pair, first_vector, dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, i));
-		if(erorr != OK){
-			fprintf(stderr, "Cannot concat dynamic vector_2d[%lu] into the first vector in function %s\n", __FUNCTION__);
+		DYNAMIC_ARRAY(pair) current_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, i);
+		error error = dynamic_array_concat(pair, &first_vector, &current_vector);
+		if(error != OK){
+			fprintf(stderr, "Cannot concat dynamic vector_2d[%lu] into the first vector in function %s\n", i, __FUNCTION__);
 			return OUT_OF_MEMORY;
 		}
 	}
@@ -65,8 +66,9 @@ void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, floa
 void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float scalar){
 	for (size_t i = 0; i < vector->length; i++)
 	{
-		float value = dynamic_array_at(pair, &vector, i).value;
-		dynamic_array_set(pair, &vector, i, value*scalar);
+		pair cur_pair = dynamic_array_at(pair, vector, i);
+		cur_pair.value = cur_pair.value * scalar;
+		dynamic_array_set(pair, vector, i, cur_pair);
 	}
 	
 }
@@ -130,37 +132,24 @@ float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)*
 	return acc;
 }
 
-error extract_vcol_csc(const matrix_data* matrix, const uint64_t index, DYNAMIC_ARRAY(float)* vector){
-	size_t number_of_elements = 0;
-	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
-		float value = dynamic_array_at(float, &matrix->dynamic_values, j);
-		
-		if(dynamic_array_add(float, vector, value)){
-			fprintf(stderr, "Cannot add element to dynamic array vector in function %s\n", __FUNCTION__);
-			return OUT_OF_MEMORY;
-		}
-	}
-	return OK;
-}
-
 void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors){	
 	// TODO it is impossible to build in the "is-the-row-empty?"-check here, unless I use some other bool field or sth
-	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
+	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
 		size_t which_vector;
 		size_t index_in_vector = 0;
-		which_vector = dynamic_array_at(uint64_t, &matrix->dynamic_row_indices, j);
+		which_vector = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index;
 		while(j >= matrix->col_ptr[index_in_vector+1]){
 			index_in_vector++; // scroll to the corect column
 		}
-		float value = dynamic_array_at(float, &matrix->dynamic_values, j);
+		float value = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).value;
 		all_vectors[which_vector][index_in_vector] = value; // note that this array is always large enough
 	}
 }
 
 size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
 	size_t number_of_elements = 0;
-	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
-		if(dynamic_array_at(uint64_t, &matrix->dynamic_row_indices, j) == index){
+	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
+		if(dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index == index){
 			size_t index_in_vector = 0;
 			for(size_t l = 0; l < matrix->no_rows+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
@@ -168,7 +157,7 @@ size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t 
 					break;
 				}
 			}
-			float value = dynamic_array_at(float, &matrix->dynamic_values, j);
+			float value = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).value;
 			vector[index_in_vector] = value; // note that this array is always large enough
 			number_of_elements++;
 		}
@@ -179,8 +168,9 @@ size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t 
 size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t index, float* const vector){
 	size_t number_of_elements = 0;
 	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
-		float value = dynamic_array_at(float, &matrix->dynamic_values, j);
-		size_t index = dynamic_array_at(uint64_t, &matrix->dynamic_row_indices, j);
+		pair pair = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j);
+		float value = pair.value;
+		size_t index = pair.index;
 		vector[index] = value; // note that vector is always large enough
 		number_of_elements++;
 	}
@@ -188,8 +178,8 @@ size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t 
 }
 
 error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector){
-	for(uint64_t j = 0; j < matrix->dynamic_values.length; j++){
-		if(dynamic_array_at(uint64_t, &matrix->dynamic_row_indices, j) == index){
+	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
+		if(dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index == index){
 			pair new_pair;
 			for(uint64_t l = 0; l < matrix->no_rows+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
@@ -197,7 +187,7 @@ error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t
 					break;
 				}
 			}
-			new_pair.value = dynamic_array_at(float, &matrix->dynamic_values, j);
+			new_pair.value = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).value;
 			if(dynamic_array_add(pair, dynamic_vector, new_pair)){
 				fprintf(stderr, "Cannot add new element to dynamic_vector in function %s\n", __FUNCTION__);
 				return OUT_OF_MEMORY;
@@ -209,10 +199,7 @@ error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t
 
 error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector){
 	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
-		pair new_pair = {
-			.index = dynamic_array_at(uint64_t, &matrix->dynamic_row_indices, j),
-			.value = dynamic_array_at(float, &matrix->dynamic_values, j)
-		};
+		pair new_pair = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j);
 		if(dynamic_array_add(pair, dynamic_vector, new_pair)){
 			fprintf(stderr, "Cannot add new element to dynamic_vector in function %s\n", __FUNCTION__);
 			return OUT_OF_MEMORY;
@@ -234,8 +221,9 @@ error expand_vector(const uint64_t length_compressed, const pair compressed[rest
 void expand_matrix(const matrix_data* const compressed, float* const * const expanded){
 	for(uint64_t col = 0; col <= compressed->no_cols; col++){
 		for(uint64_t i = compressed->col_ptr[col]; i <= compressed->col_ptr[col+1]; i++){
-			uint64_t row = dynamic_array_at(uint64_t, &compressed->dynamic_row_indices, i);
-			float value = dynamic_array_at(float, &compressed->dynamic_values, i);
+			pair pair = dynamic_array_at(pair, &compressed->dynamic_values_x_row_indices, i);
+			uint64_t row = 	pair.index;
+			float value =	pair.value;
 			expanded[row][col] = value;
 		}
 	}

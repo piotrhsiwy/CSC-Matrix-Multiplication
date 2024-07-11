@@ -80,16 +80,6 @@ float mul_vectors_expanded(size_t size, float* const vector_A, float* const vect
 float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)* vector_B);
 
 /**
- * extract only the non-zero values from a specific col from the matrix
- * @param matrix matrix from which we extract the values
- * @param index index of the col from which we extract the values
- * @param vector result of the extraction. size equal to the no of non-zero values in index-th col in matrix
- * 
- * @returns OUT_OF_MEMORY if dynamic add failed, OK else
- */
-error extract_vcol_csc(const matrix_data* matrix, const uint64_t index, DYNAMIC_ARRAY(float)* vector);
-
-/**
  * extracts all rows from a CSC matrix in the same way that extract_expanded_row_csc does, but runs
  * over values array only once and hence promises performance improvements at the cost of storage requirements
  */

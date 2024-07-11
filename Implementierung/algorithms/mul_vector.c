@@ -9,21 +9,16 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
     matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
+
     if(!(matrix_C->col_ptr)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
-    if(dynamic_array_new(float, 4, &matrix_C->dynamic_values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values field in function %s\n", __FUNCTION__);
+
+    if(dynamic_array_new(pair, 4, &matrix_C->dynamic_values_x_row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
-        matrix_C->mul_error = OUT_OF_MEMORY;
-        return;
-    }
-    if(dynamic_array_new(uint64_t, 4, &matrix_C->dynamic_row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_row_indices field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -35,13 +30,12 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
         free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = DIMENSION_MISMATCH;
         return;
     }
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
-    if(matrix_A->dynamic_values.length == 0 || matrix_B->dynamic_values.length == 0){
+    if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
         memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
         return;
     }
@@ -63,8 +57,7 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
     if(!all_vectors_A){
         fprintf(stderr, "Cannot allocate memory for all_vectors_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
         free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -73,8 +66,7 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
         if(!vector){
             fprintf(stderr, "Cannot allocate memory for all_vectors_A[%lu] vector field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", i, __FUNCTION__);
             free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
             nested_free(i, all_vectors_A);
             matrix_C->mul_error = OUT_OF_MEMORY;
             return;
@@ -88,8 +80,7 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
     if(!vector_B){
         fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __FUNCTION__);
         free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         nested_free(how_many_vectors, all_vectors_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -121,21 +112,11 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
         for(size_t index_in_vector = 0; index_in_vector <= how_many_vectors; index_in_vector++){
             float value = vector_B[index_in_vector];
             if(value != 0.0f){
-                if(dynamic_array_add(float, &matrix_C->dynamic_values, value)){
-                    fprintf(stderr, "Cannot add new element to dynamic_values in function %s\n", __FUNCTION__);
+                pair new_pair = {.index = index_in_vector, .value = value};
+                if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
+                    fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
-                    nested_free(how_many_vectors, all_vectors_A);
-                    free(vector_B);
-                    matrix_C->mul_error = OUT_OF_MEMORY;
-                    return;
-                }
-                if(dynamic_array_add(uint64_t, &matrix_C->dynamic_row_indices, index_in_vector)){
-                    fprintf(stderr, "Cannot add new element to dynamic_row_indices in function %s\n", __FUNCTION__);
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_row_indices);
+                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     nested_free(how_many_vectors, all_vectors_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;
@@ -144,7 +125,7 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
             }
         }
         memset(vector_B, 0, sizeof(*vector_B) * vector_size); // reset vector_B
-        *col_ptr_writer = matrix_C->dynamic_values.length;
+        *col_ptr_writer = matrix_C->dynamic_values_x_row_indices.length;
         col_ptr_writer++;
     }
 
