@@ -2,7 +2,7 @@
 #define MUL_SCALAR_H
 
 #include <string.h> // memset
-#include "../matrix_util.h" // extracting rows, cols, multiplying vectors
+#include "../util/matrix_util.h" // extracting rows, cols, multiplying vectors
 #include "../util/dynamic_array.h"
 
 /**

@@ -3,7 +3,7 @@
 
 #include <string.h> // memset
 #include "../matrix.h"
-#include "../matrix_util.h"
+#include "../util/matrix_util.h"
 
 /**
  * This algorithm utilizes @b expanded vectors (fully-sized rows and columns) which should

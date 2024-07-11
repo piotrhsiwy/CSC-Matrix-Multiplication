@@ -3,7 +3,7 @@
 
 #include <string.h> // memset
 #include "../matrix.h"
-#include "../matrix_util.h"
+#include "../util/matrix_util.h"
 
 /**
  *https://people.csail.mit.edu/sanchez/papers/2021.gamma.asplos.pdf 

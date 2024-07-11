@@ -4,7 +4,7 @@
 
 #include <string.h> // memset
 #include "../matrix.h"
-#include "../matrix_util.h"
+#include "../util/matrix_util.h"
 
 /**
  * like matrix_mul_scalar_expanded, but it extracts all of the rows of matrix A, before entering the two nested-for loops.

@@ -3,7 +3,7 @@
 
 #include <string.h> // memset
 #include "../matrix.h"
-#include "../matrix_util.h"
+#include "../util/matrix_util.h"
 
 /**
  * like matrix_mul_scalar (See mul_scalar.h), but expands the vectors before multiplying, making some

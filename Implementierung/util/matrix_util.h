@@ -4,10 +4,10 @@
 #include <stdint.h> // uint64_t
 #include <string.h> // memccpy
 
-#include "error_handling/errors.h"
-#include "matrix.h"
-#include "util/dynamic_array.h"
-#include "util/pair.h"
+#include "../error_handling/errors.h"
+#include "../matrix.h"
+#include "dynamic_array.h"
+#include "pair.h"
 
 /**
  * recursively frees a 2D array of size elements:
@@ -55,10 +55,10 @@ void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float sca
  * @param all_vectors is the matrix containing all rows from matrix A in the multiplication
  */
 error mul_vector_transposed_w_matrix(
-	const size_t how_many_vectors,
-	const size_t vector_size,
-	float* const vector,
-	float** const all_vectors);
+	size_t how_many_vectors,
+	size_t vector_size,
+	float* vector,
+	float** all_vectors);
 
 /**
  * Multiplies each value with the corresponsing value from the other vector under the same index.
@@ -68,7 +68,7 @@ error mul_vector_transposed_w_matrix(
  * @param vector_A
  * @param vector_B
  */
-float mul_vectors_expanded(size_t size, float* const vector_A, float* const vector_B);
+float mul_vectors_expanded(size_t size, float* vector_A, float* vector_B);
 
 /**
  * Multiplies each value with the corresponding value from the other vector with the same index (if present).
@@ -83,7 +83,7 @@ float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)*
  * extracts all rows from a CSC matrix in the same way that extract_expanded_row_csc does, but runs
  * over values array only once and hence promises performance improvements at the cost of storage requirements
  */
-void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors);
+void extract_expanded_all_rows_csc(const matrix_data* matrix, float *const * all_vectors);
 
 /**
  * See extract_compressed_row_csc() below to inspect functionality. Difference is that
@@ -94,7 +94,7 @@ void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const
  * 
  * @return number of elements in the row
  */
-size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t index, float* const vector);
+size_t extract_expanded_row_csc(const matrix_data* matrix, uint64_t index, float* vector);
 
 /**
  * See extract_compressed_col_csc() below to inspect functionality. Difference is that
@@ -105,7 +105,7 @@ size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t 
  * 
  * @return number of elements in the column
  */
-size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t index, float* const vector);
+size_t extract_expanded_col_csc(const matrix_data* matrix, uint64_t index, float* vector);
 
 /**
  * Extracts a row in a compressed form, from a matrix in CSC.
@@ -120,7 +120,7 @@ size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t 
  *   columns indices of the values in the matrix
  * @return OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails) OK else
  */
-error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
+error extract_compressed_row_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
 
 /**
  * Extracts a column in a compressed form, from a matrix in CSC.
@@ -137,7 +137,7 @@ error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t
  *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
  *  OK else
  */
-error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
+error extract_compressed_col_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
 
 /**
  * expands a sorted array of (i,v)-pairs to an array of values, where
@@ -162,7 +162,7 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
  * See error_handling/errors.h
  *
  */
-error expand_vector(const uint64_t length_compressed, const pair compressed[restrict length_compressed], const uint64_t length_extended, float extended[restrict length_extended]);
+error expand_vector(uint64_t length_compressed, const pair compressed[restrict length_compressed], uint64_t length_extended, float extended[restrict length_extended]);
 
 /**
  * expands a matrix in Compressed Sparse Column Format (CSC) to a regular matrix
@@ -171,7 +171,7 @@ error expand_vector(const uint64_t length_compressed, const pair compressed[rest
  * @param matrix - to-be-written regular matrix of appropriate size
  *
  */
-void expand_matrix(const matrix_data* const compressed, float* const * const expanded);
+void expand_matrix(const matrix_data* compressed, float *const * expanded);
 
 /**
  * compresses a matrix back to Compressed Sparse Column Format (CSC) from a
@@ -184,6 +184,6 @@ void expand_matrix(const matrix_data* const compressed, float* const * const exp
  * @param compressed - to-be-written matrix in the CSC format. See matrix.h
  * 
  */
-error compress_matrix(const uint64_t no_rows, const uint64_t no_cols, const float expanded[no_rows][no_cols], matrix_data* const compressed);
+error compress_matrix(uint64_t no_rows, uint64_t no_cols, const float expanded[no_rows][no_cols], matrix_data* compressed);
 
 #endif // MATRIX_UTIL_H
