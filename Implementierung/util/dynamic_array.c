@@ -16,11 +16,13 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
         if(arr->capacity <= arr->length) {                                                                   \
             T* buf = (T*)reallocarray(arr->data, arr->capacity * 2, sizeof(T));                              \
             if(!buf){                                                                                        \
-                return errno; /*TODO: try increasing by only 1*/                                             \
+                int err = errno;                                                                             \
+                errno = 0;                                                                                   \
+                return err; /*TODO: try increasing by only 1*/                                               \
             } else{                                                                                          \
                 arr->data = buf;                                                                             \
                 arr->capacity *= 2;                                                                          \
-                T* uninitialized_from = arr->data + arr->length;                                 \
+                T* uninitialized_from = arr->data + arr->length;                                             \
                 size_t unitialized_how_many = ( arr->capacity - arr->length ) * sizeof(T);                   \
                 memset(uninitialized_from, 0, unitialized_how_many);                                         \
             }                                                                                                \
