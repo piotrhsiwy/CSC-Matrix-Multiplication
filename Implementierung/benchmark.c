@@ -42,8 +42,8 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->no_rows = b->no_cols = rows;
 
     //Reset arrays without freeing memory since we'll still use it
-    a->dynamic_row_indices.length = a->dynamic_values.length = 0;
-    b->dynamic_row_indices.length = b->dynamic_values.length = 0;
+    a->dynamic_values_x_row_indices.length = 0;
+    b->dynamic_values_x_row_indices.length = 0;
 
     //TODO: create .csv file
     for(uint16_t filledPerThousand = 0; filledPerThousand < 1000 && continue_unattended_benchmark; ++filledPerThousand) {
@@ -73,14 +73,11 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     //TODO: return out of memory when initializing arrays and free other memory
 
     matrix_data a, b; //We don't need to initialize other fields than dynamic arrays as we initialize them on each run.
-    dynamic_array_new(float,    0, &a.dynamic_values);
-    dynamic_array_new(uint64_t, 0, &a.dynamic_row_indices);
-    dynamic_array_new(float,    0, &b.dynamic_values);
-    dynamic_array_new(uint64_t, 0, &b.dynamic_row_indices);
+    dynamic_array_new(pair,    0, &a.dynamic_values_x_row_indices);
+    dynamic_array_new(pair,    0, &b.dynamic_values_x_row_indices);
 
     matrix_data c = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL };
-    dynamic_array_new(float,    0, &c.dynamic_values);
-    dynamic_array_new(uint64_t, 0, &c.dynamic_row_indices);
+    dynamic_array_new(pair,    0, &c.dynamic_values_x_row_indices);
 
 
     struct timespec duration_buffer = {.tv_nsec = 0, .tv_sec = 0};
@@ -104,11 +101,8 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
         }
     }
 
-    dynamic_array_destroy((generic_dynamic_array*) &a.dynamic_values);
-    dynamic_array_destroy((generic_dynamic_array*) &a.dynamic_row_indices);
-    dynamic_array_destroy((generic_dynamic_array*) &b.dynamic_values);
-    dynamic_array_destroy((generic_dynamic_array*) &b.dynamic_row_indices);
-    dynamic_array_destroy((generic_dynamic_array*) &c.dynamic_values);
-    dynamic_array_destroy((generic_dynamic_array*) &c.dynamic_row_indices);
+    dynamic_array_destroy((generic_dynamic_array*) &a.dynamic_values_x_row_indices);
+    dynamic_array_destroy((generic_dynamic_array*) &b.dynamic_values_x_row_indices);
+    dynamic_array_destroy((generic_dynamic_array*) &c.dynamic_values_x_row_indices);
     return OK;
 }
