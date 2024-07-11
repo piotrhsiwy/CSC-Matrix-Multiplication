@@ -68,9 +68,12 @@ vg1:
 .PHONY: vg2
 vg2:
 	valgrind -s --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C2.txt -V 2
-.PHONY: vg3
+.phony: vg3
 vg3:
-	valgrind -s --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C3.txt -V 3
+	valgrind -s --leak-check=full ./main -a matrices/a.txt -b matrices/b.txt -o matrices/c3.txt -v 3
+.PHONY: vg4
+vg4:
+	valgrind -s --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C4.txt -V 4
 
 .PHONY: pf0
 pf0:
@@ -87,6 +90,10 @@ pf2:
 .PHONY: pf3
 pf3:
 	perf record ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C3.txt -V 3
+	perf report
+.PHONY: pf4
+pf4:
+	perf record ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C4.txt -V 4
 	perf report
 
 

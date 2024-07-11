@@ -67,8 +67,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
-    // this is a temporary dynamic-array accumulate intermediate results in
-    DYNAMIC_ARRAY(pair) new_col;
 
     for(uint64_t col_index = 0; col_index < matrix_B->no_cols; col_index++){
         // extract csc column k from matrix_B
@@ -87,6 +85,16 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
         // note that only values are extracted from the col, so the resulting vector is dynamic array of floats
         for(uint64_t i = 0; i < colB.length; i++){
             uint64_t row_index = dynamic_array_at(pair, &colB, i).index;
+            DYNAMIC_ARRAY(pair) new_col;
+            if(dynamic_array_new(pair, 4, &new_col)){
+                fprintf(stderr, "Cannot dynamically allocate memory for new_col field in function %s\n", __FUNCTION__);
+                free(matrix_C->col_ptr);
+                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
+                dynamic_array_recursive_destroy(&colA_vector);
+                dynamic_array_destroy((generic_dynamic_array*)&colB);
+                matrix_C->mul_error = OUT_OF_MEMORY;
+                return;
+            }
             {
                 error error = extract_compressed_col_csc(matrix_A, row_index, &new_col);
                 if(error != OK){
@@ -115,31 +123,29 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
             } else{
                 /* else colA is empty */
             }        
-            new_col.length = 0;
-            {
-                error error = sum_compressed_matrix(&colA_vector, &new_col);
-                if (error != OK) {
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
-                    dynamic_array_recursive_destroy(&colA_vector);
-                    dynamic_array_destroy((generic_dynamic_array*)&colB);
-                    dynamic_array_destroy((generic_dynamic_array*)&new_col);
-                    matrix_C->mul_error = error;
-                    return;
-                } 
-            }
-            dynamic_array_concat(pair, &matrix_C->dynamic_values_x_row_indices, &new_col);
-            new_col.length = 0;
-
-            // else if value==0.0f we don't write it
-            dynamic_array_destroy_top_layer(&colA_vector); // scratch the extracted columns from A
         }
+        {
+            error error = sum_compressed_matrix(&colA_vector);
+            if (error != OK) {
+                free(matrix_C->col_ptr);
+                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
+                dynamic_array_recursive_destroy(&colA_vector);
+                dynamic_array_destroy((generic_dynamic_array*)&colB);
+                matrix_C->mul_error = error;
+                return;
+            } 
+        }
+        DYNAMIC_ARRAY(pair) result = dynamic_array_at(___dynamic_array_pair_macro_defined, &colA_vector, 0);
+        dynamic_array_concat(pair, &matrix_C->dynamic_values_x_row_indices, &result);
+
+        // else if value==0.0f we don't write it
+        dynamic_array_destroy_top_layer(&colA_vector); // scratch the extracted columns from A
+        
         *col_ptr_writer = matrix_C->dynamic_values_x_row_indices.length;
         col_ptr_writer++;
         colB.length = 0; // reset the compressed col from B
     }
     dynamic_array_recursive_destroy(&colA_vector);
     dynamic_array_destroy((generic_dynamic_array*)&colB);
-    dynamic_array_destroy((generic_dynamic_array*)&new_col);
     matrix_C->mul_error = OK; 
 }
