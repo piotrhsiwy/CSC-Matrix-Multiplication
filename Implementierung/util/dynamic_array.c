@@ -1,28 +1,5 @@
 #include "dynamic_array.h"
 
-void dynamic_array_destroy_top_layer(generic_dynamic_array *const arr){
-    for (size_t i = 0; i < arr->length; i++){
-        dynamic_array_destroy(((generic_dynamic_array*) arr->data )[i]);
-    }
-    arr->length = 0;
-}
-
-void dynamic_array_recursive_destroy(generic_dynamic_array *const arr){
-    dynamic_array_destroy_top_layer(arr);
-    dynamic_array_destroy(arr)
-    
-}
-
-void dynamic_array_destroy(generic_dynamic_array *const arr) {
-    free(arr->data);
-    dynamic_array_unbind(arr);
-}
-
-void dynamic_array_unbind(generic_dynamic_array *const arr) {
-    arr->data = NULL;
-    arr->capacity = arr->length = 0;
-}
-
 #define DYNAMIC_ARRAY_DECL(T)                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
         if(arr->capacity <= arr->length) {                                                                   \
@@ -51,7 +28,7 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
     int ___dynamic_array_##T##_macro_defined_concat(                                                         \
         DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src){                                                \
         if(dest->capacity < dest->length + src-> length){                                                    \
-            T* buf = reallocarray(dest->data, dest->length + src->length, sizeof(T))                         \
+            T* buf = reallocarray(dest->data, dest->length + src->length, sizeof(T));                        \
             if(!buf){                                                                                        \
                 int err = errno;                                                                             \
                 errno = 0;                                                                                   \
@@ -84,4 +61,27 @@ void dynamic_array_unbind(generic_dynamic_array *const arr) {
 DYNAMIC_ARRAY_DECL(float)
 DYNAMIC_ARRAY_DECL(uint64_t)
 DYNAMIC_ARRAY_DECL(pair)
-DYNAMIC_ARRAY_DECL(DYNAMIC_ARRAY(pair))
+DYNAMIC_ARRAY_DECL(pair2D)
+
+void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY(pair2D)* arr){
+    for (size_t i = 0; i < arr->length; i++)
+    {
+        dynamic_array_destroy( (generic_dynamic_array*)( arr->data ) );
+    }
+    arr->length = 0;
+}
+
+void dynamic_array_recursive_destroy(DYNAMIC_ARRAY(pair2D)* arr){
+    dynamic_array_destroy_top_layer(arr);
+    dynamic_array_destroy((generic_dynamic_array*) arr);
+}
+
+void dynamic_array_destroy(generic_dynamic_array* arr) {
+    free(arr->data);
+    dynamic_array_unbind(arr);
+}
+
+void dynamic_array_unbind(generic_dynamic_array* arr) {
+    arr->data = NULL;
+    arr->capacity = arr->length = 0;
+}

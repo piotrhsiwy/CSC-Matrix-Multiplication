@@ -16,7 +16,7 @@ typedef struct {
     uint64_t no_rows;
     uint64_t no_cols;
     // size_t length_values; <-- this field is now in dynamic_values_x_row_indices->length
-    DYNAMIC_ARRAY(pair) dynamic_values_x_row_indices
+    DYNAMIC_ARRAY(pair) dynamic_values_x_row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 

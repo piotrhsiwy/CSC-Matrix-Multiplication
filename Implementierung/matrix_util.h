@@ -21,13 +21,13 @@ void nested_free(size_t size, float** vectors);
  * element *i* of vector is the sum of all elements in the row *i* in the matrix
  * vector gets overwritten
  */
-void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matrix);void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix);
+void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matrix);
 
 /**
  * concat & sort
  * TODO
  */
-error sum_compressed_matrix(DYNAMIC_ARRAY(DYNAMIC_ARRAY(pair))* const vector_2d, DYNAMIC_ARRAY(pair)* const result);
+error sum_compressed_matrix(DYNAMIC_ARRAY(pair2D)* const vector_2d, DYNAMIC_ARRAY(pair)* const result);
 
 /**
  * mutiply each value in (dynamic array of floats) vector with a scalar

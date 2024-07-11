@@ -41,6 +41,12 @@ typedef struct {
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 
+DYNAMIC_ARRAY_HEADER___(float)
+DYNAMIC_ARRAY_HEADER___(uint64_t)
+DYNAMIC_ARRAY_HEADER___(pair)
+typedef DYNAMIC_ARRAY(pair) pair2D;
+DYNAMIC_ARRAY_HEADER___(pair2D)
+
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).
  * This is useful when e. g. transferring ownership of the managed memory but you are on your own now to free it.
@@ -57,16 +63,11 @@ void dynamic_array_destroy(generic_dynamic_array* arr);
 /**
  * Recursivels calls dynamic_array_destroy on a 2D dynamic array
  */
-void dynamic_array_recursive_destroy(generic_dynamic_array *const arr);
+void dynamic_array_recursive_destroy(DYNAMIC_ARRAY(pair2D)* arr);
 
 /**
- * calls dynamic_array_destroy on a all elements of a 2D dynamic array and sets its length to 0
+ * calls dynamic_array_destroy on a all elements of a 2D dynamic array
  */
-void dynamic_array_destroy_top_layer(generic_dynamic_array *const arr);
-
-DYNAMIC_ARRAY_HEADER___(float)
-DYNAMIC_ARRAY_HEADER___(uint64_t)
-DYNAMIC_ARRAY_HEADER___(pair)
-DYNAMIC_ARRAY_HEADER___(DYNAMIC_ARRAY(pair))
+void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY(pair2D)* arr);
 
 #endif //DYNAMIC_ARRAY_H
