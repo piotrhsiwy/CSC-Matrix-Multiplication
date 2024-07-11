@@ -37,7 +37,7 @@ typedef struct {
     } DYNAMIC_ARRAY(T);                                                                                                \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T)* arr, T v);                                          \
     void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v);         \
-    int ___dynamic_array_##T##_macro_defined_concat(DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src);       \
+    int ___dynamic_array_##T##_macro_defined_concat(DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src);              \
     T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 

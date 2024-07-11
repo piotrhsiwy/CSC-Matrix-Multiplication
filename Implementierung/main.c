@@ -106,7 +106,7 @@ int main(const int argc, char** argv)
         output.mul_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);
 
         if (output.mul_error == OK) {
-            printf("%ld multiplications took %ld seconds and %ld nano seconds.\n",
+            printf("%ld Iterationen dauerten %ld Sekunden und %ld Nanosekunden.\n",
                    options.benchmark_repeat_count, duration.tv_sec, duration.tv_nsec);
         }
     } else {
