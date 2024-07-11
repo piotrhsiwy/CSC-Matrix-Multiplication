@@ -22,17 +22,17 @@ void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vec
 	}
 }
 
-error sum_compressed_matrix(DYNAMIC_ARRAY(DYNAMIC_ARRAY(pair))* const vector_2d, DYNAMIC_ARRAY(pair)* const result){
+error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pair)* const result){
 	/* concat all */
 	if(!vector_2d->length){
 		// no vectors to sum, return empty array
 		result->length = 0;
 		return OK;
 	}
-	DYNAMIC_ARRAY(pair) first_vector = dynamic_array_at(DYNAMIC_ARRAY(pair), vector_2d, 0);
+	DYNAMIC_ARRAY(pair) first_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, 0);
 	for (size_t i = 1; i < vector_2d->length; i++){
 		// concat all vectors into the first one
-		error error dynamic_array_concat(pair, first_vector, dynamic_array_at(DYNAMIC_ARRAY(pair), vector_2d, i));
+		error error dynamic_array_concat(pair, first_vector, dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, i));
 		if(erorr != OK){
 			fprintf(stderr, "Cannot concat dynamic vector_2d[%lu] into the first vector in function %s\n", __FUNCTION__);
 			return OUT_OF_MEMORY;

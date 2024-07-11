@@ -61,9 +61,10 @@
 DYNAMIC_ARRAY_DECL(float)
 DYNAMIC_ARRAY_DECL(uint64_t)
 DYNAMIC_ARRAY_DECL(pair)
-DYNAMIC_ARRAY_DECL(pair2D)
+DYNAMIC_ARRAY_DECL(___dynamic_array_pair_macro_defined)
 
-void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY(pair2D)* arr){
+
+void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY_2D* arr){
     for (size_t i = 0; i < arr->length; i++)
     {
         dynamic_array_destroy( (generic_dynamic_array*)( arr->data ) );
@@ -71,7 +72,7 @@ void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY(pair2D)* arr){
     arr->length = 0;
 }
 
-void dynamic_array_recursive_destroy(DYNAMIC_ARRAY(pair2D)* arr){
+void dynamic_array_recursive_destroy(DYNAMIC_ARRAY_2D* arr){
     dynamic_array_destroy_top_layer(arr);
     dynamic_array_destroy((generic_dynamic_array*) arr);
 }

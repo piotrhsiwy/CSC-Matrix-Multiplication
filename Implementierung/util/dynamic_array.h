@@ -44,8 +44,9 @@ typedef struct {
 DYNAMIC_ARRAY_HEADER___(float)
 DYNAMIC_ARRAY_HEADER___(uint64_t)
 DYNAMIC_ARRAY_HEADER___(pair)
-typedef DYNAMIC_ARRAY(pair) pair2D;
-DYNAMIC_ARRAY_HEADER___(pair2D)
+DYNAMIC_ARRAY_HEADER___(___dynamic_array_pair_macro_defined)
+#define DYNAMIC_ARRAY_2D DYNAMIC_ARRAY(___dynamic_array_pair_macro_defined)
+#define pair2D ___dynamic_array_pair_macro_defined
 
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).
@@ -63,11 +64,11 @@ void dynamic_array_destroy(generic_dynamic_array* arr);
 /**
  * Recursivels calls dynamic_array_destroy on a 2D dynamic array
  */
-void dynamic_array_recursive_destroy(DYNAMIC_ARRAY(pair2D)* arr);
+void dynamic_array_recursive_destroy(DYNAMIC_ARRAY_2D* arr);
 
 /**
  * calls dynamic_array_destroy on a all elements of a 2D dynamic array
  */
-void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY(pair2D)* arr);
+void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY_2D* arr);
 
 #endif //DYNAMIC_ARRAY_H

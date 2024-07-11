@@ -192,7 +192,7 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     for (uint64_t i = 0; i < data.dynamic_values.length; ++i) {
         // TODO error Handling
         if (i == 0) {
-            int ret = fprintf(stream, "%f", dynamic_array_at(float, &data.dynamic_values, (size_t)i));
+            int ret = fprintf(stream, "%f", dynamic_array_at(float, &data.dynamic_values_x_row_indices, (size_t)i).);
         } else {
             int ret = fprintf(stream, ",%f", dynamic_array_at(float, &data.dynamic_values, (size_t)i));
         }
