@@ -272,7 +272,7 @@ error compress_matrix(const uint64_t no_rows, const uint64_t no_cols, const floa
 	for(uint64_t col = 0; col < no_cols; col++)
 	{
 		{
-			error error = compress_vector(no_rows, expanded[col], compressed->dynamic_values_x_row_indices);
+			error error = compress_vector(no_rows, expanded[col], &compressed->dynamic_values_x_row_indices);
 			if(error != OK){
 				return error;
 			}
