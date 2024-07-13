@@ -7,7 +7,7 @@
 
 
 typedef struct {
-    int algorithm;
+    long algorithm;
     char* matrixA_path;
     char* matrixB_path;
     char* matrix_output_path;
@@ -18,6 +18,13 @@ typedef struct {
     long benchmark_repeat_count;
 } config;
 
+/**
+ * Parses the cli arguments passed to the function and updates the values in program_config accordingly
+ * @param argc the argc received in the main method
+ * @param argv the argv received in the main method
+ * @param program_config the struct whose values should be updated
+ * @returns Possible Values: OK | OUT_OF_MEMORY
+ */
 error parse_arguments(int argc, char *const * argv, config* program_config);
 
 #endif //GRA24CAPSPROJEKT_T064_CONFIG_H

@@ -21,18 +21,22 @@ void deallocate_config_buffers(config* options)
 
 int main(const int argc, char** argv)
 {
-    // TODO: switch to start unattended benchmark and configure iterations per run
 
-    config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false , .is_unattended_benchmark = false};
-    // TODO write function to deallocate buffers in config
+    config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_dir = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
-        // TODO proper error handling
+        switch (err_parse_config) {
+        case OUT_OF_MEMORY:
+            fprintf(stderr, "failed to parsed arguments: malloc failed.\n");
+            break;
+        default:
+            break;
+        }
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (options.requested_help) {
-        // TODO Ernsthafte Help
+        // TODO add all the algorithms and what they do
         const char* const help_str = "Das Programm unterstützt folgende Optionen:\n"
                                      "-a <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die mulitpliziert werden soll liegt.\n"
                                      "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
@@ -49,7 +53,7 @@ int main(const int argc, char** argv)
     }
     if (options.is_unattended_benchmark) {
         if (options.unattended_export_dir == NULL) {
-            // getopt will already print an error message
+            // getopt will already print an error message. No need to print one ourselves
             deallocate_config_buffers(&options);
             return EXIT_FAILURE;
         }
@@ -58,21 +62,19 @@ int main(const int argc, char** argv)
         return EXIT_SUCCESS;
     }
     // Did the user pass all required options?
-    // TODO ist das garantiert NULL falls nicht intialisiert
     if (NULL == options.matrixA_path) {
         // TODO bessere Fehlermeldung
-        printf("Ein Pfad für die Matrix A muss spezifiziert werden.\n");
-        // TODO cleanup
+        fprintf(stderr, "Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (NULL == options.matrixB_path) {
-        printf("Ein Pfad für die Matrix B muss spezifiziert werden.\n");
+        fprintf(stderr, "Ein Pfad für die Matrix B muss spezifiziert werden.\n");
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (NULL == options.matrix_output_path) {
-        printf("Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.\n");
+        fprintf(stderr, "Ein Pfad an dem die Ergebnis-Matrix geschrieben werden soll muss spezifiziert werden.\n");
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
@@ -123,7 +125,21 @@ int main(const int argc, char** argv)
         algorithm(&a, &b, &output);
     }
 
-    // TODO: handle mul_error
+    if (OK != output.mul_error) {
+        const char * const prefix = "Multiplication failed: ";
+        switch (output.mul_error) {
+        case OUT_OF_MEMORY:
+            fprintf(stderr, "%sran out of memory.", prefix);
+            break;
+        case DIMENSION_MISMATCH:
+            fprintf(stderr, "%sDimensions of the matrices dont match.", prefix);
+            break;
+        }
+        deallocate_config_buffers(&options);
+        destruct_matrix_data(&a);
+        destruct_matrix_data(&b);
+        return EXIT_FAILURE;
+    }
 
     // now write the output
     // TODO evtl printen??
