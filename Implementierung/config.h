@@ -13,6 +13,8 @@ typedef struct {
     char* matrix_output_path;
     bool requested_help;
     bool is_benchmark;
+    bool is_unattended_benchmark;
+    char *unattended_export_dir;
     long benchmark_repeat_count;
 } config;
 

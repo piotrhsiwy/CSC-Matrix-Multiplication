@@ -54,7 +54,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char *const * const 
     while (true) {
         // : nach buchstabe -> required_argument, :: -> optional argument
         // nichts nach buchstaben -> kein argument
-        const int ret_val = getopt_long(argc, argv, ":a:b:o:V:B:h", options_struct, &option_index);
+        const int ret_val = getopt_long(argc, argv, ":a:b:o:V:B:U:h", options_struct, &option_index);
         // TODO check errno maybe?
         if (-1 == ret_val) {
             // alle optionen wurden abgearbeitet
@@ -95,6 +95,11 @@ __attribute__((cold)) error parse_arguments(const int argc, char *const * const 
                 program_config->benchmark_repeat_count = parse_number(optarg);
                 // TODO how do optional arguments work??
                 // i dont think this works if -B used without argument
+                break;
+            case 'U':
+                program_config->is_unattended_benchmark = true;
+                err_return_value = allocate_argument(optarg, &program_config->unattended_export_dir);
+                RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
                 break;
             case 'h':
                 // TODO soll checken if requested_help und benchmark gleichzeitig
