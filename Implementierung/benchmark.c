@@ -56,7 +56,7 @@ void interput_handler(int sig) {
 
     print_sig("\nCtrl-C erkannt.");
     while(true) {
-        print_sig("\nTesten fortführen/Nach diesem Test beenden/Nach diesem Run beenden/Sofort beenden --> mögl. Datenverlust? [c/t/r/q] ");
+        print_sig("\nTesten fortführen/Nach diesem Test beenden/Nach diesem Run beenden/Sofort beenden? [c/t/r/q] ");
 
         switch(getchar_sig()) {
             case 'c':
@@ -124,6 +124,8 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count && continue_test; ++algo_id) {
             matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
+            //TODO: temp
+            destruct_matrix_data(c);
             error err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
 
             if(err) {

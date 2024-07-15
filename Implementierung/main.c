@@ -21,6 +21,9 @@ void deallocate_config_buffers(config* options)
 
 int main(const int argc, char** argv)
 {
+    //TODO: temp
+    unattended_benchmark(10000, "blah");
+    return EXIT_SUCCESS;
 
     config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_dir = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
