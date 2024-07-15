@@ -1,4 +1,7 @@
-#include "../signal_io.h"
+#include "signal_io.h"
+
+#include <unistd.h>
+
 
 void print_sig(const char *const msg) {
     write(STDOUT_FILENO, msg, strlen(msg));
