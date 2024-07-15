@@ -121,7 +121,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         }
         pair update_my_index = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, loop_counter);
         update_my_index.index = index;
-        dynamic_array_set(pair, &data->dynamic_values_x_row_indices, loop_counter, update_my_index);
+        dynamic_array_at(pair, &data->dynamic_values_x_row_indices, loop_counter) = update_my_index;
         loop_counter++;
     }
 
