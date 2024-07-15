@@ -23,7 +23,7 @@ void deallocate_config_buffers(config* options)
 
 int main(const int argc, char** argv)
 {
-    config options = { .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_dir = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
+    config options = { .algorithm = 0, .benchmark_repeat_count = 100, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_dir = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
         switch (err_parse_config) {
@@ -46,14 +46,15 @@ int main(const int argc, char** argv)
                                         "\t0: der normale Algorithmus. TODO was macht er\n"
                                      "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrixen. Diese Daten werden dann ausgegeben.\n"
                                      "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n"
-                                     "-U <Pfad zu Ordner>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte im angegebenen Ordern.\n"
+                                     "-U <Pfad zu Ausgabe-Datei>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte in der angegebenen csv-Datei.\n"
+                                        "\tMuss in Kombination mit -B verwendet werden, um Anzahl anzugeben (default ist 100). Dabei werden die Ergebnisse jedoch nicht in stdout ausgegeben.\n"
                                         "\tCtrl-C wärend der Ausführung: Menü mit folgenden Optionen:\n"
                                             "\t\tTesten fortführen [c]: Führt den Test fort.\n"
                                             "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
                                             "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
-                                     "-h oder --help: Gibt diese Hilfe aus.\n";
+                                     "-h oder --help: Gibt diese Hilfe aus.";
 
-        printf("%s", help_str);
+        printf("%s\n", help_str);
         deallocate_config_buffers(&options);
         return EXIT_SUCCESS;
     }
