@@ -1,4 +1,6 @@
 #include "benchmark.h"
+#include "util/signal_io.h"
+
 #include <errno.h>
 #include <signal.h>
 
@@ -39,15 +41,6 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data*
 
 //TODO: fix segfault when changing these
 volatile bool continue_unattended_benchmark;
-//TODO: move to util/
-void print_sig(const char *const msg) {
-    write(STDOUT_FILENO, msg, strlen(msg));
-}
-char getchar_sig(void) {
-    char res;
-    read(STDIN_FILENO, &res, sizeof res + 1); //char + \n
-    return res;
-}
 void interput_handler(int sig) {
     if(sig != SIGINT) {
         return;
@@ -122,7 +115,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             //TODO: Rerun test when continue_unattended_benchmark was set for false (only once)
 
             if(err) {
-                //TODO: log error
+                //TODO: log error1
             } else {
                 //TODO: add line to file
             }
