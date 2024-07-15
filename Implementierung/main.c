@@ -17,6 +17,8 @@ void deallocate_config_buffers(config* options)
     options->matrixA_path = NULL;
     free(options->matrixB_path);
     options->matrixB_path = NULL;
+    free(options->unattended_export_dir);
+    options->unattended_export_dir = NULL;
 }
 
 int main(const int argc, char** argv)
@@ -41,9 +43,14 @@ int main(const int argc, char** argv)
                                      "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
                                      "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
                                      "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
-                                     "\t0: der normale Algorithmus. TODO was macht er\n"
+                                        "\t0: der normale Algorithmus. TODO was macht er\n"
                                      "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrixen. Diese Daten werden dann ausgegeben.\n"
-                                     "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n\n"
+                                     "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n"
+                                     "-U <Pfad zu Ordner>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte im angegebenen Ordern.\n"
+                                        "\tCtrl-C wärend der Ausführung: Menü mit folgenden Optionen:\n"
+                                            "\t\tTesten fortführen [c]: Führt den Test fort.\n"
+                                            "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
+                                            "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
                                      "-h oder --help: Gibt diese Hilfe aus.\n";
 
         printf("%s", help_str);

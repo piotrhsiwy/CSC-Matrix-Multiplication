@@ -39,7 +39,6 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data*
 
 //TODO: fix segfault when changing these
 volatile bool continue_unattended_benchmark;
-volatile bool continue_test;
 //TODO: move to util/
 void print_sig(const char *const msg) {
     write(STDOUT_FILENO, msg, strlen(msg));
@@ -56,7 +55,7 @@ void interput_handler(int sig) {
 
     print_sig("\nCtrl-C erkannt.");
     while(true) {
-        print_sig("\nTesten fortführen/Nach diesem Test beenden/Nach diesem Run beenden/Sofort beenden? [c/t/r/q] ");
+        print_sig("\nTesten fortführen/Nach diesem Run beenden/Sofort beenden? [c/r/q] ");
 
         switch(getchar_sig()) {
             case 'c':
@@ -64,17 +63,10 @@ void interput_handler(int sig) {
                 print_sig("Fahre fort...\n");
                 break;
 
-            case 't':
-            case 'T':
-                print_sig("Warte auf letzten Test...\n");
-                continue_unattended_benchmark = false;
-                break;
-
             case 'r':
             case 'R':
                 print_sig("Warte auf letzten Run...\n");
                 continue_unattended_benchmark = false;
-                continue_test = false;
                 break;
 
             case 'q':
@@ -121,12 +113,13 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         //TODO: generate matrix a and b
         //TODO: experiment with clustering as a factor(?) --> might have an impact on SIMD
 
-        for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count && continue_test; ++algo_id) {
+        for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
             //TODO: temp
             destruct_matrix_data(c);
             error err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
+            //TODO: Rerun test when continue_unattended_benchmark was set for false (only once)
 
             if(err) {
                 //TODO: log error
@@ -143,7 +136,6 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     signal(SIGINT, interput_handler);
 
     continue_unattended_benchmark = true;
-    continue_test = true;
 
     //TODO: return out of memory when initializing arrays and free other memory
 
