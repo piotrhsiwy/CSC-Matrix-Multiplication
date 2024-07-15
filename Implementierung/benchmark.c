@@ -157,6 +157,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
         }
 
         printf("\rBenchmarke mit Matrizen der Größe %ld (Letzter Durchlauf brauchte ca. %ld Sek.)", row_count, duration_buffer.tv_sec);
+        fflush(stdout);
         for(uint64_t col_count = row_count / 2; col_count < (row_count * 2) && continue_unattended_benchmark; col_count += increment) {
             //TODO: different column counts for a and b
             if(col_count == 0) {
@@ -167,6 +168,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
             unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, export_directory, &a, &b, &c, &duration_buffer);
         }
     }
+    printf("\n");
 
     dynamic_array_destroy((generic_dynamic_array*) &a.dynamic_values_x_row_indices);
     dynamic_array_destroy((generic_dynamic_array*) &b.dynamic_values_x_row_indices);
