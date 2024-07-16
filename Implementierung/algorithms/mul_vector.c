@@ -110,7 +110,7 @@ __attribute__((hot)) void matrix_mul_vector(const matrix_data* const matrix_A, c
         
         // TODO I think this loop might just nullify all the work done by vectorizing the multiplication, since we have to add one-by-one anyway
         for(size_t index_in_vector = 0; index_in_vector <= how_many_vectors; index_in_vector++){
-            float value = vector_B[index_in_vector];
+            float value = vector_B[index_in_vector]; //TODO: fix overflow (maybe change loop condition to <?) - Execute debug_asan with -U xyz -B xyz to see issue (on 6th time called)
             if(value != 0.0f){
                 pair new_pair = {.index = index_in_vector, .value = value};
                 if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){

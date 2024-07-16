@@ -151,14 +151,14 @@ float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)*
 
 void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors){	
 	// TODO it is impossible to build in the "is-the-row-empty?"-check here, unless I use some other bool field or sth
-	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
-		size_t which_vector;
+	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++) {
 		size_t index_in_vector = 0;
-		which_vector = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index;
-		while(j >= matrix->col_ptr[index_in_vector+1]){
-			index_in_vector++; // scroll to the corect column
-		}
-		float value = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).value;
+		while(j >= matrix->col_ptr[index_in_vector + 1]){
+            index_in_vector++; // scroll to the correct column
+        }
+
+        size_t which_vector = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index;
+        float value = dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).value;
 		all_vectors[which_vector][index_in_vector] = value; // note that this array is always large enough
 	}
 }

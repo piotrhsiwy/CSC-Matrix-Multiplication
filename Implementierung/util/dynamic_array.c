@@ -51,10 +51,10 @@
         return 0;                                                                                            \
     }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {         \
-        if (capacity < arr->capacity) {                                                                      \
+        if (capacity <= arr->capacity) {                                                                     \
             return 0;                                                                                        \
         }                                                                                                    \
-        T* buf = (T*)reallocarray(arr->data, capacity, sizeof(T));                                           \
+        T* buf = (T*)realloc(arr->data, capacity * sizeof(T));                                               \
         if (!buf) {                                                                                          \
             int err = errno;                                                                                 \
             errno = 0;                                                                                       \
@@ -68,76 +68,7 @@
 
 DYNAMIC_ARRAY_DECL(float)
 DYNAMIC_ARRAY_DECL(uint64_t)
-//DYNAMIC_ARRAY_DECL(pair)
-int ___dynamic_array_pair_macro_defined_add(___dynamic_array_pair_macro_defined* const arr, pair v)
-{
-    if (arr->capacity <= arr->length) {
-        pair* buf = (pair*)reallocarray(arr->data, arr->capacity * 2, sizeof(pair));
-        if (!buf) {
-            int err = (*__errno_location());
-            (*__errno_location()) = 0;
-            return err;
-        } else {
-            arr->data = buf;
-            arr->capacity *= 2;
-            pair* uninitialized_from = arr->data + arr->length;
-            size_t unitialized_how_many = (arr->capacity - arr->length) * sizeof(pair);
-            memset(uninitialized_from, 0, unitialized_how_many);
-        }
-    }
-    arr->data[arr->length] = v;
-    arr->length++;
-    return 0;
-}
-
-int ___dynamic_array_pair_macro_defined_concat(___dynamic_array_pair_macro_defined* dest, const ___dynamic_array_pair_macro_defined* src)
-{
-    if (dest->capacity < dest->length + src->length) {
-        pair* buf = reallocarray(dest->data, dest->length + src->length, sizeof(pair));
-        if (!buf) {
-            int err = (*__errno_location());
-            (*__errno_location()) = 0;
-            return err;
-        }
-        dest->data = buf;
-        dest->capacity = dest->length + src->length;
-    }
-    pair* uninitialized_from = dest->data + dest->length;
-    size_t how_many_copy = src->length * sizeof(pair);
-    memmove(uninitialized_from, src->data, how_many_copy);
-    dest->length = dest->length + src->length;
-    return 0;
-}
-
-int ___dynamic_array_pair_macro_defined_new(size_t capacity, ___dynamic_array_pair_macro_defined* const arr)
-{
-    if (!(arr->data = (pair*)reallocarray(((void*)0), capacity, sizeof(pair)))) {
-        int err = (*__errno_location());
-        (*__errno_location()) = 0;
-        return err;
-    }
-    memset(arr->data, 0, capacity * sizeof(pair));
-    arr->length = 0;
-    arr->capacity = capacity;
-    return 0;
-}
-
-int ___dynamic_array_pair_macro_defined_reserve(size_t capacity, ___dynamic_array_pair_macro_defined* const arr)
-{
-    if (capacity < arr->capacity) {
-        return 0;
-    }
-    pair* buf = (pair*)reallocarray(arr->data, capacity, sizeof(pair));
-    if (!buf) {
-        int err = errno;
-        errno = 0;
-        return err;
-    }
-
-    arr->data = buf;
-    arr->capacity = capacity;
-    return 0;
-}
+DYNAMIC_ARRAY_DECL(pair)
 DYNAMIC_ARRAY_DECL(___dynamic_array_pair_macro_defined)
 
 

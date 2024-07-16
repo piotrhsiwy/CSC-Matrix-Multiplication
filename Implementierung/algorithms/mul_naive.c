@@ -60,7 +60,7 @@ __attribute__((hot)) void matrix_mul_naive(const matrix_data* const a, const mat
         expanded_B[col] = temp;
     }
 
-    float** expanded_result = malloc(( result->no_cols * result->no_rows )* sizeof(float));
+    float** expanded_result = malloc(( result->no_cols * result->no_rows )* sizeof(*expanded_result)); //TODO: Shouldn't this just be result->no_cols * sizeof? (I just fixed a memory-error here that was caused by wrong types but this still does not make sense.)
     if(!expanded_result){
         fprintf(stderr, "Cannot allocate memmory for field expanded_result in function %s\n", __FUNCTION__);
         free(result->col_ptr);

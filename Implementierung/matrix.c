@@ -199,11 +199,11 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         cells_with_space--;
 
         for(size_t col = 0; col < entries; ++col) {
-            if (cell_offset < matrix->col_ptr[col]) {
-                --matrix->col_ptr[col];
+            if (cell_offset < matrix->col_ptr[col + 1]) {
+                --matrix->col_ptr[col + 1];
                 break;
             }
-            cell_offset -= matrix->col_ptr[col];
+            cell_offset -= matrix->col_ptr[col + 1];
         }
     }
 
