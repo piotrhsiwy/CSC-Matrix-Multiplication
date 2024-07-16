@@ -183,10 +183,14 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
-    for(size_t i = 0; i < entries; ++i) {
-        dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, i).value = (float)rand() + 0.00001; //random float bigger than 0
-
+    matrix->col_ptr[0] = 0;
+    for(size_t i = 0; i < matrix->no_cols; ++i) {
         matrix->col_ptr[i + 1] = matrix->no_rows;
+    }
+
+    for(size_t i = 0; i < entries; ++i) {
+        const pair p = {.value=(float)rand() + 0.00001};
+        dynamic_array_add(pair, &matrix->dynamic_values_x_row_indices, p); //random float bigger than 0
     }
 
     //TODO: clustering as a factor --> might have an impact on SIMD
@@ -202,28 +206,28 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
             cell_offset -= matrix->col_ptr[col];
         }
     }
-    uint64_t col_index = 0;
-    for(size_t i = 0; i < entries; ++i) {
-        matrix->col_ptr[i + 1] = (col_index += matrix->col_ptr[i]);
-    }
 
     uint64_t* row_indices = alloca(matrix->no_rows * sizeof *row_indices);
     if(!row_indices) {
         return OUT_OF_MEMORY;
     }
     for(uint64_t col = 0; col < matrix->no_cols; ++col) {
-        const uint64_t filled_cells = matrix->col_ptr[col + 1] - matrix->col_ptr[col];
-        uint64_t free_cells = filled_cells;
+        const uint64_t filled_cells = matrix->no_rows - matrix->col_ptr[col + 1];
+        matrix->col_ptr[col + 1] = matrix->col_ptr[col] + filled_cells;
+
+        uint64_t free_cells = matrix->no_rows;
 
         for(uint64_t i = 0; i < filled_cells; ++i) {
             row_indices[i] = rand() % free_cells;
             --free_cells;
 
+            uint64_t offset = 0;
             for(uint64_t j = 0; j < i; ++j) {
-                if(row_indices[i] <= row_indices[j]) {
-                    ++row_indices[i];
+                if(row_indices[i] >= row_indices[j]) {
+                    ++offset;
                 }
             }
+            row_indices[i] += offset;
         }
 
         qsort(row_indices, filled_cells, sizeof(*row_indices), cmp_u64);

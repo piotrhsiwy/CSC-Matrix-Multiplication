@@ -144,11 +144,12 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
 
     //TODO: return out of memory when initializing arrays and free other memory
 
-    matrix_data a, b; //We don't need to initialize other fields than dynamic arrays as we initialize them on each run.
+    matrix_data a = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
+    matrix_data b = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
     dynamic_array_new(pair, 0, &a.dynamic_values_x_row_indices);
     dynamic_array_new(pair, 0, &b.dynamic_values_x_row_indices);
 
-    matrix_data c = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL };
+    matrix_data c = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
     dynamic_array_new(pair, 0, &c.dynamic_values_x_row_indices);
 
     FILE *const output = fopen(export_csv, "w");

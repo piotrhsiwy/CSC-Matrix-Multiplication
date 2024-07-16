@@ -101,6 +101,10 @@ pf4:
 benchABC:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/Cbench.txt -B 99999
 
+.PHONY: benchUSmall
+benchUSmall:
+	./main -U benchmark.csv -B 50
+
 .PHONY: clean
 clean:
 	rm main *.o -f
