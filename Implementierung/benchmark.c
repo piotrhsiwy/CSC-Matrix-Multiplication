@@ -127,9 +127,9 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             }
 
             if(err) {
-                //TODO: log error1
+                fprintf(output, "%lu,%lu,%d,%lu,-,%s\n", rows, cols, (10 - filledPerTen) * 10, algo_id, error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%lu,%f\n", rows, cols, (10 - filledPerTen) * 10, algo_id, (duration_buffer->tv_sec / (double)SEC_IN_NANOS + duration_buffer->tv_nsec) / iterations_per_run);
+                fprintf(output, "%lu,%lu,%d,%lu,%f,-\n", rows, cols, (10 - filledPerTen) * 10, algo_id, (duration_buffer->tv_sec / (double)SEC_IN_NANOS + duration_buffer->tv_nsec) / iterations_per_run);
             }
         }
     }
@@ -152,7 +152,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     dynamic_array_new(pair, 0, &c.dynamic_values_x_row_indices);
 
     FILE *const output = fopen(export_csv, "w");
-    fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec]\n");
+    fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Error\n");
 
     struct timespec duration_buffer = {.tv_nsec = 0, .tv_sec = 0};
     //Exponentially increase #rows

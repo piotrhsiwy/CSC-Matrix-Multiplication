@@ -2,11 +2,13 @@
 
 #include "util/format.h"
 #include "util/dynamic_array.h"
+#include "util/compare.h"
 
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
 #include <string.h>
+
 
 __attribute__((cold)) void destruct_matrix_data(matrix_data* const data)
 {

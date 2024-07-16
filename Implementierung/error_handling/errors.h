@@ -19,4 +19,6 @@ typedef enum {
 
 #define RETURN_IF_NOT_OK(value, return_value)  if (OK != value) return return_value
 
+const char* error_to_str(error error);
+
 #endif // ERRORS_H
