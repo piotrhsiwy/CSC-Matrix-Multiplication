@@ -43,7 +43,6 @@ tabc:
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C3.txt -V 3
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C4.txt -V 4
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5
-	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C6.txt -V 6
 	@echo "----------------------------------------"
 	diff matrices/C.txt matrices/C0.txt
 	@echo "----------------------------------------"
@@ -56,16 +55,13 @@ tabc:
 	diff matrices/C.txt matrices/C4.txt
 	@echo "----------------------------------------"
 	diff matrices/C.txt matrices/C5.txt
-	@echo "----------------------------------------"
-	diff matrices/C.txt matrices/C6.txt
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C0.txt -V 0 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C1.txt -V 1 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C2.txt -V 2 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C3.txt -V 3 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C4.txt -V 4 -B 4000000
 	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5 -B 4000000
-	./main -a matrices/A.txt -b matrices/B.txt -o matrices/C6.txt -V 6 -B 4000000
-	rm matrices/C0.txt matrices/C1.txt matrices/C2.txt matrices/C3.txt matrices/C4.txt matrices/C5.txt matrices/C6.txt
+	rm matrices/C0.txt matrices/C1.txt matrices/C2.txt matrices/C3.txt matrices/C4.txt matrices/C5.txt
 
 .PHONY: vg0
 vg0:
@@ -85,9 +81,6 @@ vg4:
 .PHONY: vg5
 vg5:
 	valgrind -s --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5
-.PHONY: vg6
-vg6:
-	valgrind -s --leak-check=full ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C6.txt -V 6
 
 .PHONY: pf0
 pf0:
@@ -113,11 +106,6 @@ pf4:
 pf5:
 	perf record ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5
 	perf report
-.PHONY: pf6
-pf6:
-	perf record ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C6.txt -V 6
-	perf report
-
 
 .PHONY: benchABC
 benchABC:
