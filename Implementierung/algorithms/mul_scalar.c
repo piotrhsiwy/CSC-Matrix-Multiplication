@@ -12,7 +12,7 @@ __attribute__((hot)) void matrix_mul_scalar(const matrix_data* const matrix_A, c
     matrix_C->no_rows = matrix_A->no_rows;
     matrix_C->no_cols = matrix_B->no_cols;
 
-    matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
+    matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * (matrix_C->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
     if(!(matrix_C->col_ptr)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         matrix_C->mul_error = OUT_OF_MEMORY;
