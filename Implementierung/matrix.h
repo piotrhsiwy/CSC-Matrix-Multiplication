@@ -46,6 +46,14 @@ void destruct_matrix_data(matrix_data* data);
  */
 error read_matrix_from_fd(FILE* stream, matrix_data* data);
 
+/**
+ * Fills a matrix with random values without changing the dimensions
+ * @param matrix The matrix to fill
+ * @param filledPerTen The relative amount of filled cells (given in parts per 10)
+ * @return The error if one occurred
+ */
+error fill_matrix(matrix_data* matrix, uint8_t filledPerTen);
+
 /*
  * Writes the matrix to passed stream in the text representation given by the requirements
  */

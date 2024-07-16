@@ -169,6 +169,70 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     return OK;
 }
 
+error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
+    const size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
+
+    dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
+    matrix->dynamic_values_x_row_indices.length = 0;
+
+    uint64_t cells_with_space = matrix->no_cols * matrix->no_rows;
+    void* tmp = realloc(matrix->col_ptr, (matrix->no_cols + 1) * sizeof *matrix->col_ptr);
+    if(!tmp) {
+        return OUT_OF_MEMORY;
+    }
+    matrix->col_ptr = tmp;
+    for(size_t i = 0; i < entries; ++i) {
+        dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, i).value = (float)rand() + 0.00001; //random float bigger than 0
+
+        matrix->col_ptr[i + 1] = matrix->no_rows;
+    }
+
+    //TODO: clustering as a factor --> might have an impact on SIMD
+    for(size_t i = 0; i < entries; ++i) {
+        size_t cell_offset = rand() % cells_with_space;
+        cells_with_space--;
+
+        for(size_t col = 0; col < entries; ++col) {
+            if (cell_offset < matrix->col_ptr[col]) {
+                --matrix->col_ptr[col];
+                break;
+            }
+            cell_offset -= matrix->col_ptr[col];
+        }
+    }
+    uint64_t col_index = 0;
+    for(size_t i = 0; i < entries; ++i) {
+        matrix->col_ptr[i + 1] = (col_index += matrix->col_ptr[i]);
+    }
+
+    uint64_t* row_indices = alloca(matrix->no_rows * sizeof *row_indices);
+    if(!row_indices) {
+        return OUT_OF_MEMORY;
+    }
+    for(uint64_t col = 0; col < matrix->no_cols; ++col) {
+        const uint64_t filled_cells = matrix->col_ptr[col + 1] - matrix->col_ptr[col];
+        uint64_t free_cells = filled_cells;
+
+        for(uint64_t i = 0; i < filled_cells; ++i) {
+            row_indices[i] = rand() % free_cells;
+            --free_cells;
+
+            for(uint64_t j = 0; j < i; ++j) {
+                if(row_indices[i] <= row_indices[j]) {
+                    ++row_indices[i];
+                }
+            }
+        }
+
+        qsort(row_indices, filled_cells, sizeof(*row_indices), cmp_u64);
+        for(uint64_t i = 0; i < filled_cells; ++i) {
+            dynamic_array_at(DYNAMIC_ARRAY(pair), &matrix->dynamic_values_x_row_indices, i + matrix->col_ptr[col]).index = row_indices[i];
+        }
+    }
+
+    return OK;
+}
+
 __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_data data)
 {
     // write the noRows,NoCols
