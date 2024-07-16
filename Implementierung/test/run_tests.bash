@@ -6,7 +6,9 @@ fi
 
 
 for dir in */ ; do
-    ../main -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt > $dir/log.txt
-    cmp $dir/C.txt $dir/expected.txt
-    echo "$dir: last cmp returned: $?"
+    for alg in $(seq 0 5); do
+        ../main -V${alg} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt > $dir/log.txt
+        cmp $dir/C.txt $dir/expected.txt
+        echo "$dir, alg:-V${alg}: last cmp returned: $?"
+    done
 done
