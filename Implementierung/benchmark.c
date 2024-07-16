@@ -127,9 +127,9 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             }
 
             if(err) {
-                fprintf(output, "%lu,%lu,%d,%lu,-,%s\n", rows, cols, (10 - filledPerTen) * 10, algo_id, error_to_str(err));
+                fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%lu,%f,-\n", rows, cols, (10 - filledPerTen) * 10, algo_id, (duration_buffer->tv_sec / (double)SEC_IN_NANOS + duration_buffer->tv_nsec) / iterations_per_run);
+                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), (duration_buffer->tv_sec / (double)SEC_IN_NANOS + duration_buffer->tv_nsec) / iterations_per_run);
             }
         }
     }

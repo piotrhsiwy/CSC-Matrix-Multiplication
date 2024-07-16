@@ -24,6 +24,13 @@ typedef void (*matrix_multiplier) (const matrix_data* const a, const matrix_data
 matrix_multiplier id_to_algorithm(unsigned int algorithm_id);
 
 /**
+ * Converts the given id into the name of the algorithm
+ * @param algorithm_id The id of the algorithm
+ * @return A const string containing the name or NULL if the id is invalid
+ */
+const char* id_to_name(unsigned int algorithm_id);
+
+/**
  * All implemented algorithms for multiplying two csc-matrices, ordered by id
  */
 extern matrix_multiplier matrix_mul_algorithms[];
