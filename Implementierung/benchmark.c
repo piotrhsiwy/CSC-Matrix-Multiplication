@@ -95,6 +95,13 @@ void interrupt_handler(const int sig) {
     }
 }
 
+//TODO: move to util
+int cmp_u64(const void *const aptr, const void *const bptr) {
+    uint64_t a = *(uint64_t *)aptr;
+    uint64_t b = *(uint64_t *)bptr;
+    return a > b ? 1 : (a < b ? -1 : 0);
+}
+//TODO: move to matrix.h/c?
 error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     const size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
 
@@ -135,7 +142,26 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     if(!row_indices) {
         return OUT_OF_MEMORY;
     }
-    //TODO: set row_indices
+    for(uint64_t col = 0; col < matrix->no_cols; ++col) {
+        const uint64_t filled_cells = matrix->col_ptr[col + 1] - matrix->col_ptr[col];
+        uint64_t free_cells = filled_cells;
+
+        for(uint64_t i = 0; i < filled_cells; ++i) {
+            row_indices[i] = rand() % free_cells;
+            --free_cells;
+
+            for(uint64_t j = 0; j < i; ++j) {
+                if(row_indices[i] <= row_indices[j]) {
+                    ++row_indices[i];
+                }
+            }
+        }
+
+        qsort(row_indices, filled_cells, sizeof(*row_indices), cmp_u64);
+        for(uint64_t i = 0; i < filled_cells; ++i) {
+            dynamic_array_at(DYNAMIC_ARRAY(pair), &matrix->dynamic_values_x_row_indices, i + matrix->col_ptr[col]).index = row_indices[i];
+        }
+    }
 
     return OK;
 }
