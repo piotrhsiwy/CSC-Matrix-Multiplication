@@ -41,7 +41,7 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data*
 }
 
 volatile bool continue_unattended_benchmark;
-void interrupt_handler(int sig) {
+void interrupt_handler(const int sig) {
     if(sig != SIGINT) {
         return;
     }
@@ -94,45 +94,44 @@ void interrupt_handler(int sig) {
 }
 
 int subtract_size_t(const void *const ap, const void *const bp) {
-    size_t a = *((const size_t*)ap);
-    size_t b = *((const size_t*)bp);
+    const size_t a = *((const size_t*)ap);
+    const size_t b = *((const size_t*)bp);
     return a > b ? 1 : (a < b ? -1 : 0);
 }
 error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
-    size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
+    const size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
 
     dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
     matrix->dynamic_values_x_row_indices.length = 0;
 
-    size_t* col_indexes = alloca(entries * sizeof(size_t));
-    if (!col_indexes) {
-        return OUT_OF_MEMORY;
-    }
-    for(size_t i = 0; i < entries; ++i) {
-        dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, i).value = (float)rand() + 0.00001; //random float bigger than 0
-
-        //TODO: clustering as a factor --> might have an impact on SIMD
-        //TODO: limit column height by no_rows
-        col_indexes[i] = rand() % entries;
-    }
-    qsort(col_indexes, entries, sizeof *col_indexes, subtract_size_t);
-
+    size_t cells_with_space = matrix->no_cols * matrix->no_rows;
     void* tmp = realloc(matrix->col_ptr, (matrix->no_cols + 1) * sizeof *matrix->col_ptr);
     if(!tmp) {
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
-    memset(matrix->col_ptr, 0, (matrix->no_cols + 1) * sizeof *matrix->col_ptr);
+    for(size_t i = 0; i < entries; ++i) {
+        dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, i).value = (float)rand() + 0.00001; //random float bigger than 0
 
-    size_t col = 0;
-    for(size_t i = 0; i <= matrix->no_cols;) {
-        if (col_indexes[i] > col) {
-            uint64_t start = matrix->col_ptr[i];
-            matrix->col_ptr[++i] = start;
-            continue;
+        matrix->col_ptr[i + 1] = matrix->no_rows;
+    }
+
+    //TODO: clustering as a factor --> might have an impact on SIMD
+    for(size_t i = 0; i < entries; ++i) {
+        size_t cell_offset = rand() % cells_with_space;
+        cells_with_space--;
+
+        for(size_t col = 0; col < entries; ++col) {
+            if (cell_offset < matrix->col_ptr[col]) {
+                --matrix->col_ptr[col];
+                break;
+            }
+            cell_offset -= matrix->col_ptr[col];
         }
-
-        ++matrix->col_ptr[col];
+    }
+    size_t col_index = 0;
+    for(size_t i = 0; i < entries; ++i) {
+        matrix->col_ptr[i + 1] = (col_index += matrix->col_ptr[i]);
     }
 
     //TODO: set row_indices
