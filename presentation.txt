@@ -1,0 +1,73 @@
+Begrüßung
+
+Aufgabe:
+	Kurz Matrix-Mulitplikation erklären
+	-> Spaltenzahl von A = Zeilenzahl von B
+	-> Wie funktionert es? Erklärung, am besten mit Wikipedia Bild
+	-> ist assoziativ, aber nicht kommutativ
+	Beliebtes Problem:
+	-> Gauss-Algorithmus
+	-> Graphen (Adjazenmatrizen, Googlematrix, ...)
+	-> Computer-Grafik (Rotationen, Vektoren, ...)
+	-> Oft viele Nuller
+	Problem: wenn viele Nuller viel verschwendete Platz + Rechenzeit
+	-> Nur nicht nulle Speichern
+	Formate:
+	CSR vs CSC vs (gibt noch andere, sollen wir die erwähnen?)
+	-> Angabe nutzt CSC
+	Multiplikationsalgorithmen, für sparse
+
+Algorithmen:
+	// Wollen wir hier schon auf algorithmische Komplezität eingehen?
+	decompremieren und normal rechen
+	-> O(n^3)
+	--> decompremieren ist O(n) worst case -> n element auslesen udn schreiben
+	--> jedes element mal element der Spalte -> n da n element pro row * n da n spalten * n da länge der Spalte 
+	-> gibt auch etwas schneller algorithmen, wann lohnen sich die (Überhaupt erwähnen)
+	Aber:
+	-> viel Ram verbrauch
+	-> nur zum vergleich
+	evtl: einfach naive Algorithmus, aber sparse
+	-> Bei vollständig dichter Matrix immernoch O(n^3), sonst kammt auf überschneidungen an (Welches O?)
+	-> besser
+	-> weniger ram
+	-> aber schlechte Zugriffsmuster, da Rows teuer sind
+	Gustafson (heißt der so) Algorithmus:
+	-> in der Version für CSC, geht auch noch für CSR
+	-> vermeidet teure Row-Operationen
+	-> optimal, wenn (siehe Papers)
+	Multihreaded Gustafson:
+	-> aufteilen nach columns
+	-> lesen muss nicht syncronisiert werden
+	-> locks bei zuteilen der ROws
+	-> mergen der Rows am enden
+Korrektheit:
+	Begründung Gustafson korrekt
+	Wie haben wir unsere Implementationen getestet
+	    -> Integration tests (der script)
+	       -> einige matrixes, bei denen man Weiß wass rauskommt -> schauen ob die ergebnisse korrekte sind + das ganze programm funktionert
+	    -> UNIT test -> TODO tatsächlich machen
+	    -> zufällig generierte werte
+	    --> macht die Benchmark???
+
+
+Performance:
+	Algorithmische Komplezität der Algorithmen
+	-> normale Matrix Multiplikation -> O(n^3) (worst, average, best-case) (unter annahme konstante multiplikationsgeschwindigkeit, scheint auf x86 zu stimmen)
+	-> gustafson -> worst-case auch O(N^3), aber mit höheren konstanten Faktor
+	   	     -> best-case O(1) (ließt no_values -> 0 -> fertig)
+		     -> average hängt von sparse-heit ab -> nachschauen, wie es sich verhält
+		     --> O(flops + nnz + n), also optimal wenn flops > max(nnz, n)
+		     ---> solange mehr notwenige muls also values oder columns ist es algorithmisch optimal
+		     ---> https://people.eecs.berkeley.edu/~aydin/spgemm_sisc12.pdf
+		     -> konstante Faktor ist aber unterschiedlich!
+	Wie messen wir
+	Speicherverbrauch
+	-> Speicherverbrauch aller sparsen gleich(bis auf parrallel), speicherverbrauch nicht-sparsen sehr hoch
+	Laufzeit bei Messungen:
+		 -> nach sparseheit
+		 -> nach größe
+		 -> nach Kerne
+		 -> usw
+	Verhält sich wie erwartet? Rausfinden wenn benchmarks durchgeführt	
+		 
