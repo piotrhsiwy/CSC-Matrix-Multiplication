@@ -40,7 +40,6 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data*
     return OK;
 }
 
-//TODO: fix segfault when changing these
 volatile bool continue_unattended_benchmark;
 void interrupt_handler(int sig) {
     if(sig != SIGINT) {
