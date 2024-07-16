@@ -104,7 +104,7 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
     matrix->dynamic_values_x_row_indices.length = 0;
 
-    size_t cells_with_space = matrix->no_cols * matrix->no_rows;
+    uint64_t cells_with_space = matrix->no_cols * matrix->no_rows;
     void* tmp = realloc(matrix->col_ptr, (matrix->no_cols + 1) * sizeof *matrix->col_ptr);
     if(!tmp) {
         return OUT_OF_MEMORY;
@@ -129,7 +129,7 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
             cell_offset -= matrix->col_ptr[col];
         }
     }
-    size_t col_index = 0;
+    uint64_t col_index = 0;
     for(size_t i = 0; i < entries; ++i) {
         matrix->col_ptr[i + 1] = (col_index += matrix->col_ptr[i]);
     }
