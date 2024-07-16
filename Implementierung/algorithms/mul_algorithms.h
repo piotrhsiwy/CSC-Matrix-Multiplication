@@ -10,6 +10,7 @@
 #include "mul_vector.h"
 #include "mul_gustavson.h"
 #include "mul_naive.h"
+#include "mul_gustavson_preextract.h"
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"

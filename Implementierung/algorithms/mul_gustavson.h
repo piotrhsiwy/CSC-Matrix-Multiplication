@@ -2,7 +2,6 @@
 #define MUL_GUSTAFSON_H
 
 #include <string.h> // memset
-#include "../matrix.h"
 #include "../util/matrix_util.h"
 
 /**
