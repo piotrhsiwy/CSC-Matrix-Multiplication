@@ -104,7 +104,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->dynamic_values_x_row_indices.length = 0;
     b->dynamic_values_x_row_indices.length = 0;
 
-    for(uint8_t filledPerTen = 0; filledPerTen < 10 && continue_unattended_benchmark; ++filledPerTen) {
+    for(uint8_t filledPerTen = 0; filledPerTen <= 10 && continue_unattended_benchmark; ++filledPerTen) {
         //TODO: handle errors
         error err = fill_matrix(a, filledPerTen);
         if(err) {
