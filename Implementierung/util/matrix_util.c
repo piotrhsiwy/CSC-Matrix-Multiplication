@@ -247,7 +247,7 @@ error expand_vector(const uint64_t length_compressed, const pair compressed[rest
 }
 
 void expand_matrix(const matrix_data* const compressed, float* const * const expanded){
-	for(uint64_t col = 0; col <= compressed->no_cols; col++){
+	for(uint64_t col = 0; col < compressed->no_cols; col++){
 		extract_expanded_col_csc(compressed, col, expanded[col]);
 	}
 }
@@ -256,7 +256,7 @@ static error compress_vector(const uint64_t count, const float vector[count], DY
 	for (uint64_t i = 0; i < count; i++)
 	{
 		pair new_pair = {.index = i, .value = vector[i]};
-		if(dynamic_array_add(pair, compressed, new_pair))
+		if(new_pair.value && dynamic_array_add(pair, compressed, new_pair))
 		{
 			fprintf(stderr, "Cannot add an element to dynamic array compressed in function %s\n", __FUNCTION__);
 			return OUT_OF_MEMORY;
@@ -265,15 +265,13 @@ static error compress_vector(const uint64_t count, const float vector[count], DY
 	return OK;
 }
 
-error compress_matrix(const uint64_t no_rows, const uint64_t no_cols, const float expanded[no_cols][no_rows], matrix_data* const compressed){
-	compressed->no_rows = no_rows;
-	compressed->no_cols = no_cols;
+error compress_matrix(float** const expanded, matrix_data* const compressed){
 	uint64_t* col_ptr_writer = compressed->col_ptr;
 	*col_ptr_writer++ = 0;
-	for(uint64_t col = 0; col < no_cols; col++)
+	for(uint64_t col = 0; col < compressed->no_cols; col++)
 	{
 		{
-			error error = compress_vector(no_rows, expanded[col], &compressed->dynamic_values_x_row_indices);
+			error error = compress_vector(compressed->no_rows, expanded[col], &compressed->dynamic_values_x_row_indices);
 			if(error != OK){
 				return error;
 			}

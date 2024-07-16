@@ -178,12 +178,10 @@ void expand_matrix(const matrix_data* compressed, float *const * expanded);
  * regular matrix.
  *
  * @param
- * @param no_rows
- * @param no_cols
  * @param expanded - regular matrix of size no_rows x no_columns
  * @param compressed - to-be-written matrix in the CSC format. See matrix.h
  * 
  */
-error compress_matrix(uint64_t no_rows, uint64_t no_cols, const float expanded[no_rows][no_cols], matrix_data* compressed);
+error compress_matrix(float** const expanded, matrix_data* compressed);
 
 #endif // MATRIX_UTIL_H

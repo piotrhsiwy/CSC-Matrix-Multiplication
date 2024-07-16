@@ -16,23 +16,73 @@ __attribute__((hot)) void matrix_mul_naive(const matrix_data* const a, const mat
         return;
     }
 
-    float** expanded_A = alloc(( a->no_cols * a->no_rows )* sizeof(float));
+    float** expanded_A = malloc(( a->no_cols ) * sizeof(*expanded_A));
     if(!expanded_A){
         fprintf(stderr, "Cannot allocate memmory for field expanded_A in function %s\n", __FUNCTION__);
+        free(result->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
         result->mul_error = OUT_OF_MEMORY;
         return;
     }
-    float** expanded_B = alloc(( b->no_cols * b->no_rows )* sizeof(float));
+    for (size_t col = 0; col < a->no_cols; col++) {
+        float* temp = malloc(( a->no_rows ) * sizeof(*temp));
+        if(!temp){
+            fprintf(stderr, "Cannot allocate memmory for field expanded_A[%lu] in function %s\n", col, __FUNCTION__);
+            free(result->col_ptr);
+            dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
+            nested_free(col, expanded_A);
+            result->mul_error = OUT_OF_MEMORY;
+            return;
+        }
+        expanded_A[col] = temp;
+    }
+    
+    float** expanded_B = malloc(( b->no_cols * b->no_rows )* sizeof(*expanded_B));
     if(!expanded_B){
         fprintf(stderr, "Cannot allocate memmory for field expanded_B in function %s\n", __FUNCTION__);
+        free(result->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
+        nested_free(a->no_cols, expanded_A);
         result->mul_error = OUT_OF_MEMORY;
         return;
     }
-    float** expanded_result = alloc(( result->no_cols * result->no_rows )* sizeof(float));
+    for (size_t col = 0; col < b->no_cols; col++) {
+        float* temp = malloc(( b->no_rows ) * sizeof(*temp));
+        if(!temp){
+            fprintf(stderr, "Cannot allocate memmory for field expanded_B[%lu] in function %s\n", col, __FUNCTION__);
+            free(result->col_ptr);
+            dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
+            nested_free(a->no_cols, expanded_A);
+            nested_free(col, expanded_B);
+            result->mul_error = OUT_OF_MEMORY;
+            return;
+        }
+        expanded_B[col] = temp;
+    }
+
+    float** expanded_result = malloc(( result->no_cols * result->no_rows )* sizeof(float));
     if(!expanded_result){
         fprintf(stderr, "Cannot allocate memmory for field expanded_result in function %s\n", __FUNCTION__);
+        free(result->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
+        nested_free(a->no_cols, expanded_A);
+        nested_free(b->no_cols, expanded_B);
         result->mul_error = OUT_OF_MEMORY;
         return;
+    }
+    for (size_t col = 0; col < result->no_cols; col++) {
+        float* temp = malloc(( result->no_rows ) * sizeof(*temp));
+        if(!temp){
+            fprintf(stderr, "Cannot allocate memmory for field expanded_result[%lu] in function %s\n", col, __FUNCTION__);
+            free(result->col_ptr);
+            dynamic_array_destroy((generic_dynamic_array*)&result->dynamic_values_x_row_indices);
+            nested_free(a->no_cols, expanded_A);
+            nested_free(b->no_cols, expanded_B);
+            nested_free(col, expanded_result);
+            result->mul_error = OUT_OF_MEMORY;
+            return;
+        }
+        expanded_result[col] = temp;
     }
 
     expand_matrix(a, expanded_A);
@@ -45,12 +95,19 @@ __attribute__((hot)) void matrix_mul_naive(const matrix_data* const a, const mat
             float acc = 0.0f;
             for (size_t k = 0; k < a->no_cols; k++)
             {
-                acc += a[k][row] * b[col][k];
+                acc += expanded_A[k][row] * expanded_B[col][k];
             }
             expanded_result[col][row] = acc;
         }
     }
 
+    {
+        error error = compress_matrix(expanded_result, result);
+    }
+
+    nested_free(a->no_cols, expanded_A);
+    nested_free(b->no_cols, expanded_B);
+    nested_free(result->no_cols, expanded_result);
     result->mul_error = OK;
     return;
 }
