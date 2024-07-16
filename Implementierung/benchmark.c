@@ -8,7 +8,9 @@
 #define SEC_IN_NANOS 1000000000l
 
 
-error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data* result, uint32_t iterations, matrix_multiplier algorithm, struct timespec* duration) {
+error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
+    algorithm(a, b, result); //We don't want to benchmark the memory allocator --> preallocate
+
     struct timespec start;
     if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
         fprintf(stderr, "failed to get time. errno is: %d\n", errno);
@@ -93,11 +95,6 @@ void interrupt_handler(const int sig) {
     }
 }
 
-int subtract_size_t(const void *const ap, const void *const bp) {
-    const size_t a = *((const size_t*)ap);
-    const size_t b = *((const size_t*)bp);
-    return a > b ? 1 : (a < b ? -1 : 0);
-}
 error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     const size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
 
@@ -134,6 +131,10 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         matrix->col_ptr[i + 1] = (col_index += matrix->col_ptr[i]);
     }
 
+    uint64_t* row_indices = alloca(matrix->no_rows * sizeof *row_indices);
+    if(!row_indices) {
+        return OUT_OF_MEMORY;
+    }
     //TODO: set row_indices
 
     return OK;
@@ -148,16 +149,22 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
 
     for(uint8_t filledPerTen = 0; filledPerTen < 10 && continue_unattended_benchmark; ++filledPerTen) {
         //TODO: handle errors
-        fill_matrix(a, filledPerTen);
-        fill_matrix(b, filledPerTen);
+        error err = fill_matrix(a, filledPerTen);
+        if(err) {
+            return err;
+        }
+        err = fill_matrix(b, filledPerTen);
+        if(err) {
+            return err;
+        }
 
         bool prev_continue_unattended_benchmark = true;
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
-            matrix_multiplier algo = matrix_mul_algorithms[algo_id];
+            const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
             //TODO: temp
             destruct_matrix_data(c);
-            error err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
+            err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
             if(!continue_unattended_benchmark && prev_continue_unattended_benchmark) {
                 prev_continue_unattended_benchmark = false;
                 --algo_id; //repeat measurement
