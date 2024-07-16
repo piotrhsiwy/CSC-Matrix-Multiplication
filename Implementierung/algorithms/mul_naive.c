@@ -103,6 +103,13 @@ __attribute__((hot)) void matrix_mul_naive(const matrix_data* const a, const mat
 
     {
         error error = compress_matrix(expanded_result, result);
+        if(error != OK){
+            nested_free(a->no_cols, expanded_A);
+            nested_free(b->no_cols, expanded_B);
+            nested_free(result->no_cols, expanded_result);
+            result->mul_error = error;
+            return;
+        }
     }
 
     nested_free(a->no_cols, expanded_A);

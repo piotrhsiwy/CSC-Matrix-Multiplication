@@ -267,6 +267,5 @@ error compress_matrix(float** const expanded, matrix_data* const compressed){
 		}
 		*col_ptr_writer++ = compressed->dynamic_values_x_row_indices.length;
 	}
-	compressed->mul_error = OK;
 	return OK;
 }
