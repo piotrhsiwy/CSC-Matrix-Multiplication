@@ -30,12 +30,6 @@ void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matri
 error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d);
 
 /**
- * mutiply each value in (dynamic array of floats) vector with a scalar
- * then add up all values of a vector to each other and return the sum
- */
-float mul_collapse_vector_expanded_w_scalar(DYNAMIC_ARRAY(float)* vector, float scalar);
-
-/**
  * A = A *horizontal-multiply* B
  */
 void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B);

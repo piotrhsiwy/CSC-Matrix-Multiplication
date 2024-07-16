@@ -85,7 +85,7 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
         // note that only values are extracted from the col, so the resulting vector is dynamic array of floats
         for(uint64_t i = 0; i < colB.length; i++){
             uint64_t row_index = dynamic_array_at(pair, &colB, i).index;
-            DYNAMIC_ARRAY(pair) new_col;
+            DYNAMIC_ARRAY(pair) new_col = {.data = 0, .length = 0, .capacity = 0}; // to @ignore 'use of uinitialized value when reallocating in dynamic_array_new'
             if(dynamic_array_new(pair, 4, &new_col)){
                 fprintf(stderr, "Cannot dynamically allocate memory for new_col field in function %s\n", __FUNCTION__);
                 free(matrix_C->col_ptr);
@@ -118,10 +118,13 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
+                dynamic_array_unbind((generic_dynamic_array*)&new_col);
                 DYNAMIC_ARRAY(pair) colA = dynamic_array_at(___dynamic_array_pair_macro_defined, &colA_vector, colA_vector.length-1);
                 mul_vector_compressed_w_scalar(&colA, dynamic_array_at(pair, &colB, i).value);
             } else{
-                /* else colA is empty */
+                dynamic_array_destroy((generic_dynamic_array*)&new_col);
+                /* else new_col is empty */
+
             }        
         }
         {

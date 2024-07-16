@@ -144,7 +144,8 @@ DYNAMIC_ARRAY_DECL(___dynamic_array_pair_macro_defined)
 void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY_2D* arr){
     for (size_t i = 0; i < arr->length; i++)
     {
-        dynamic_array_destroy( (generic_dynamic_array*)( arr->data ) );
+        DYNAMIC_ARRAY(pair) cur = dynamic_array_at(___dynamic_array_pair_macro_defined, arr, i);
+        dynamic_array_destroy( (generic_dynamic_array*)( &cur ) );
     }
     arr->length = 0;
 }

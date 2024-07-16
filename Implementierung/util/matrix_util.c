@@ -71,16 +71,6 @@ error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d){
 	return OK;
 }
 
-float mul_collapse_vector_expanded_w_scalar(DYNAMIC_ARRAY(float)* vector, float scalar){
-	float acc = 0.0f;
-	for(size_t i = 0; i < vector->length; i++){
-		float value = dynamic_array_at(float, vector, i);
-		acc += value * scalar;
-	}
-
-    //TODO: return value (return acc?)
-}
-
 // TODO this can be done with SIMD faster?
 // TODO should we return any erorrs here?
 void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B){
@@ -98,7 +88,6 @@ void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float sca
 		cur_pair.value = cur_pair.value * scalar;
 		dynamic_array_at(pair, vector, i) = cur_pair;
 	}
-	
 }
 
 error mul_vector_transposed_w_matrix(
