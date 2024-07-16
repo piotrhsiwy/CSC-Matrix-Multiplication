@@ -25,7 +25,7 @@ typedef struct {
 #define DYNAMIC_ARRAY(T) ___dynamic_array_##T##_macro_defined
 #define dynamic_array_add(T, arr, v) ___dynamic_array_##T##_macro_defined_add(arr, v)
 #define dynamic_array_concat(T, dest, src) ___dynamic_array_##T##_macro_defined_concat(dest, src)
-#define dynamic_array_at(T, arr, i) (arr)->data[i]
+#define dynamic_array_at(T, arr, i) ((arr)->data[i])
 #define dynamic_array_new(T, capacity, arr) ___dynamic_array_##T##_macro_defined_new(capacity, arr)
 #define dynamic_array_reserve(T, capacity, arr) ___dynamic_array_##T##_macro_defined_reserve(capacity, arr)
 

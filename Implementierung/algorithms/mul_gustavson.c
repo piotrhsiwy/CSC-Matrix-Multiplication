@@ -107,7 +107,7 @@ __attribute__((hot)) void matrix_mul_gustavson(const matrix_data* const matrix_A
                     return;
                 }
             }
-            if(new_col.length){
+            if(new_col.length) {
                 if(dynamic_array_add(___dynamic_array_pair_macro_defined, &colA_vector, new_col)){
                     fprintf(stderr, "Cannot add new element to colA_vector in function %s\n", __FUNCTION__);
                     free(matrix_C->col_ptr);

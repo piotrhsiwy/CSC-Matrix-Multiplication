@@ -1,5 +1,6 @@
 #include "signal_io.h"
 
+#include <string.h>
 #include <unistd.h>
 
 
