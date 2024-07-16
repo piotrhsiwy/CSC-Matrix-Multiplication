@@ -188,8 +188,6 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
-            //TODO: temp
-            destruct_matrix_data(c);
             err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
             if(!continue_unattended_benchmark && prev_continue_unattended_benchmark) {
                 prev_continue_unattended_benchmark = false;
@@ -244,6 +242,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
 
             //TODO: handle error
             unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &duration_buffer);
+            fflush(output); //reduce data-loss in case of Ctrl-C/q
         }
     }
     printf("\n");
