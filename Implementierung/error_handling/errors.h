@@ -15,6 +15,8 @@ typedef enum {
 
     COULD_NOT_FETCH_TIME = 101,
 
+    UNDEFINED = 255,
+
 } error;
 
 #define RETURN_IF_NOT_OK(value, return_value)  if (OK != value) return return_value

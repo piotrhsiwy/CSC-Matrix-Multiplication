@@ -28,7 +28,21 @@ typedef struct {
 } matrix_data;
 
 /**
- * Frees the memory used by the arrays of the given matrix_data.
+ * Allocate storage for all the fields of the matrix and fill the no_rows and no_cols fields appropriately.
+ * The mul_error field will be filled with UNDEFINED.
+ * 
+ * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
+ */
+error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix);
+
+/**
+ * Free all fields of the matrix, including
+ *  col_ptr - static array
+ *  dynamic_values_x_row_indices - dynamic array
+ * Zero the fields
+ *  no_cols
+ *  no_rows
+ * Set the mul_erorr field to undefined
  */
 void destruct_matrix_data(matrix_data* data);
 

@@ -21,5 +21,7 @@ const char* error_to_str(const error err) {
         return "Dimension mismatch";
     case COULD_NOT_FETCH_TIME:
         return "Could not fetch time";
+    case UNDEFINED:
+        return "Undefined";
     }
 }

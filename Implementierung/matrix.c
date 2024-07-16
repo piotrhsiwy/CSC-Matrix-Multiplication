@@ -10,12 +10,42 @@
 #include <string.h>
 
 
+/**
+ * Allocate storage for all the fields of the matrix and fill the no_rows and no_cols fields appropriately.
+ * The mul_error field will be filled with UNDEFINED.
+ * 
+ * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
+ */
+__attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix){
+
+    matrix->col_ptr = malloc(sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
+    if(!(matrix->col_ptr)){
+        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
+        return OUT_OF_MEMORY;
+    }
+
+    if(dynamic_array_new(pair, 4, &matrix->dynamic_values_x_row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
+        free(matrix->col_ptr);
+        return OUT_OF_MEMORY;
+    }
+
+    matrix->no_rows = no_rows;
+    matrix->no_cols = no_cols;
+    matrix->mul_error = UNDEFINED;
+
+    return OK;
+}
+
 __attribute__((cold)) void destruct_matrix_data(matrix_data* const data)
 {
     // freeing NULL doesnt do anything, no need to check for it
-    free(data->col_ptr);
-    data->col_ptr = NULL;
-    dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+    free(matrix->col_ptr);
+    matrix->col_ptr = NULL;
+    dynamic_array_destroy((generic_dynamic_array*)&matrix->dynamic_values_x_row_indices);
+    matrix->no_rows = 0;
+    matrix->no_cols = 0;
+    matrix->mul_error = UNDEFINED;
 }
 
 __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data* const data)
