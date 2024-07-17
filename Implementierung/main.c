@@ -148,6 +148,7 @@ int main(const int argc, char** argv)
         deallocate_config_buffers(&options);
         destruct_matrix_data(&a);
         destruct_matrix_data(&b);
+        destruct_matrix_data(&output);
         return EXIT_FAILURE;
     }
 
@@ -178,9 +179,7 @@ int main(const int argc, char** argv)
     deallocate_config_buffers(&options);
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
-    if (output.mul_error == OK) {
-        destruct_matrix_data(&output);
-    }
+    destruct_matrix_data(&output);
 
     if (OK != err_output) {
         // TODO better error handling
