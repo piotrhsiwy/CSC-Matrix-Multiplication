@@ -12,8 +12,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
         // matrix size mismatch
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = DIMENSION_MISMATCH;
         return;
     }
@@ -37,8 +35,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
     DYNAMIC_ARRAY_2D colA_vector;
     if(dynamic_array_new(___dynamic_array_pair_macro_defined, 4, &colA_vector)){
         fprintf(stderr, "Cannot dynamically allocate memory for colA_vector in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -46,8 +42,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
     DYNAMIC_ARRAY(pair) colB;
     if(dynamic_array_new(pair, 4, &colB)){
         fprintf(stderr, "Cannot dynamically allocate memory for colB field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         dynamic_array_recursive_destroy(&colA_vector);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -58,8 +52,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
         { 
             error error = extract_compressed_col_csc(matrix_B, col_index, &colB);
             if(error != OK){
-                free(matrix_C->col_ptr);
-                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                 dynamic_array_recursive_destroy(&colA_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB);
                 matrix_C->mul_error = error;
@@ -73,8 +65,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
             DYNAMIC_ARRAY(pair) new_col = {.data = 0, .length = 0, .capacity = 0}; // to @ignore 'use of uinitialized value when reallocating in dynamic_array_new'
             if(dynamic_array_new(pair, 4, &new_col)){
                 fprintf(stderr, "Cannot dynamically allocate memory for new_col field in function %s\n", __FUNCTION__);
-                free(matrix_C->col_ptr);
-                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                 dynamic_array_recursive_destroy(&colA_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB);
                 matrix_C->mul_error = OUT_OF_MEMORY;
@@ -83,8 +73,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
             {
                 error error = extract_compressed_col_csc(matrix_A, row_index, &new_col);
                 if(error != OK){
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     dynamic_array_recursive_destroy(&colA_vector);
                     dynamic_array_destroy((generic_dynamic_array*)&colB);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col);
@@ -95,8 +83,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
             if(new_col.length) {
                 if(dynamic_array_add(___dynamic_array_pair_macro_defined, &colA_vector, new_col)){
                     fprintf(stderr, "Cannot add new element to colA_vector in function %s\n", __FUNCTION__);
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     dynamic_array_recursive_destroy(&colA_vector);
                     dynamic_array_destroy((generic_dynamic_array*)&colB);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col);
@@ -115,8 +101,6 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
         {
             error error = sum_compressed_matrix(&colA_vector);
             if (error != OK) {
-                free(matrix_C->col_ptr);
-                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                 dynamic_array_recursive_destroy(&colA_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB);
                 matrix_C->mul_error = error;

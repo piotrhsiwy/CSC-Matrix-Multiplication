@@ -9,13 +9,6 @@
 #include <math.h>
 #include <string.h>
 
-
-/**
- * Allocate storage for all the fields of the matrix and fill the no_rows and no_cols fields appropriately.
- * The mul_error field will be filled with UNDEFINED.
- *
- * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
- */
 __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix){
 
     matrix->col_ptr = malloc(sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
