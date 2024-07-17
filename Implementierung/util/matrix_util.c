@@ -18,7 +18,7 @@ void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vec
 	memset(vector, 0, n * sizeof(*vector));
 	for(size_t i = 0; i < m; i++){
 		for(size_t j = 0; j < n; j++){
-			vector[i] += matrix[i][j];
+			vector[j] += matrix[i][j];
 		}
 	}
 }
