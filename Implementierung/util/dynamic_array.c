@@ -40,7 +40,7 @@
         return 0;                                                                                            \
     }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {             \
-        if(!(arr->data = (T*)reallocarray(NULL, capacity, sizeof(T)))) {                                     \
+        if(!(arr->data = (T*)malloc(capacity * sizeof(T)))) {                                                \
             int err = errno;                                                                                 \
             errno = 0;                                                                                       \
             return err;                                                                                      \
@@ -51,7 +51,6 @@
         return 0;                                                                                            \
     }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {         \
-        arr->data = NULL;                                                                                    \
         if (capacity <= arr->capacity) {                                                                     \
             return 0;                                                                                        \
         }                                                                                                    \

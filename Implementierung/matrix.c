@@ -14,7 +14,6 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     matrix->no_rows = no_rows;
     matrix->no_cols = no_cols;
     matrix->mul_error = UNDEFINED;
-    matrix->col_ptr = NULL; // to @surpress use of unitialized in valgrind
 
     void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
     if(!(tmp)){
