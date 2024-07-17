@@ -99,7 +99,7 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
             }        
         }
         {
-            error error = sum_compressed_matrix(&colA_vector);
+            error error = sum_compressed_matrix(&colA_vector, &colB);
             if (error != OK) {
                 dynamic_array_recursive_destroy(&colA_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB);
@@ -107,8 +107,7 @@ __attribute__((hot)) void matrix_mul_gustavson(const void*  a, const void*  b, v
                 return;
             } 
         }
-        DYNAMIC_ARRAY(pair) result = dynamic_array_at(___dynamic_array_pair_macro_defined, &colA_vector, 0);
-        dynamic_array_concat(pair, &matrix_C->dynamic_values_x_row_indices, &result);
+        dynamic_array_concat(pair, &matrix_C->dynamic_values_x_row_indices, &colB);
 
         // else if value==0.0f we don't write it
         dynamic_array_destroy_top_layer(&colA_vector); // scratch the extracted columns from A

@@ -27,7 +27,7 @@ void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matri
  * concat & sort
  * TODO
  */
-error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d);
+error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pair)* const result);
 
 /**
  * A = A *horizontal-multiply* B

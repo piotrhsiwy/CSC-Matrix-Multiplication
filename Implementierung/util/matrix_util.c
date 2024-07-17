@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h> // bool in sum_compressed_matrix
 
 #include "matrix_util.h"
 
@@ -30,7 +31,6 @@ static void swap(const size_t i, const size_t j, pair arr[]){
 
 // TODO optimize this
 static void sort(const size_t count, pair arr[count]){
-	pair temp[count];
 	for (size_t i = 0; i < count; i++)
 	{
 		pair min = arr[i];
@@ -49,27 +49,52 @@ static void sort(const size_t count, pair arr[count]){
 	}
 }
 
-error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d){
-	/* concat all */
+error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pair)* const result){
 	if(!vector_2d->length){
 		// no vectors to sum, return empty array
 		return OK;
 	}
-	DYNAMIC_ARRAY(pair) first_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, 0);
-	for (size_t i = 1; i < vector_2d->length; i++){
-		// concat all vectors into the first one
-		DYNAMIC_ARRAY(pair) current_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, i);
-		error error = dynamic_array_concat(pair, &first_vector, &current_vector);
-		if(error != OK){
-			fprintf(stderr, "Cannot concat dynamic vector_2d[%lu] into the first vector in function %s\n", i, __FUNCTION__);
-			return OUT_OF_MEMORY;
+
+	result->length = 0;
+	size_t index_in_vector[vector_2d->length];
+	memset(index_in_vector, 0, vector_2d->length * sizeof(size_t));
+	size_t how_many_have_values_left = vector_2d->length;
+
+	size_t lowest_index = 0;
+	while (true)
+	{
+		if(!how_many_have_values_left)
+			break;
+		float acc = 0.0f;
+		for (size_t vector_index = 0; vector_index < vector_2d->length; vector_index++)
+		{
+			DYNAMIC_ARRAY(pair) cur_vector = dynamic_array_at(___dynamic_array_pair_macro_defined, vector_2d, vector_index);
+			if(index_in_vector[vector_index] != cur_vector.length)
+			{ /* there are values left in this vector */
+				pair cur_pair = dynamic_array_at(pair, &cur_vector, index_in_vector[vector_index]);
+				if(cur_pair.index == lowest_index){
+					/* belongs to the currently accumulated value */
+					acc += cur_pair.value;
+					index_in_vector[vector_index]++;
+					if(index_in_vector[vector_index] >= cur_vector.length)
+						how_many_have_values_left--;
+				} else{
+					/* do nothing if index is too big (it will be never be lower, since pairs are sorted by increasing indices in vectors) */
+				}
+			}	
 		}
+		if(acc != 0.0f)
+		{
+			pair new_pair = {.index = lowest_index, .value = acc};
+			if(dynamic_array_add(pair, result, new_pair))
+				return OUT_OF_MEMORY;
+		}
+		lowest_index++;
 	}
-	/* sort by increasing index */
-	sort(first_vector.length, first_vector.data);
-	dynamic_array_at(DYNAMIC_ARRAY(pair), vector_2d, 0) = first_vector;
-	return OK;
+
+	return OK;	
 }
+// alternatively scatter to an extended vector and then add up
 
 // TODO this can be done with SIMD faster?
 // TODO should we return any erorrs here?
