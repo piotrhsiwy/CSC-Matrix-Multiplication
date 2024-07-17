@@ -21,6 +21,7 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
             return;
         }
         expanded_A[col] = temp;
+        memset(temp, 0, ( matrix_A->no_rows ) * sizeof(*temp));
     }
     
     float** expanded_B = malloc(( matrix_B->no_cols * matrix_B->no_rows )* sizeof(*expanded_B));
@@ -40,6 +41,7 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
             return;
         }
         expanded_B[col] = temp;
+        memset(temp, 0, ( matrix_B->no_rows ) * sizeof(*temp));
     }
 
     float** expanded_C = malloc(( matrix_C->no_cols * matrix_C->no_rows )* sizeof(*expanded_C)); //TODO: Shouldn't this just be matrix_C->no_cols * sizeof? (I just fixed a memory-error here that was caused by wrong types but this still does not make sense.)
@@ -61,6 +63,7 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
             return;
         }
         expanded_C[col] = temp;
+        memset(temp, 0, ( matrix_C->no_rows ) * sizeof(*temp));
     }
 
     expand_matrix(a, expanded_A);
