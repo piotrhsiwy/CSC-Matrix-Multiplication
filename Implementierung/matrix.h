@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define EMPTY_MATRIX_INIT {.no_rows = 0, .no_cols = 0, .col_ptr = NULL, .dynamic_values_x_row_indices = {.data = NULL, .capacity = 0, .length = 0}}
+
 
 typedef struct {
     uint64_t no_rows;

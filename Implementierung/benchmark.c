@@ -110,7 +110,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->dynamic_values_x_row_indices.length = 0;
     b->dynamic_values_x_row_indices.length = 0;
 
-    for(uint8_t filledPerTen = 0; filledPerTen <= 10 && continue_unattended_benchmark; ++filledPerTen) {
+    for(uint8_t filledPerTen = 0; filledPerTen <= 10; ++filledPerTen) {
         //TODO: handle errors
         error err = fill_matrix(a, filledPerTen);
         if(err) {
@@ -159,20 +159,15 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
 
     continue_unattended_benchmark = true;
 
-    //TODO: return out of memory when initializing arrays and free other memory
+    matrix_data a = EMPTY_MATRIX_INIT;
+    matrix_data b = EMPTY_MATRIX_INIT;
 
-    matrix_data a = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
-    matrix_data b = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
-    dynamic_array_new(pair, 0, &a.dynamic_values_x_row_indices);
-    dynamic_array_new(pair, 0, &b.dynamic_values_x_row_indices);
-
-    matrix_data c = {.no_rows = 0, .no_cols = 0, .col_ptr = NULL};
-    dynamic_array_new(pair, 0, &c.dynamic_values_x_row_indices);
+    matrix_data c = EMPTY_MATRIX_INIT;
 
     FILE *const output = fopen(export_csv, "w");
     fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Error\n");
 
-    struct timespec run_duration;
+    struct timespec run_duration = {.tv_sec = 0, .tv_nsec = 0};
     for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; ++row_count) {
         //Cover 10 equally spaced values in range #rows/2 to #rows*2 for #columns
         uint64_t increment = (row_count / 2) / 5;
@@ -198,9 +193,9 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     }
     printf("\n");
 
-    dynamic_array_destroy((generic_dynamic_array*) &a.dynamic_values_x_row_indices);
-    dynamic_array_destroy((generic_dynamic_array*) &b.dynamic_values_x_row_indices);
-    dynamic_array_destroy((generic_dynamic_array*) &c.dynamic_values_x_row_indices);
+    destruct_matrix_data(&a);
+    destruct_matrix_data(&b);
+    destruct_matrix_data(&c);
 
     fclose(output);
     signal(SIGINT, SIG_DFL); //reset signal handler

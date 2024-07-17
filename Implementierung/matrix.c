@@ -15,14 +15,14 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     matrix->no_cols = no_cols;
     matrix->mul_error = UNDEFINED;
 
-    void* tmp = malloc(sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
+    void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
     if(!(tmp)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
 
-    if(dynamic_array_new(pair, 4, &matrix->dynamic_values_x_row_indices)){
+    if(dynamic_array_reserve(pair, 4, &matrix->dynamic_values_x_row_indices)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;

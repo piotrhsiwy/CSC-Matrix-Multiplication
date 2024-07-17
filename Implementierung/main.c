@@ -129,7 +129,7 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    matrix_data output;
+    matrix_data output = EMPTY_MATRIX_INIT;
     matrix_multiplier algorithm = id_to_algorithm(options.algorithm);
     if (!algorithm) {
         fprintf(stderr, "Unbekannter Algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
@@ -138,6 +138,7 @@ int main(const int argc, char** argv)
     }
 
     if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)){
+        //TODO: print error
         return EXIT_FAILURE;
     }
     if (options.is_benchmark) {
