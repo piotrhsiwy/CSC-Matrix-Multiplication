@@ -228,7 +228,6 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         matrix->col_ptr[i + 1] = matrix->no_rows;
     }
 
-    //TODO: clustering as a factor --> might have an impact on SIMD
     for(size_t i = 0; i < entries; ++i) {
         size_t cell_offset = rand() % cells_with_space;
         cells_with_space--;
@@ -261,14 +260,14 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         for(uint64_t i = 0; i < filled_cells; ++i) {
             row_indices[i] = rand() % free_cells;
             --free_cells;
+            //TODO: directly insert into correct position (binary search insertion)
+            qsort(row_indices, i, sizeof(*row_indices), cmp_u64);
 
-            uint64_t offset = 0;
             for(uint64_t j = 0; j < i; ++j) {
                 if(row_indices[i] >= row_indices[j]) {
-                    ++offset;
+                    ++row_indices[i];
                 }
             }
-            row_indices[i] += offset;
         }
 
         //The values are stored in a random order -> sort them before setting them as indizes for the values
