@@ -37,7 +37,7 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     return OK;
 }
 
-__attribute__((cold)) void destruct_matrix_data(matrix_data* const data)
+__attribute__((cold)) void destruct_matrix_data(matrix_data* const matrix)
 {
     // freeing NULL doesnt do anything, no need to check for it
     free(matrix->col_ptr);
@@ -229,11 +229,11 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         cells_with_space--;
 
         for(size_t col = 0; col < entries; ++col) {
-            if (cell_offset < matrix->col_ptr[col + 1]) {
-                --matrix->col_ptr[col + 1];
+            if (cell_offset < matrix->col_ptr[col]) {
+                --matrix->col_ptr[col];
                 break;
             }
-            cell_offset -= matrix->col_ptr[col + 1];
+            cell_offset -= matrix->col_ptr[col];
         }
     }
 
