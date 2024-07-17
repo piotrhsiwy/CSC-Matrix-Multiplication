@@ -49,10 +49,12 @@ void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float sca
  * @param all_vectors is the matrix containing all rows from matrix A in the multiplication
  */
 error mul_vector_transposed_w_matrix(
-	size_t how_many_vectors,
-	size_t vector_size,
-	float* vector,
-	float** all_vectors);
+	const size_t how_many_vectors,
+	const size_t vector_size,
+	float* const vector, // [vector_size]
+	float** const all_vectors, // [how_many_vectors][vector_size]
+	float* const result) // [how_many_vectors]
+;
 
 /**
  * Multiplies each value with the corresponsing value from the other vector under the same index.

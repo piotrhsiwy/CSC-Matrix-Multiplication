@@ -63,6 +63,17 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
     }
     memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
+    // this is vector to store the expanded column of matrix C, before storing it
+    float* const result = malloc(sizeof(*result) * vector_size);
+    if(!result){
+        fprintf(stderr, "Cannot allocate memory for result field in function %s\n", __FUNCTION__);
+        nested_free(how_many_vectors, all_vectors_A);
+        free(vector_B);
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
+    }
+    memset(result, 0, sizeof(*result) * how_many_vectors);
+
     // extract all rows from matrix A. Iterates over both values and col_ptr array only once. See description of the function in matrix_util.h
     extract_expanded_all_rows_csc(matrix_A, all_vectors_A);
         
@@ -81,18 +92,19 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
         // MULTIPLY ALL THE ROWS WITH THE COLUMN AND WRITE THE WHOLE
         // ##################################
         
-        mul_vector_transposed_w_matrix(how_many_vectors, vector_size, vector_B, all_vectors_A);
-        // after this call the result-matrix's column is in vector_B
+        mul_vector_transposed_w_matrix(how_many_vectors, vector_size, vector_B, all_vectors_A, result);
+        // after this call the result-matrix's column is in result[how_many_vectors]
         
         // TODO I think this loop might just nullify all the work done by vectorizing the multiplication, since we have to add one-by-one anyway
         for(size_t index_in_vector = 0; index_in_vector < how_many_vectors; index_in_vector++){
-            float value = vector_B[index_in_vector]; //TODO: fix overflow (maybe change loop condition to <?) - Execute debug_asan with -U xyz -B xyz to see issue (on 6th time called)
+            float value = result[index_in_vector]; //TODO: fix overflow (maybe change loop condition to <?) - Execute debug_asan with -U xyz -B xyz to see issue (on 6th time called)
             if(value != 0.0f){
                 pair new_pair = {.index = index_in_vector, .value = value};
                 if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
                     fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
                     nested_free(how_many_vectors, all_vectors_A);
                     free(vector_B);
+                    free(result);
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
@@ -105,6 +117,7 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
 
     nested_free(how_many_vectors, all_vectors_A);
     free(vector_B);
+    free(result);
     matrix_C->mul_error = OK;
     return;
 }
