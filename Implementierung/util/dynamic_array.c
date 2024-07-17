@@ -51,6 +51,7 @@
         return 0;                                                                                            \
     }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {         \
+        arr->data = NULL;                                                                                    \
         if (capacity <= arr->capacity) {                                                                     \
             return 0;                                                                                        \
         }                                                                                                    \
