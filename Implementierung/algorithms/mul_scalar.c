@@ -1,9 +1,7 @@
 #include "mul_scalar.h"
 
-//TODO add void matrix_mult_csc(void*, void*, void*) interface as per Angabe
 
 __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void*  c) {
-
     const matrix_data* const matrix_A = (const matrix_data* const) a;
     const matrix_data* const matrix_B = (const matrix_data* const) b;
     matrix_data* const matrix_C = (matrix_data* const) c;
@@ -23,7 +21,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
     }
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
     if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
-        memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
+        memset(matrix_C->col_ptr, 0, (matrix_C->no_cols + 1) * sizeof *matrix_C->col_ptr);
         return;
     }
 
