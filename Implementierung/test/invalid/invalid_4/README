@@ -1,0 +1,6 @@
+4,4
+1,2,3,4
+0,0,0,0
+0,1,2,3,5
+
+! col_ptr[4] is illegal, because 5 > dynamic_values_x_row_indices.length

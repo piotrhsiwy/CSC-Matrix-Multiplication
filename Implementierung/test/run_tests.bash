@@ -5,7 +5,7 @@ fi
 
 
 
-for dir in */ ; do
+for dir in valid/* ; do
     for alg in $(seq 0 4); do
         ../main -V${alg} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt > $dir/log.txt
         cmp $dir/C.txt $dir/expected.txt
