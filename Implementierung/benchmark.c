@@ -120,6 +120,10 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         if(err) {
             return err;
         }
+        err = allocate_matrix_data(a->no_rows, b->no_cols, c);
+        if(err) {
+            return err;
+        }
 
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];

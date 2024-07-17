@@ -10,14 +10,15 @@
 #include <string.h>
 
 __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix){
-
-    matrix->col_ptr = malloc(sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
+    void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
     if(!(matrix->col_ptr)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         return OUT_OF_MEMORY;
     }
+    matrix->col_ptr = tmp;
 
-    if(dynamic_array_new(pair, 4, &matrix->dynamic_values_x_row_indices)){
+    matrix->dynamic_values_x_row_indices.length = 0;
+    if(dynamic_array_reserve(pair, 4, &matrix->dynamic_values_x_row_indices)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
