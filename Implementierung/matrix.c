@@ -83,38 +83,53 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
 
     // TODO: fail, if still more characters left in line
 
+    // allocate for dynamic_values_x_row_indices field
+    if(dynamic_array_new(pair, 4, &data->dynamic_values_x_row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
+        return OUT_OF_MEMORY;
+    }
+
+    // allocate for no_cols field
+    uint64_t* cols = malloc(sizeof(*cols) * (data->no_cols + 1));
+    if (NULL == cols) {
+        fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        return OUT_OF_MEMORY;
+    }
+
     // region setting values
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        free(cols);
         return UNEXPECTED_END_OF_FILE;
     }
 
-
     // TODO what if there is no commas and no value
     // TODO what if there is no commas and 1 value, need to separate those 2
-    if(dynamic_array_new(pair, 4, &data->dynamic_values_x_row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
-        free(line);
-        return OUT_OF_MEMORY;
-    }
 
     for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
         const float value = strtof(token, NULL);
         if (value == 0.f) { // We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             free(line);
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(cols);
             return INVALID_VALUE;
         }
         // over/underflows
         if ((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
             free(line);
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(cols);
             return INVALID_VALUE;
         }
         pair new_pair = {.index = 0, .value = value}; // index is not yet known at this point
         if(dynamic_array_add(pair, &data->dynamic_values_x_row_indices, new_pair)){
             fprintf(stderr, "Cannot add element to dynamically sized array dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             free(line);
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(cols);
             return OUT_OF_MEMORY;
         }
     }
@@ -133,6 +148,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        free(cols);
         return UNEXPECTED_END_OF_FILE;
     }
 
@@ -143,6 +159,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
             free(line);
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(cols);
             return INVALID_VALUE;
         }
         pair update_my_index = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, loop_counter);
@@ -160,15 +177,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     if (getline(&line, &line_length, stream) == -1) {
         free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-        return UNEXPECTED_END_OF_FILE;
-    }
-
-    uint64_t* cols = malloc(sizeof(*cols) * (data->no_cols + 1));
-    if (NULL == cols) {
-        free(line);
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
         free(cols);
-        return OUT_OF_MEMORY;
+        return UNEXPECTED_END_OF_FILE;
     }
 
     size_t cols_index = 0;

@@ -101,14 +101,31 @@ int main(const int argc, char** argv)
     matrix_data a;
     matrix_data b;
     error err_a = read_matrix_from_fd(matrix_a_file, &a);
-    error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_a) {
         // TODO proper error handling
         deallocate_config_buffers(&options);
+        if (fclose(matrix_a_file)) {
+            fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+            return CANNOT_CLOSE_FILE;
+        }
+        if (fclose(matrix_b_file)) {
+            fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+            return CANNOT_CLOSE_FILE;
+        }
         return EXIT_FAILURE;
     }
+    error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_b) {
+        destruct_matrix_data(&a);
         deallocate_config_buffers(&options);
+        if (fclose(matrix_a_file)) {
+            fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+            return CANNOT_CLOSE_FILE;
+        }
+        if (fclose(matrix_b_file)) {
+            fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+            return CANNOT_CLOSE_FILE;
+        }
         return EXIT_FAILURE;
     }
 
