@@ -270,10 +270,12 @@ static error compress_vector(const uint64_t count, const float vector[count], DY
 	for (uint64_t i = 0; i < count; i++)
 	{
 		pair new_pair = {.index = i, .value = vector[i]};
-		if(new_pair.value && dynamic_array_add(pair, compressed, new_pair))
-		{
-			fprintf(stderr, "Cannot add an element to dynamic array compressed in function %s\n", __FUNCTION__);
-			return OUT_OF_MEMORY;
+		if(new_pair.value != 0){
+			if(dynamic_array_add(pair, compressed, new_pair))
+			{
+				fprintf(stderr, "Cannot add an element to dynamic array compressed in function %s\n", __FUNCTION__);
+				return OUT_OF_MEMORY;
+			}
 		}
 	}
 	return OK;
