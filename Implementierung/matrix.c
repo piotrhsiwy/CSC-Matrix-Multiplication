@@ -212,7 +212,7 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     matrix->dynamic_values_x_row_indices.length = 0;
 
     for(size_t i = 0; i < entries; ++i) {
-        const pair p = {.value=(float)rand() + 0.00001};
+        const pair p = {.value=(float)rand() + 0.00001}; //index will be initialized later on
         dynamic_array_add(pair, &matrix->dynamic_values_x_row_indices, p); //random float bigger than 0
     }
 
@@ -233,7 +233,7 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         size_t cell_offset = rand() % cells_with_space;
         cells_with_space--;
 
-        for(size_t col = 0; col < entries; ++col) {
+        for(size_t col = 0; col < matrix->no_cols; ++col) {
             if (cell_offset < matrix->col_ptr[col + 1]) {
                 --matrix->col_ptr[col + 1]; //offset is inside this column -> decrease number of free cells inside
                 break;
