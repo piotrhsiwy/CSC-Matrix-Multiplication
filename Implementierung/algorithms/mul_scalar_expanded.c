@@ -59,14 +59,14 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
     for(uint64_t k = 0; k < matrix_C->no_cols; k++){ // 
 
         // extract column from matrix B. See description of the function in matrix_util.h
-        if(!extract_expanded_col_csc(matrix_B, k, vector_A)){ // the col is empty
+        if(!extract_expanded_col_csc(matrix_B, k, vector_B)){ // the col is empty
             continue;  
         }
 
         for(uint64_t i = 0; i < matrix_C->no_rows; i++){
             
             // extract row from matrix A. See description of the function in matrix_util.h
-            if(!extract_expanded_row_csc(matrix_A, i, vector_B)){ // the row is empty
+            if(!extract_expanded_row_csc(matrix_A, i, vector_A)){ // the row is empty
                 continue;  
             }
 

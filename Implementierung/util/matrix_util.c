@@ -178,7 +178,7 @@ void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const
 	// TODO it is impossible to build in the "is-the-row-empty?"-check here, unless I use some other bool field or sth
 	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++) {
 		size_t index_in_vector = 0;
-		while(j >= matrix->col_ptr[index_in_vector + 1]){
+		while(( index_in_vector < matrix->no_cols+1 ) && ( j >= matrix->col_ptr[index_in_vector + 1] )){
             index_in_vector++; // scroll to the correct column
         }
 

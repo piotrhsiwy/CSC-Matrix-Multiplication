@@ -163,7 +163,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         return UNEXPECTED_END_OF_FILE;
     }
 
-    uint64_t* cols = malloc(sizeof(*cols) * (data->no_rows + 1));
+    uint64_t* cols = malloc(sizeof(*cols) * (data->no_cols + 1));
     if (NULL == cols) {
         free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
