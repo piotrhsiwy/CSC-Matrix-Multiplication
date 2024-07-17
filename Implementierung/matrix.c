@@ -10,8 +10,13 @@
 #include <string.h>
 
 __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix){
+
+    matrix->no_rows = no_rows;
+    matrix->no_cols = no_cols;
+    matrix->mul_error = UNDEFINED;
+
     void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1)); //TODO: segfaultv in malloc (yes, it is really the call to malloc)
-    if(!(matrix->col_ptr)){
+    if(!(tmp)){
         fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
         return OUT_OF_MEMORY;
     }
@@ -23,10 +28,6 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
-
-    matrix->no_rows = no_rows;
-    matrix->no_cols = no_cols;
-    matrix->mul_error = UNDEFINED;
 
     return OK;
 }
