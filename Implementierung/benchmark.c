@@ -167,8 +167,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Error\n");
 
     struct timespec duration_buffer = {.tv_nsec = 0, .tv_sec = 0};
-    //Exponentially increase #rows
-    for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; row_count *= 2) {
+    for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; ++row_count) {
         //Cover 10 equally spaced values in range #rows/2 to #rows*2 for #columns
         uint64_t increment = (row_count / 2) / 5;
         if(increment < 1) {
