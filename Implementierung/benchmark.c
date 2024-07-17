@@ -102,7 +102,7 @@ void interrupt_handler(const int sig) {
     }
 }
 
-error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, const uint32_t iterations_per_run, FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data *const c, struct timespec *const duration_buffer) {
+error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, const uint32_t iterations_per_run, FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data *const c, struct timespec *const run_duration) {
     a->no_cols = b->no_rows = cols;
     a->no_rows = b->no_cols = rows;
 
@@ -128,7 +128,8 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
-            err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
+            struct timespec duration;
+            err = execute_benchmark(a, b, c, iterations_per_run, algo, &duration);
             if(was_signal_interrupt_executed) {
                 was_signal_interrupt_executed = false;
 
@@ -140,8 +141,13 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             if(err) {
                 fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), (duration_buffer->tv_sec / (double)SEC_IN_NANOS + duration_buffer->tv_nsec) / iterations_per_run);
+                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run);
             }
+
+            run_duration->tv_sec += duration.tv_sec;
+            run_duration->tv_sec += run_duration->tv_nsec / SEC_IN_NANOS;
+            run_duration->tv_nsec += duration.tv_nsec;
+            run_duration->tv_nsec %= SEC_IN_NANOS;
         }
     }
 
@@ -166,7 +172,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
     FILE *const output = fopen(export_csv, "w");
     fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Error\n");
 
-    struct timespec duration_buffer = {.tv_nsec = 0, .tv_sec = 0};
+    struct timespec run_duration;
     for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; ++row_count) {
         //Cover 10 equally spaced values in range #rows/2 to #rows*2 for #columns
         uint64_t increment = (row_count / 2) / 5;
@@ -174,8 +180,11 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
             increment = 1;
         }
 
-        printf("\rBenchmarke mit Matrizen der Größe %ld (Letzter Durchlauf brauchte ca. %ld Sek.)", row_count, duration_buffer.tv_sec);
+        printf("\rBenchmarke mit Matrizen der Größe %ld (Letzter Durchlauf brauchte ca. %ld Sek.)          ", row_count, run_duration.tv_sec);
+        run_duration.tv_nsec = run_duration.tv_sec = 0;
+
         fflush(stdout);
+
         for(uint64_t col_count = row_count / 2; col_count < (row_count * 2) && continue_unattended_benchmark; col_count += increment) {
             //TODO: different column counts for a and b
             if(col_count == 0) {
@@ -183,7 +192,7 @@ error unattended_benchmark(const uint32_t iterations_per_run, const char *const 
             }
 
             //TODO: handle error
-            unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &duration_buffer);
+            unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &run_duration);
             fflush(output); //reduce data-loss in case of Ctrl-C/q
         }
     }
