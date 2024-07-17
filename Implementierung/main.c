@@ -120,6 +120,9 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)){
+        return EXIT_FAILURE;
+    }
     if (options.is_benchmark) {
         struct timespec duration;
         output.mul_error = execute_benchmark(&a, &b, &output, options.benchmark_repeat_count, algorithm, &duration);

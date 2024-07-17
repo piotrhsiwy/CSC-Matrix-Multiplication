@@ -2,6 +2,21 @@
 
 #include "matrix_util.h"
 
+error catch_special_cases(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C){
+        // matrix size mismatch
+    if(matrix_A->no_cols != matrix_B->no_rows){
+        fprintf(stderr, "Matrix size mismatch\n");
+        free(matrix_C->col_ptr);
+        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
+        return DIMENSION_MISMATCH;
+    }
+        // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
+    if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
+        memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
+        return OK;
+    }
+}
+
 void nested_free(size_t size, float** vectors){
     while(--size){
         free(vectors[size]);

@@ -17,6 +17,7 @@ const char* matrix_mul_algorithm_names[] = {
         "gustavson",                       // 4
         "naive",                           // 5
 };
+
 size_t matrix_mul_algorithm_count = sizeof matrix_mul_algorithms / sizeof *matrix_mul_algorithms;
 _Static_assert((sizeof matrix_mul_algorithms / sizeof *matrix_mul_algorithms) == (sizeof matrix_mul_algorithm_names / sizeof *matrix_mul_algorithm_names),
     "Length mismatch between matrix_mul_algorithms and matrix_mul_algorithm_names!");

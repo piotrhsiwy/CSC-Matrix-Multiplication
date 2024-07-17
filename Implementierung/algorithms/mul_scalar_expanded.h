@@ -2,7 +2,6 @@
 #define MUL_SCALAR_EXPANDED_H
 
 #include <string.h> // memset
-#include "../matrix.h"
 #include "../util/matrix_util.h"
 
 /**
@@ -11,6 +10,6 @@
  * and no_cols are small enough so that we are able to allocate an array of pairs
  * of that size.
  * */
-__attribute__((hot)) void matrix_mul_scalar_expanded(const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
+__attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*  b, void*  c);
 
 #endif //MUL_SCALAR_EXPANDED_H

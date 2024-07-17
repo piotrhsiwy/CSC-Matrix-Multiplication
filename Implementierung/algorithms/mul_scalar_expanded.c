@@ -1,28 +1,12 @@
 #include "mul_scalar_expanded.h"
 
-__attribute__((hot)) void matrix_mul_scalar_expanded(const matrix_data* const matrix_A, const matrix_data* const matrix_B, matrix_data* const matrix_C) {
+__attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*  b, void*  c) {
+
+    const matrix_data* const matrix_A = (const matrix_data* const) a;
+    const matrix_data* const matrix_B = (const matrix_data* const) b;
+    matrix_data* const matrix_C = (matrix_data* const) c;
+
     matrix_C->mul_error = OK; //If we don't set an error late the multiplication was successful.
-
-    // ##################################
-    // ALLOCATE THE FIELDS OF THE RESULT MATRIX
-    // ##################################
-    // all malloc'd pointers can be passed to free (alloc'd or null)
-    matrix_C->no_rows = matrix_A->no_rows;
-    matrix_C->no_cols = matrix_B->no_cols;
-
-    matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
-    if(!(matrix_C->col_ptr)){
-        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
-        matrix_C->mul_error = OUT_OF_MEMORY;
-        return;
-    }
-
-    if(dynamic_array_new(pair, 4, &matrix_C->dynamic_values_x_row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        matrix_C->mul_error = OUT_OF_MEMORY;
-        return;
-    }
 
     // ##################################
     // CATCH ERRORS

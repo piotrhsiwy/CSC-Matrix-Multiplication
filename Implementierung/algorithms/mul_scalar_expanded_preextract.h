@@ -3,7 +3,6 @@
 #define MUL_SCALAR_EXPANDED_PREEXTRACT_H
 
 #include <string.h> // memset
-#include "../matrix.h"
 #include "../util/matrix_util.h"
 
 /**
@@ -14,6 +13,6 @@
  *   b) this function cannot sort-out empty rows in advance, so the less of them, the bigger will the advantage be
  * (-) this function will face sharp limits due storage space by where no_rows and no_cols of matrix_A are the limiting factors.
  */
-__attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const matrix_data* const a, const matrix_data* const b, matrix_data* const result);
+__attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const void*  a, const void*  b, void*  c);
 
 #endif //MUL_SCALAR_EXPANDED_H
