@@ -14,8 +14,6 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
         // matrix size mismatch
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = DIMENSION_MISMATCH;
         return;
     }
@@ -40,8 +38,6 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
     float* vector_A = malloc(sizeof(*vector_A) * vector_size);
     if(!vector_A){
         fprintf(stderr, "Cannot allocate memory for vector_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -50,8 +46,6 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
     float* vector_B = malloc(sizeof(*vector_B) * vector_size);
     if(!vector_B){
         fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         free(vector_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -84,8 +78,6 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
                 pair new_pair = {.index = i, .value = value};
                 if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
                     fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     free(vector_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;

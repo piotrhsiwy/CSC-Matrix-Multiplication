@@ -16,8 +16,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
         // matrix size mismatch
     if(matrix_A->no_cols != matrix_B->no_rows){
         fprintf(stderr, "Matrix size mismatch\n");
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = DIMENSION_MISMATCH;
         return;
     }
@@ -41,8 +39,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
     DYNAMIC_ARRAY(pair) dynamic_vector_A;
     if(dynamic_array_new(pair, 4, &dynamic_vector_A)){
         fprintf(stderr, "Cannot dynamically allocate memory for vector_A field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -50,8 +46,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
     DYNAMIC_ARRAY(pair) dynamic_vector_B;
     if(dynamic_array_new(pair, 4, &dynamic_vector_B)){
         fprintf(stderr, "Cannot dynamically allocate memory for vector_B field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -67,8 +61,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
         {
             error error = extract_compressed_col_csc(matrix_B, k, &dynamic_vector_B);
             if(error != OK){
-                free(matrix_C->col_ptr);
-                dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                 dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
                 dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
                 matrix_C->mul_error = error;
@@ -88,8 +80,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
             {
                 error error = extract_compressed_row_csc(matrix_A, i, &dynamic_vector_A);
                 if(error != OK){
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
                     dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
                     matrix_C->mul_error = error;
@@ -108,8 +98,6 @@ __attribute__((hot)) void matrix_mul_scalar(const void*  a, const void*  b, void
                 pair new_pair = {.index = i, .value = value};
                 if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
                     fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-                    free(matrix_C->col_ptr);
-                    dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
                     dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
                     dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;

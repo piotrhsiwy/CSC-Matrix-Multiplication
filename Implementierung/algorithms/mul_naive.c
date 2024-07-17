@@ -6,26 +6,9 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
     const matrix_data* const matrix_B = (const matrix_data* const) b;
     matrix_data* const matrix_C = (matrix_data* const) c;
 
-    matrix_C->no_rows = matrix_A->no_rows;
-    matrix_C->no_cols = matrix_B->no_cols;
-    matrix_C->col_ptr = malloc(sizeof(*matrix_C->col_ptr) * ( matrix_C->no_cols + 1 ));
-    if(!(matrix_C->col_ptr)){
-        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
-        matrix_C->mul_error = OUT_OF_MEMORY;
-        return;
-    }
-    if(dynamic_array_new(pair, 4, &matrix_C->dynamic_values_x_row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        matrix_C->mul_error = OUT_OF_MEMORY;
-        return;
-    }
-
     float** expanded_A = malloc(( matrix_A->no_cols ) * sizeof(*expanded_A));
     if(!expanded_A){
         fprintf(stderr, "Cannot allocate memmory for field expanded_A in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -33,8 +16,6 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
         float* temp = malloc(( matrix_A->no_rows ) * sizeof(*temp));
         if(!temp){
             fprintf(stderr, "Cannot allocate memmory for field expanded_A[%lu] in function %s\n", col, __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
             nested_free(col, expanded_A);
             matrix_C->mul_error = OUT_OF_MEMORY;
             return;
@@ -45,8 +26,6 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
     float** expanded_B = malloc(( matrix_B->no_cols * matrix_B->no_rows )* sizeof(*expanded_B));
     if(!expanded_B){
         fprintf(stderr, "Cannot allocate memmory for field expanded_B in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         nested_free(matrix_A->no_cols, expanded_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -55,8 +34,6 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
         float* temp = malloc(( matrix_B->no_rows ) * sizeof(*temp));
         if(!temp){
             fprintf(stderr, "Cannot allocate memmory for field expanded_B[%lu] in function %s\n", col, __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
             nested_free(matrix_A->no_cols, expanded_A);
             nested_free(col, expanded_B);
             matrix_C->mul_error = OUT_OF_MEMORY;
@@ -68,8 +45,6 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
     float** expanded_C = malloc(( matrix_C->no_cols * matrix_C->no_rows )* sizeof(*expanded_C)); //TODO: Shouldn't this just be matrix_C->no_cols * sizeof? (I just fixed a memory-error here that was caused by wrong types but this still does not make sense.)
     if(!expanded_C){
         fprintf(stderr, "Cannot allocate memmory for field expanded_C in function %s\n", __FUNCTION__);
-        free(matrix_C->col_ptr);
-        dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
         nested_free(matrix_A->no_cols, expanded_A);
         nested_free(matrix_B->no_cols, expanded_B);
         matrix_C->mul_error = OUT_OF_MEMORY;
@@ -79,8 +54,6 @@ __attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*
         float* temp = malloc(( matrix_C->no_rows ) * sizeof(*temp));
         if(!temp){
             fprintf(stderr, "Cannot allocate memmory for field expanded_C[%lu] in function %s\n", col, __FUNCTION__);
-            free(matrix_C->col_ptr);
-            dynamic_array_destroy((generic_dynamic_array*)&matrix_C->dynamic_values_x_row_indices);
             nested_free(matrix_A->no_cols, expanded_A);
             nested_free(matrix_B->no_cols, expanded_B);
             nested_free(col, expanded_C);
