@@ -205,8 +205,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     return OK;
 }
 
-error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
-    const size_t entries = (matrix->no_cols * matrix->no_rows * filledPerTen + 5) / 10; //+5 is for proper rounding
+error fill_matrix(matrix_data *const matrix, const uint8_t filledPercent) {
+    const size_t entries = (matrix->no_cols * matrix->no_rows * filledPercent + 50) / 100; //+50 is for proper rounding
 
     dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
     matrix->dynamic_values_x_row_indices.length = 0;

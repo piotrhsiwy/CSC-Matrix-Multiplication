@@ -110,13 +110,13 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->dynamic_values_x_row_indices.length = 0;
     b->dynamic_values_x_row_indices.length = 0;
 
-    for(uint8_t filledPerTen = 0; filledPerTen <= 10; ++filledPerTen) {
+    for(uint8_t filledPercent = 0; filledPercent <= 100; ++filledPercent) {
         //TODO: handle errors
-        error err = fill_matrix(a, filledPerTen);
+        error err = fill_matrix(a, filledPercent);
         if(err) {
             return err;
         }
-        err = fill_matrix(b, filledPerTen);
+        err = fill_matrix(b, filledPercent);
         if(err) {
             return err;
         }
@@ -139,9 +139,9 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             }
 
             if(err) {
-                fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), error_to_str(err));
+                fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, (10 - filledPerTen) * 10, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run);
+                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run);
             }
 
             run_duration->tv_sec += duration.tv_sec;
