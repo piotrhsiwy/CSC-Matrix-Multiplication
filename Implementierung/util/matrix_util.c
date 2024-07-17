@@ -193,7 +193,7 @@ size_t extract_expanded_row_csc(const matrix_data* const matrix, const uint64_t 
 	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
 		if(dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index == index){
 			size_t index_in_vector = 0;
-			for(size_t l = 0; l < matrix->no_rows+1; l++){
+			for(size_t l = 0; l < matrix->no_cols+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
 					index_in_vector = l;				
 					break;
@@ -223,7 +223,7 @@ error extract_compressed_row_csc(const matrix_data* const matrix, const uint64_t
 	for(uint64_t j = 0; j < matrix->dynamic_values_x_row_indices.length; j++){
 		if(dynamic_array_at(pair, &matrix->dynamic_values_x_row_indices, j).index == index){
 			pair new_pair;
-			for(uint64_t l = 0; l < matrix->no_rows+1; l++){
+			for(uint64_t l = 0; l < matrix->no_cols+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
 					new_pair.index = l;				
 					break;
