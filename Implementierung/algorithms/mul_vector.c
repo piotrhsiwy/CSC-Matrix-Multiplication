@@ -18,6 +18,7 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
     if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
         memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
+        matrix_C->mul_error = OK;
         return;
     }
 
@@ -104,4 +105,6 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
 
     nested_free(how_many_vectors, all_vectors_A);
     free(vector_B);
+    matrix_C->mul_error = OK;
+    return;
 }
