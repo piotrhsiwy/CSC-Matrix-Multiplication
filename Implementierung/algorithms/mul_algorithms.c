@@ -2,20 +2,20 @@
 
 
 matrix_multiplier matrix_mul_algorithms[] = {
-        // matrix_mul_scalar,                          // 0
-        // matrix_mul_scalar_expanded,                 // 1
-        // matrix_mul_scalar_expanded_preextract,      // 2
-        // matrix_mul_vector,                          // 3
+        matrix_mul_scalar,                          // 0
+        matrix_mul_scalar_expanded,                 // 1
+        matrix_mul_scalar_expanded_preextract,      // 2
+        matrix_mul_vector,                          // 3
         matrix_mul_gustavson,                       // 4
-        // matrix_mul_naive,                           // 5
+        matrix_mul_naive,                           // 5
 };
 const char* matrix_mul_algorithm_names[] = {
-        // "scalar",                          // 0
-        // "scalar_expanded",                 // 1
-        // "scalar_expanded_preextract",      // 2
-        // "vector",                          // 3
+        "scalar",                          // 0
+        "scalar_expanded",                 // 1
+        "scalar_expanded_preextract",      // 2
+        "vector",                          // 3
         "gustavson",                       // 4
-        // "naive",                           // 5
+        "naive",                           // 5
 };
 
 size_t matrix_mul_algorithm_count = sizeof matrix_mul_algorithms / sizeof *matrix_mul_algorithms;
