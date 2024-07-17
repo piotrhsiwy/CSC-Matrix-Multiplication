@@ -33,7 +33,7 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
     uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     // these are vectors for all the rows extracted from matrix A
-    size_t vector_size = matrix_C-> no_rows;
+    size_t vector_size = matrix_A->no_cols;
     size_t how_many_vectors = matrix_A->no_rows;
     float** all_vectors_A = malloc(sizeof(*all_vectors_A)* how_many_vectors);
     if(!all_vectors_A){

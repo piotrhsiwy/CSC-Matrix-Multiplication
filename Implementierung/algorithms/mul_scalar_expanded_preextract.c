@@ -33,7 +33,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const void*  a, 
     uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     // these are vectors for all the rows extracted from matrix A
-    size_t vector_size = matrix_C-> no_rows;
+    size_t vector_size = matrix_A->no_cols;
     float** all_vectors_A = malloc(sizeof(*all_vectors_A)* matrix_A->no_rows);
     if(!all_vectors_A){
         fprintf(stderr, "Cannot allocate memory for all_vectors_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);

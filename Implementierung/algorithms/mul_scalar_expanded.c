@@ -34,7 +34,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
     uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     // this is vector for the row extracted from matrix A
-    size_t vector_size = matrix_C-> no_rows;
+    size_t vector_size = matrix_A->no_cols;
     float* vector_A = malloc(sizeof(*vector_A) * vector_size);
     if(!vector_A){
         fprintf(stderr, "Cannot allocate memory for vector_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
@@ -85,11 +85,11 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*
                 }
             }
             // else we don't write anything
-            memset(vector_B, 0, sizeof(*vector_B) * vector_size); // reset vector_B
+            memset(vector_A, 0, sizeof(*vector_A) * vector_size); // reset vector_B
         }
         *col_ptr_writer = matrix_C->dynamic_values_x_row_indices.length;
         col_ptr_writer++;
-        memset(vector_A, 0, sizeof(*vector_A) * vector_size); // reset vector_A
+        memset(vector_B, 0, sizeof(*vector_B) * vector_size); // reset vector_A
     }
 
     free(vector_A);
