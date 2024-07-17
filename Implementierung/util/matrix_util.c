@@ -14,7 +14,7 @@ void nested_free(size_t size, float** vectors){
 // TODO this can be done with SIMD faster?
 // TODO should we return any erorrs here?
 void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix){
-	memset(vector, 0, n * sizeof(*vector));
+	memset(vector, 0, m * sizeof(*vector));
 	for(size_t i = 0; i < m; i++){
 		for(size_t j = 0; j < n; j++){
 			vector[i] += matrix[i][j];

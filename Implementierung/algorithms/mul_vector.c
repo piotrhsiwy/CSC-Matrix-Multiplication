@@ -64,7 +64,7 @@ __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void
     memset(vector_B, 0, sizeof(*vector_B) * vector_size);
 
     // this is vector to store the expanded column of matrix C, before storing it
-    float* const result = malloc(sizeof(*result) * vector_size);
+    float* const result = malloc(sizeof(*result) * how_many_vectors);
     if(!result){
         fprintf(stderr, "Cannot allocate memory for result field in function %s\n", __FUNCTION__);
         nested_free(how_many_vectors, all_vectors_A);
