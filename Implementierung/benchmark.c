@@ -1,6 +1,5 @@
 #include "benchmark.h"
 #include "util/signal_io.h"
-#include "util/compare.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -10,7 +9,9 @@
 
 
 error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
-    algorithm(a, b, result); //We don't want to benchmark the memory allocator --> preallocate
+    // We don't want to benchmark the memory allocator --> preallocate.
+    // This should also load the function (instr.) and structures (data) into cache.
+    algorithm(a, b, result);
 
     struct timespec start;
     if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
@@ -35,6 +36,8 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
     duration->tv_sec -= start.tv_sec;
     duration->tv_nsec -= start.tv_nsec;
 
+    //Due to subtraction we might end up with negative values for nanoseconds. -> "Borrow" a second fron sec.
+    //Theoretically the duration before and after are equivalent but outputting it might not handle it correctly.
     if(duration->tv_nsec < 0l) {
         duration->tv_nsec += SEC_IN_NANOS;
         duration->tv_sec -= 1l;
@@ -44,7 +47,10 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
 }
 
 volatile bool continue_unattended_benchmark;
+volatile bool was_signal_interrupt_executed = false;
 void interrupt_handler(const int sig) {
+    was_signal_interrupt_executed = true; //let the time measurement know that the duration has been tempered with
+
     if(sig != SIGINT) {
         return;
     }
@@ -115,14 +121,15 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             return err;
         }
 
-        bool prev_continue_unattended_benchmark = true;
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
             err = execute_benchmark(a, b, c, iterations_per_run, algo, duration_buffer);
-            if(!continue_unattended_benchmark && prev_continue_unattended_benchmark) {
-                prev_continue_unattended_benchmark = false;
-                --algo_id; //repeat measurement
+            if(was_signal_interrupt_executed) {
+                was_signal_interrupt_executed = false;
+
+                //repeat measurement (duration is too long)
+                --algo_id;
                 continue;
             }
 

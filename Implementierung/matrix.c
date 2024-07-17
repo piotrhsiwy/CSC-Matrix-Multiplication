@@ -13,7 +13,7 @@
 /**
  * Allocate storage for all the fields of the matrix and fill the no_rows and no_cols fields appropriately.
  * The mul_error field will be filled with UNDEFINED.
- * 
+ *
  * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
  */
 __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix){
@@ -207,20 +207,21 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
     matrix->dynamic_values_x_row_indices.length = 0;
 
+    for(size_t i = 0; i < entries; ++i) {
+        const pair p = {.value=(float)rand() + 0.00001};
+        dynamic_array_add(pair, &matrix->dynamic_values_x_row_indices, p); //random float bigger than 0
+    }
+
     uint64_t cells_with_space = matrix->no_cols * matrix->no_rows;
     void* tmp = realloc(matrix->col_ptr, (matrix->no_cols + 1) * sizeof *matrix->col_ptr);
     if(!tmp) {
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
+    //Save number of free cells in each next's column-ptr
     matrix->col_ptr[0] = 0;
     for(size_t i = 0; i < matrix->no_cols; ++i) {
         matrix->col_ptr[i + 1] = matrix->no_rows;
-    }
-
-    for(size_t i = 0; i < entries; ++i) {
-        const pair p = {.value=(float)rand() + 0.00001};
-        dynamic_array_add(pair, &matrix->dynamic_values_x_row_indices, p); //random float bigger than 0
     }
 
     //TODO: clustering as a factor --> might have an impact on SIMD
@@ -229,11 +230,11 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
         cells_with_space--;
 
         for(size_t col = 0; col < entries; ++col) {
-            if (cell_offset < matrix->col_ptr[col]) {
-                --matrix->col_ptr[col];
+            if (cell_offset < matrix->col_ptr[col + 1]) {
+                --matrix->col_ptr[col + 1]; //offset is inside this column -> decrease number of free cells inside
                 break;
             }
-            cell_offset -= matrix->col_ptr[col];
+            cell_offset -= matrix->col_ptr[col + 1]; //offset is behind this column -> set to offset to next column
         }
     }
 
@@ -243,10 +244,16 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
     }
     for(uint64_t col = 0; col < matrix->no_cols; ++col) {
         const uint64_t filled_cells = matrix->no_rows - matrix->col_ptr[col + 1];
-        matrix->col_ptr[col + 1] = matrix->col_ptr[col] + filled_cells;
+        matrix->col_ptr[col + 1] = matrix->col_ptr[col] + filled_cells; //convert number of free cells into offset
 
         uint64_t free_cells = matrix->no_rows;
 
+        // In our imagination, we create an array containing every free cell inside a column, pick one at random and remove it
+        //
+        // In reality we only store the cells chosen. All offsets of cells with a higher offset are therefore move one to the left.
+        // To account for this, for each cell that is before the chosen one we increment the offset by one.
+        //
+        // (Both are equivalent.)
         for(uint64_t i = 0; i < filled_cells; ++i) {
             row_indices[i] = rand() % free_cells;
             --free_cells;
@@ -260,6 +267,7 @@ error fill_matrix(matrix_data *const matrix, const uint8_t filledPerTen) {
             row_indices[i] += offset;
         }
 
+        //The values are stored in a random order -> sort them before setting them as indizes for the values
         qsort(row_indices, filled_cells, sizeof(*row_indices), cmp_u64);
         for(uint64_t i = 0; i < filled_cells; ++i) {
             dynamic_array_at(DYNAMIC_ARRAY(pair), &matrix->dynamic_values_x_row_indices, i + matrix->col_ptr[col]).index = row_indices[i];
