@@ -12,7 +12,7 @@ with the following semantics:
 > i0, i1, ... is the row-index of the corresponding value
 > 0, c1, .. is the accumulative number of non-zero values in the columns (values v0-vc1 are in the 1st column, values vc1-vc2 are in the 2nd column, etc.)
 
-Following syntactic constrains are to be imposed on the  format. All of the requirements have to be fulfilled for the matrix to be valid
+### Following syntactic constrains are to be imposed on the  format. All of the requirements have to be fulfilled for the matrix to be valid
 > no_rows, no_cols (line 1)
     - length: 2
     - values-range: [1, UINT64_MAX]

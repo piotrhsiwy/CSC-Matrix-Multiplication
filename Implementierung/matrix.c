@@ -54,34 +54,55 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
 
     char* token;
 
-    // region setting no_rows
+    // See: CSC_format_definition.md for format constraints. This function strictly follows that definition
+    #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line, index); return INVALID_VALUE;
+    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Länge der Zeile %d zu groß. Lese CSC_format_definition.md\n", line); return INVALID_LINE_LENGTH;
+    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Länge der Zeile %d zu klein. Lese CSC_format_definition.md\n", line); return UNEXPECTED_END_OF_LINE;
+
+    // set the uint64_reader to strtoul or strtoull correctly
+    typedef unsigned long (*uint64_reader)(const char *restrict , char **restrict , int );
+    if(UINT64_WIDTH == sizeof(unsigned long))
+        const uint64_reader u64reader = strtoul;
+    else if(UINT64_WIDTH == sizeof(unsigned long long))
+        const uint64_reader u64reader = strtoull;
+    else
+        // uint64_t has different width than both ul and ull
+
+
+    /* LINE 1 */
+    int line = 1;
+
+    /* no_rows */
+    size_t index = 0;
+    char* field = "no_rows";
     token = strtok(line, ",");
-    if (!token) {
-        free(line);
-        return UNEXPECTED_END_OF_LINE;
-    }
-    // TODO: check whether to use strtoull
-    data->no_rows = strtoul(token, NULL, 10);
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE)) { // Zero is unexpected: either trying to enter empty matrix or invalid number format.
-        free(line);
-        return INVALID_VALUE;
-    }
-    // endregion
+    if (!token)
+        REPORT_TOO_SHORT;
 
-    // region setting no_cols
+    data->no_rows = u64reader(token, NULL, 10);
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0))
+        REPORT_BAD_VALUE;
+    errno = 0;
+
+    /* no_cols */
+    index = 1;
+    field = "no_cols";
     token = strtok(NULL, ",");
-    if (!token) {
-        free(line);
-        return UNEXPECTED_END_OF_LINE;
-    }
-    data->no_cols = strtoul(token, NULL, 10);
-    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE)) { // Zero is unexpected: either trying to enter empty matrix or invalid number format.
-        free(line);
-        return INVALID_VALUE;
-    }
-    // endregion
+    if (!token)
+        REPORT_TOO_SHORT;
+    data->no_cols = u64reader(token, NULL, 10);
+    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE) || errno != 0)
+        REPORT_BAD_VALUE;
+    errno = 0;
 
-    // TODO: fail, if still more characters left in line
+    token = strtok(NULL, ",");
+    if(token)
+        REPORT_TOO_LONG;
+
+    /* LINE 2 */
+    line = 2;
+    field = "values";
+    index = 0;
 
     // allocate for dynamic_values_x_row_indices field
     if(dynamic_array_new(pair, 4, &data->dynamic_values_x_row_indices)){
@@ -89,117 +110,162 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         return OUT_OF_MEMORY;
     }
 
-    // allocate for no_cols field
-    uint64_t* cols = malloc(sizeof(*cols) * (data->no_cols + 1));
-    if (NULL == cols) {
-        fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-        return OUT_OF_MEMORY;
-    }
-
-    // region setting values
     if (getline(&line, &line_length, stream) == -1) {
-        free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-        free(cols);
-        return UNEXPECTED_END_OF_FILE;
+        REPORT_TOO_SHORT;
     }
 
     // TODO what if there is no commas and no value
     // TODO what if there is no commas and 1 value, need to separate those 2
 
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
+    for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
         const float value = strtof(token, NULL);
-        if (value == 0.f) { // We do not expect zero as a value -> either not CSC or invalid number format ; Comparing directly is fine, since '0.0F' will be returned exactly according to man(3)
+        if (value == 0.f) {
+            // zero is not allowed 
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
-            free(line);
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            free(cols);
-            return INVALID_VALUE;
-        }
-        // over/underflows
-        if ((value == HUGE_VALF || value == HUGE_VALL) && errno == ERANGE) {
-            free(line);
+            REPORT_BAD_VALUE;
+        } else if(value == HUGE_VALF && errno == ERANGE){
+            // overflow -> warn about rounding
+            // TODO
+        } else if(value == -HUGE_VALF && errno == ERANGE){
+            // underflow -> warn about rounding
+            // TODO
+        } else if(errno != 0){
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            free(cols);
-            return INVALID_VALUE;
+            REPORT_BAD_VALUE;
+        } else{
+            // +inf, -inf and NaN
+            // TODO
         }
-        pair new_pair = {.index = 0, .value = value}; // index is not yet known at this point
+        errno = 0;
+
+        pair new_pair = {.index = 0, .value = value}; // index is to be filled later, so I pre-initialize it with 0
         if(dynamic_array_add(pair, &data->dynamic_values_x_row_indices, new_pair)){
             fprintf(stderr, "Cannot add element to dynamically sized array dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-            free(line);
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            free(cols);
+            free(line);
             return OUT_OF_MEMORY;
         }
     }
 
-    // TODO: sanity-check on length of values? --> How?
-    // is it even possible with noCols noRows
-    // yes, just multiply > ceiling with UINT64_MAX > compare
-    // does it make sense? i don't know but better be safe than sorry
-    // data->values = values;
-    // endregion
+    // calculate maximum number_of values. Set it to UINT64_MAX if no_rows*no_cols would overflow
+    const MAX_VALUES_LENGTH = UINT64_MAX / data->no_cols > data->no_rows ?
+        UINT64_MAX
+        : data->no_cols * data->no_rows;
+    // check length constraint
+    if(data->dynamic_values_x_row_indices.length > MAX_VALUES_LENGTH ){
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        REPORT_TOO_LONG;
+    }
 
-    // row_indices hat len = length_values
-
-    // region setting row_indices
+    /* LINE 3 */
+    line = 3;
+    field = "row_indices";
+    index = 0;
 
     if (getline(&line, &line_length, stream) == -1) {
-        free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-        free(cols);
-        return UNEXPECTED_END_OF_FILE;
+        REPORT_TOO_SHORT;
     }
 
-    size_t loop_counter = 0;
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        const uint64_t index = strtoul(token, NULL, 10);
-        // TODO: check for invalid format as well
-        if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
-            free(line);
+    for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
+        const uint64_t row_index = u64reader(token, NULL, 10);
+        if (( row_index == ULONG_MAX && errno == ERANGE ) || row_index > data->no_rows-1 || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            free(cols);
-            return INVALID_VALUE;
+            REPORT_BAD_VALUE;
         }
-        pair update_my_index = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, loop_counter);
-        update_my_index.index = index;
-        dynamic_array_at(pair, &data->dynamic_values_x_row_indices, loop_counter) = update_my_index;
-        loop_counter++;
+        errno = 0;
+        // check for length constraint before "at"-ing to dynamic array, else it could result in writing to unallocated block
+        if(index >= MAX_VALUES_LENGTH){
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            REPORT_TOO_LONG;
+        } else
+            dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index = row_index;
     }
 
-    // TODO: sanity-check on length of row_indices? is it equal to length_values
-    // data->row_indices = ints;
-    // ints = NULL;
-    // endregion
+    /* LINE 4 */
+    line = 4;
+    field = "col_ptrs";
+    index = 0;
 
-    // region setting col_ptr
+    // allocate for no_cols field
+    uint64_t* temp = malloc(sizeof(*cols) * (data->no_cols + 1));
+    if (NULL == temp) {
+        fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        return OUT_OF_MEMORY;
+    }
+    data->col_ptr = temp;
+
     if (getline(&line, &line_length, stream) == -1) {
-        free(line);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-        free(cols);
-        return UNEXPECTED_END_OF_FILE;
+        free(data->col_ptr);
+        REPORT_TOO_SHORT;
     }
 
-    size_t cols_index = 0;
-    for (token = strtok(line, ","); token; token = strtok(NULL, ",")) {
-        const uint64_t index = strtoul(token, NULL, 10);
-        // TODO: check for invalid format as well
-        // over/underflows
-        if ((index == 0 || index == ULONG_MAX) && errno == ERANGE) {
-            free(line);
+    // check for the "first value == 0" constraint
+    uint64_t col_ptr = u64reader(token, NULL, 10);
+    if(errno != 0 || col_ptr != 0){
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        free(data->col_ptr);
+        REPORT_BAD_VALUE;
+    }
+    errno = 0;
+    index++;
+
+    for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
+        col_ptr = u64reader(token, NULL, 10);
+        if (( col_ptr == ULONG_MAX && errno == ERANGE ) || col_ptr >= MAX_VALUES_LENGTH || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            free(cols);
-            return INVALID_VALUE;
+            free(data->col_ptr);
+            REPORT_BAD_VALUE;
         }
-        cols[cols_index] = index;
-        cols_index++;
+        errno = 0;
+        // check for the "(non-strictly) increasing" constraint
+        if(!( col_ptr >= data->col_ptr[index-1] )){
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(data->col_ptr);
+            REPORT_BAD_VALUE;
+        }
+        // check for the length constraint (too long), else it could result in a write to an unallocated block
+        if(index <= data->no_cols+1){
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            free(data->col_ptr);
+            REPORT_TOO_LONG;
+        }
+        data->col_ptr[index] = col_ptr;
+    }
+    
+    //check for the "last value == length of line 2" constraint
+    if(data->col_ptr[index] != data->dynamic_values_x_row_indices.length){
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        free(data->col_ptr);
+        REPORT_BAD_VALUE;
+    }
+    
+    //check for the length constraint (too short)
+    if(index != data->no_cols){
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        free(data->col_ptr);
+        REPORT_TOO_SHORT;
     }
 
-    // TODO: sanity-check on length of col_ptr? is it equal to noCols + 1
-    data->col_ptr = cols;
-    cols = NULL;
-    // endregion
+    //check for the sanity check. See CSC_format_definition.md. Field is set to row_indices(strictly increasing) for informative error reporting.
+    field = "row_indices(strictly increasing)";
+    for(size_t i = 0; i < data->no_cols-1; i++){
+        size_t begin = data->col_ptr[i];
+        size_t end = data->col_ptr[i+1];
+        for(index = begin; index < end; index++){ 
+            float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).value;
+            float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).value;
+            if(!( b > a )){
+                dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+                free(data->col_ptr);
+                REPORT_BAD_VALUE;
+            }
+        }
+    }
 
     free(line);
     return OK;

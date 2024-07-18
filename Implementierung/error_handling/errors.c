@@ -23,5 +23,7 @@ const char* error_to_str(const error err) {
         return "Could not fetch time";
     case UNDEFINED:
         return "Undefined";
+    case INVALID_LINE_LENGTH:
+        return "Invalid line length";
     }
 }
