@@ -1,8 +1,10 @@
 4,4
-1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7
+1,2,3,4,5,6,7,8,9,8,1,2,3,4,5,6,7
 0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0
 0,4,8,12,17
 
-! dynamic_values_x_row_indices.length is 17 > 16
-! dynamic_values_x_row_indices[16].index is illegal, becuase two values with index 0 in the 4th col
-! col_ptr[4] is 17 > 16 is illegal
+dynamic_values_x_row_indices.length is 17 > 16 is not allowed!
+
+### from ../../../CSC_format_definition.md
+> v0, v1, v2, ... (line 2)
+    #4 length: [0, min{UINT64_MAX, no_rows*no_cols}]

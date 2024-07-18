@@ -10,27 +10,57 @@ else
 
 fi
 
+clear
 for dir in invalid/* ; do
-    ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt > $dir/log.txt
-    if [ ! -s "$dir/log.txt" ]; then
-        echo "- $dir/log.txt is empty! (ret $?) Here is the explanation:"
-        cat $dir/explanation.txt
-    else
-        echo "+ $dir/log.txt is not empty! (ret $?) Comparing to expected.txt..."
-        cmp $dir/log.txt $dir/expected.txt
-        if [ $? = 1 ]; then
-            echo "- Not the same, here is diff output: (ret $?)"
-            diff $dir/log.txt $dir/expected.txt
+    echo "----------------------------- Testcase $dir"
+    ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
+    if [ $? = 1 ]; then
+        echo "+ return value is correctly EXIT_FAILURE (ret $?). Checking stderr output..."
+        if [ ! -s "$dir/log.txt" ]; then
+            echo "- $dir/log.txt is empty! (ret $?) Here is the explanation:"
+            cat $dir/README
         else
-            echo "+ They are the same picture! (ret $?)"
+            echo "+ $dir/log.txt is not empty! (ret $?) Comparing to expected.txt..."
+            cmp $dir/log.txt $dir/expected.txt
+            if [ $? = 1 ]; then
+                echo "- Not the same, here is diff output: (ret $?)"
+                diff $dir/log.txt $dir/expected.txt
+            else
+                echo "+ They are the same picture! (ret $?)"
+            fi
         fi
+    else
+        echo "- return value is incorrectly EXIT_SUCCESS (ret $?)"
     fi
 done
 
 for dir in valid/* ; do
     for alg in $(seq 0 5); do
-        ${BINARY_TO_TEST} -V${alg} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt > $dir/log.txt
-        cmp $dir/C.txt $dir/expected.txt
-        echo "$dir, alg:-V${alg}: last cmp returned: $?"
+        echo "----------------------------- Testcase $dir"
+        ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
+        if [ $? = 0 ]; then
+            echo "+ return value is correctly EXIT_SUCCESS (ret $?). Checking stderr output..."
+            if [ ! -s "$dir/log.txt" ]; then
+                echo "+ $dir/log.txt is empty! (ret $?). Checking the result matrix..."
+                cmp $dir/log.txt $dir/expected.txt
+                if [ $? = 1 ]; then
+                    echo "- The result is different than expected (ret $?). Here is diff output:"
+                    diff $dir/log.txt $dir/expected.txt
+                else
+                    echo "+ They are the same picture! (ret $?)"
+                fi
+            else
+                echo "- $dir/log.txt is not empty! (ret $?). Here is it's content:"
+                cat $dir/log.txt
+            fi
+        else
+            echo "- return value is incorrectly EXIT_FAILURE (ret $?). Checking stderr output..."
+            if [ ! -s "$dir/log.txt" ]; then
+                echo "- $dir/log.txt is empty! (ret $?). CRITICAL. This should never happen!"
+            else
+                echo "- $dir/log.txt is not empty! (ret $?). Here is it's content:"
+                cat $dir/log.txt
+            fi
+        fi
     done
 done

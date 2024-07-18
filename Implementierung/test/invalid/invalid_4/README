@@ -3,4 +3,8 @@
 0,0,0,0
 0,1,2,3,5
 
-! col_ptr[4] is illegal, because 5 > dynamic_values_x_row_indices.length
+col_ptr[4] is illegal, because 5 > dynamic_values_x_row_indices.length!
+
+### from ../../../CSC_format_definition.md
+> 0, c1, c2, ... (line 4)
+    #8 values-range: first value = 0, last value = length of line 2, rest in [0, min{UINT64_MAX, no_rows*no_cols}], (non-strictly) increasing

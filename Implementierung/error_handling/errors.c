@@ -25,5 +25,7 @@ const char* error_to_str(const error err) {
         return "Undefined";
     case INVALID_LINE_LENGTH:
         return "Invalid line length";
+    case NO_U64READER_FUNC:
+        return "No u64reader function";
     }
 }

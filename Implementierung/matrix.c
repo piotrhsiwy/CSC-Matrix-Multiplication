@@ -56,17 +56,17 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
 
     // See: CSC_format_definition.md for format constraints. This function strictly follows that definition
     #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line_index, index); return INVALID_VALUE;
-    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Länge der Zeile %d zu groß. Lese CSC_format_definition.md\n", line_index); return INVALID_LINE_LENGTH;
-    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Länge der Zeile %d zu klein. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE;
+    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Zeile %d ist zu lang. Lese CSC_format_definition.md\n", line_index); return INVALID_LINE_LENGTH;
+    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Zeile %d ist zu kurz. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE;
 
-    // set the uint64_reader to strtoul or strtoull correctly
-    typedef unsigned long long(*u64reader_t)(const char *restrict , char **restrict , int );
+    typedef uint64_t (*u64reader_t)(const char *restrict , char **restrict , int );
     u64reader_t u64reader = 0;
-    if(UINT64_WIDTH == sizeof(unsigned long)) {
+    if(UINT64_WIDTH/8 == sizeof(unsigned long)) {
         u64reader = (u64reader_t)strtoul;
-    } else if(UINT64_WIDTH == sizeof(unsigned long long)) {
-        u64reader = strtoull;
     } else {
+        free(line);
+        fprintf(stderr, "Keine Funktion um die Daten vom Typ uint64_t zu lesen in function %s\n", __FUNCTION__);
+        return NO_U64READER_FUNC;
         // uint64_t has different width than both ul and ull?
     }
 
@@ -156,7 +156,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     // calculate maximum number_of values. Set it to UINT64_MAX if no_rows*no_cols would overflow
-    const uint64_t MAX_VALUES_LENGTH = UINT64_MAX / data->no_cols > data->no_rows ?
+    const uint64_t MAX_VALUES_LENGTH = UINT64_MAX / data->no_cols < data->no_rows ?
         UINT64_MAX
         : data->no_cols * data->no_rows;
     // check length constraint
@@ -211,6 +211,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     // check for the "first value == 0" constraint
+    token = strtok(line, ",");
     uint64_t col_ptr = u64reader(token, NULL, 10);
     if(errno != 0 || col_ptr != 0){
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
@@ -218,9 +219,10 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         REPORT_BAD_VALUE;
     }
     errno = 0;
-    index++;
+    data->col_ptr[index++] = col_ptr;
 
-    for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
+    token = strtok(NULL, ",");
+    for (; token; token = strtok(NULL, ",")) {
         col_ptr = u64reader(token, NULL, 10);
         if (( col_ptr == ULONG_MAX && errno == ERANGE ) || col_ptr >= MAX_VALUES_LENGTH || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
@@ -235,15 +237,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
             REPORT_BAD_VALUE;
         }
         // check for the length constraint (too long), else it could result in a write to an unallocated block
-        if(index <= data->no_cols+1){
+        if(index > data->no_cols+1){
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             free(data->col_ptr);
             REPORT_TOO_LONG;
         }
-        data->col_ptr[index] = col_ptr;
+        data->col_ptr[index++] = col_ptr;
     }
     
     //check for the "last value == length of line 2" constraint
+    index--;
     if(data->col_ptr[index] != data->dynamic_values_x_row_indices.length){
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
         free(data->col_ptr);
@@ -257,17 +260,19 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         REPORT_TOO_SHORT;
     }
 
-    //check for the sanity check. See CSC_format_definition.md. Field is set to row_indices(strictly increasing) for informative error reporting.
+    //check for the sanity check. See CSC_format_definition.md. field/line_index are set for informative error reporting.
+    line_index = 3;
     field = "row_indices(strictly increasing)";
-    for(size_t i = 0; i < data->no_cols-1; i++){
+    for(size_t i = 0; i < data->no_cols; i++){
         size_t begin = data->col_ptr[i];
-        size_t end = data->col_ptr[i+1];
+        size_t end = data->col_ptr[i+1]-1;
         for(index = begin; index < end; index++){ 
-            float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).value;
-            float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).value;
+           float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index;
+           float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).index;
             if(!( b > a )){
                 dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
                 free(data->col_ptr);
+                index = index+2; // to account for i) 0-indexing ii) the fact that I'm comparing values under indices "index" and "index+1", but since prev test passed, the value under "index+1" is actually the incorrect one here
                 REPORT_BAD_VALUE;
             }
         }

@@ -1,0 +1,1 @@
+Der Wert des Felds col_ptrs in Zeile 4 unter Index 4 ist inkorrekt. Lese CSC_format_definition.md
