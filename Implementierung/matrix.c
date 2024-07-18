@@ -405,7 +405,5 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
 
         int ret = fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
-    fprintf(stream, "\n");
-    //TODO: fsync?
     return OK;
 }
