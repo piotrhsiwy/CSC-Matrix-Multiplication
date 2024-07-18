@@ -124,9 +124,20 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     // TODO what if there is no commas and no value
     // TODO what if there is no commas and 1 value, need to separate those 2
 
+
     for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
         const float value = strtof(token, NULL);
-        if (value == 0.f) {
+
+        if(*token == '\n'){
+           // the value erray is empty -> all the values in the matrix are zeros
+           errno = 0;
+           break;
+        }
+
+        if(errno != 0){
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            REPORT_BAD_VALUE;
+        } else if (value == 0.f) {
             // zero is not allowed 
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
@@ -137,9 +148,6 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if(value == -HUGE_VALF && errno == ERANGE){
             // underflow -> warn about rounding
             // TODO
-        } else if(errno != 0){
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            REPORT_BAD_VALUE;
         } else{
             // +inf, -inf and NaN
             // TODO
@@ -176,6 +184,11 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
+        if(*token == '\n'){
+           // the row_indices array is empty -> all the values in the matrix are zeros
+           errno = 0;
+           break;
+        }
         const uint64_t row_index = u64reader(token, NULL, 10);
         if (( row_index == ULONG_MAX && errno == ERANGE ) || row_index > data->no_rows-1 || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
@@ -265,7 +278,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "row_indices(strictly increasing)";
     for(size_t i = 0; i < data->no_cols; i++){
         size_t begin = data->col_ptr[i];
-        size_t end = data->col_ptr[i+1]-1;
+        size_t end = ( data->col_ptr[i+1] == 0 ) ? 0 : data->col_ptr[i+1]-1; // begin == end == 0, then straight "-1" results in silent wrap-up and we get 0xfffffffffff in end
         for(index = begin; index < end; index++){ 
            float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index;
            float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).index;
