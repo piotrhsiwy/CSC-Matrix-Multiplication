@@ -12,21 +12,21 @@ fi
 
 clear
 for dir in invalid/* ; do
-    echo "----------------------------- Testcase $dir"
+    echo "----------------------------- Testcase $dir -----------------------------"
     ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
     if [ $? = 1 ]; then
-        echo "+ return value is correctly EXIT_FAILURE (ret $?). Checking stderr output..."
+        # echo "+ return value is correctly EXIT_FAILURE (ret $?). Checking stderr output..."
         if [ ! -s "$dir/log.txt" ]; then
             echo "- $dir/log.txt is empty! (ret $?) Here is the explanation:"
             cat $dir/README
         else
-            echo "+ $dir/log.txt is not empty! (ret $?) Comparing to expected.txt..."
+            # echo "+ $dir/log.txt is not empty! (ret $?) Comparing to expected.txt..."
             cmp $dir/log.txt $dir/expected.txt
             if [ $? = 1 ]; then
                 echo "- Not the same, here is diff output: (ret $?)"
                 diff $dir/log.txt $dir/expected.txt
-            else
-                echo "+ They are the same picture! (ret $?)"
+            # else
+                # echo "+ They are the same picture! (ret $?)"
             fi
         fi
     else
@@ -39,15 +39,15 @@ for dir in valid/* ; do
         echo "----------------------------- Testcase $dir"
         ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
         if [ $? = 0 ]; then
-            echo "+ return value is correctly EXIT_SUCCESS (ret $?). Checking stderr output..."
+            # echo "+ return value is correctly EXIT_SUCCESS (ret $?). Checking stderr output..."
             if [ ! -s "$dir/log.txt" ]; then
-                echo "+ $dir/log.txt is empty! (ret $?). Checking the result matrix..."
+                # echo "+ $dir/log.txt is empty! (ret $?). Checking the result matrix..."
                 cmp $dir/log.txt $dir/expected.txt
                 if [ $? = 1 ]; then
                     echo "- The result is different than expected (ret $?). Here is diff output:"
                     diff $dir/log.txt $dir/expected.txt
-                else
-                    echo "+ They are the same picture! (ret $?)"
+                # else
+                #     echo "+ They are the same picture! (ret $?)"
                 fi
             else
                 echo "- $dir/log.txt is not empty! (ret $?). Here is it's content:"
