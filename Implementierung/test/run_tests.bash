@@ -36,16 +36,16 @@ done
 
 for dir in valid/* ; do
     for alg in $(seq 0 5); do
-        echo "----------------------------- Testcase $dir"
+        echo "----------------------------- Testcase $dir -----------------------------"
         ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
         if [ $? = 0 ]; then
             # echo "+ return value is correctly EXIT_SUCCESS (ret $?). Checking stderr output..."
             if [ ! -s "$dir/log.txt" ]; then
                 # echo "+ $dir/log.txt is empty! (ret $?). Checking the result matrix..."
-                cmp $dir/log.txt $dir/expected.txt
+                cmp $dir/C.txt $dir/expected.txt
                 if [ $? = 1 ]; then
                     echo "BAD The result is different than expected (ret $?). Here is diff output:"
-                    diff $dir/log.txt $dir/expected.txt
+                    diff $dir/C.txt $dir/expected.txt
                 # else
                 #     echo "+ They are the same picture! (ret $?)"
                 fi

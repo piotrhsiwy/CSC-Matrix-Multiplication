@@ -224,7 +224,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     token = strtok(NULL, ",");
     for (; token; token = strtok(NULL, ",")) {
         col_ptr = u64reader(token, NULL, 10);
-        if (( col_ptr == ULONG_MAX && errno == ERANGE ) || col_ptr >= MAX_VALUES_LENGTH || errno != 0) {
+        if (( col_ptr == ULONG_MAX && errno == ERANGE ) || col_ptr > MAX_VALUES_LENGTH || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             free(data->col_ptr);
             REPORT_BAD_VALUE;
