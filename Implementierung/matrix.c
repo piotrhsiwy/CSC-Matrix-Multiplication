@@ -55,52 +55,58 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     char* token;
 
     // See: CSC_format_definition.md for format constraints. This function strictly follows that definition
-    #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line, index); return INVALID_VALUE;
-    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Länge der Zeile %d zu groß. Lese CSC_format_definition.md\n", line); return INVALID_LINE_LENGTH;
-    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Länge der Zeile %d zu klein. Lese CSC_format_definition.md\n", line); return UNEXPECTED_END_OF_LINE;
+    #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line_index, index); return INVALID_VALUE;
+    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Länge der Zeile %d zu groß. Lese CSC_format_definition.md\n", line_index); return INVALID_LINE_LENGTH;
+    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Länge der Zeile %d zu klein. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE;
 
     // set the uint64_reader to strtoul or strtoull correctly
-    typedef unsigned long (*uint64_reader)(const char *restrict , char **restrict , int );
-    if(UINT64_WIDTH == sizeof(unsigned long))
-        const uint64_reader u64reader = strtoul;
-    else if(UINT64_WIDTH == sizeof(unsigned long long))
-        const uint64_reader u64reader = strtoull;
-    else
-        // uint64_t has different width than both ul and ull
+    typedef unsigned long long(*u64reader_t)(const char *restrict , char **restrict , int );
+    u64reader_t u64reader = 0;
+    if(UINT64_WIDTH == sizeof(unsigned long)) {
+        u64reader = (u64reader_t)strtoul;
+    } else if(UINT64_WIDTH == sizeof(unsigned long long)) {
+        u64reader = strtoull;
+    } else {
+        // uint64_t has different width than both ul and ull?
+    }
 
 
     /* LINE 1 */
-    int line = 1;
+    int line_index = 1;
 
     /* no_rows */
     size_t index = 0;
     char* field = "no_rows";
     token = strtok(line, ",");
-    if (!token)
+    if (!token){
         REPORT_TOO_SHORT;
-
+    }
     data->no_rows = u64reader(token, NULL, 10);
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0))
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0)){
         REPORT_BAD_VALUE;
+    }
     errno = 0;
 
     /* no_cols */
     index = 1;
     field = "no_cols";
     token = strtok(NULL, ",");
-    if (!token)
+    if (!token) {
         REPORT_TOO_SHORT;
+    }
     data->no_cols = u64reader(token, NULL, 10);
-    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE) || errno != 0)
+    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE) || errno != 0){
         REPORT_BAD_VALUE;
+    }
     errno = 0;
 
     token = strtok(NULL, ",");
-    if(token)
+    if(token) {
         REPORT_TOO_LONG;
+    }
 
     /* LINE 2 */
-    line = 2;
+    line_index = 2;
     field = "values";
     index = 0;
 
@@ -150,7 +156,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     // calculate maximum number_of values. Set it to UINT64_MAX if no_rows*no_cols would overflow
-    const MAX_VALUES_LENGTH = UINT64_MAX / data->no_cols > data->no_rows ?
+    const uint64_t MAX_VALUES_LENGTH = UINT64_MAX / data->no_cols > data->no_rows ?
         UINT64_MAX
         : data->no_cols * data->no_rows;
     // check length constraint
@@ -160,7 +166,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     /* LINE 3 */
-    line = 3;
+    line_index = 3;
     field = "row_indices";
     index = 0;
 
@@ -185,12 +191,12 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     /* LINE 4 */
-    line = 4;
+    line_index = 4;
     field = "col_ptrs";
     index = 0;
 
     // allocate for no_cols field
-    uint64_t* temp = malloc(sizeof(*cols) * (data->no_cols + 1));
+    uint64_t* temp = malloc(sizeof(*temp) * (data->no_cols + 1));
     if (NULL == temp) {
         fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
         dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
