@@ -17,20 +17,20 @@ for dir in invalid/* ; do
     if [ $? = 1 ]; then
         # echo "+ return value is correctly EXIT_FAILURE (ret $?). Checking stderr output..."
         if [ ! -s "$dir/log.txt" ]; then
-            echo "- $dir/log.txt is empty! (ret $?) Here is the explanation:"
+            echo "BAD $dir/log.txt is empty! (ret $?) Here is the explanation:"
             cat $dir/README
         else
             # echo "+ $dir/log.txt is not empty! (ret $?) Comparing to expected.txt..."
             cmp $dir/log.txt $dir/expected.txt
             if [ $? = 1 ]; then
-                echo "- Not the same, here is diff output: (ret $?)"
+                echo "BAD Not the same, here is diff output: (ret $?)"
                 diff $dir/log.txt $dir/expected.txt
             # else
                 # echo "+ They are the same picture! (ret $?)"
             fi
         fi
     else
-        echo "- return value is incorrectly EXIT_SUCCESS (ret $?)"
+        echo "BAD return value is incorrectly EXIT_SUCCESS (ret $?)"
     fi
 done
 
@@ -44,21 +44,21 @@ for dir in valid/* ; do
                 # echo "+ $dir/log.txt is empty! (ret $?). Checking the result matrix..."
                 cmp $dir/log.txt $dir/expected.txt
                 if [ $? = 1 ]; then
-                    echo "- The result is different than expected (ret $?). Here is diff output:"
+                    echo "BAD The result is different than expected (ret $?). Here is diff output:"
                     diff $dir/log.txt $dir/expected.txt
                 # else
                 #     echo "+ They are the same picture! (ret $?)"
                 fi
             else
-                echo "- $dir/log.txt is not empty! (ret $?). Here is it's content:"
+                echo "BAD $dir/log.txt is not empty! (ret $?). Here is it's content:"
                 cat $dir/log.txt
             fi
         else
-            echo "- return value is incorrectly EXIT_FAILURE (ret $?). Checking stderr output..."
+            echo "BAD return value is incorrectly EXIT_FAILURE (ret $?). Checking stderr output..."
             if [ ! -s "$dir/log.txt" ]; then
-                echo "- $dir/log.txt is empty! (ret $?). CRITICAL. This should never happen!"
+                echo "BAD $dir/log.txt is empty! (ret $?). CRITICAL. This should never happen!"
             else
-                echo "- $dir/log.txt is not empty! (ret $?). Here is it's content:"
+                echo "BAD $dir/log.txt is not empty! (ret $?). Here is it's content:"
                 cat $dir/log.txt
             fi
         fi
