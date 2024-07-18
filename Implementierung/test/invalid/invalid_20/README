@@ -1,0 +1,8 @@
+3,3
+9.0,1.18e-38,4.123E+38,76534.0
+0,1,2,1
+0,3,2,4
+
+### from ../../../CSC_format_definition.md
+> 0, c1, c2, ... (line 4)
+    #8 values-range: first value = 0, last value = length of line 2, rest in [0, min{UINT64_MAX, no_rows*no_cols}], (non-strictly) increasing

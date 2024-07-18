@@ -1,0 +1,10 @@
+4,4,4
+1,2,3,4
+0,0,0,0
+0,1,2,3,5
+
+3 values in the first line are not allowed as per #1
+
+### from ../../../CSC_format_definition.md
+> no_rows, no_cols (line 1)
+    #1 length: 2

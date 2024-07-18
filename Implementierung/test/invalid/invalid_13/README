@@ -1,0 +1,7 @@
+3,3
+9.0,1.18e-38,4.123E+38,76534.0
+0,1,0,0,2
+
+### from ../../../CSC_format_definition.md
+> i0, i1, i2, ... (line 3)
+    #5 length: same as of the previous line

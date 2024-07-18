@@ -1,0 +1,8 @@
+3,3
+9.0,1.18e-38,4.123E+38,76534.0
+0,1,2,1
+0,0,0,4,4
+
+### from ../../../CSC_format_definition.md
+> 0, c1, c2, ... (line 4)
+    #7 length: no_cols+1

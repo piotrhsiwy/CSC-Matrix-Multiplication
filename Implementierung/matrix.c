@@ -82,6 +82,9 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         REPORT_TOO_SHORT;
     }
     data->no_rows = u64reader(token, NULL, 10);
+    if (token[0] == '-'){
+        REPORT_BAD_VALUE;
+    }
     if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0)){
         REPORT_BAD_VALUE;
     }
@@ -95,7 +98,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         REPORT_TOO_SHORT;
     }
     data->no_cols = u64reader(token, NULL, 10);
-    if (data->no_cols == 0 || (data->no_cols == ULONG_MAX && errno == ERANGE) || errno != 0){
+    if (data->no_cols == 0 || errno == ERANGE || errno != 0){
         REPORT_BAD_VALUE;
     }
     errno = 0;
@@ -134,7 +137,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
            break;
         }
 
-        if(errno != 0){
+        if(( value == HUGE_VALF || value == -HUGE_VALF ) && errno == ERANGE){
+            // overflow -> warn about rounding
+            // TODO
+            errno = 0;
+        } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE){
+            // underflow -> warn about rounding
+            // TODO
+            errno = 0;
+        } else if(errno != 0){
+            // other error
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_BAD_VALUE;
         } else if (value == 0.f) {
@@ -142,12 +154,6 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_BAD_VALUE;
-        } else if(value == HUGE_VALF && errno == ERANGE){
-            // overflow -> warn about rounding
-            // TODO
-        } else if(value == -HUGE_VALF && errno == ERANGE){
-            // underflow -> warn about rounding
-            // TODO
         } else{
             // +inf, -inf and NaN
             // TODO
@@ -190,17 +196,25 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
            break;
         }
         const uint64_t row_index = u64reader(token, NULL, 10);
-        if (( row_index == ULONG_MAX && errno == ERANGE ) || row_index > data->no_rows-1 || errno != 0) {
+        if (token[0] == '-'){
+            REPORT_BAD_VALUE;
+        } else if(errno == ERANGE || row_index > data->no_rows-1 || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_BAD_VALUE;
         }
         errno = 0;
-        // check for length constraint before "at"-ing to dynamic array, else it could result in writing to unallocated block
-        if(index >= MAX_VALUES_LENGTH){
+        // check for length constraint (too long) before "at"-ing to dynamic array, else it could result in writing to unallocated block
+        if(index >= MAX_VALUES_LENGTH || index >= data->dynamic_values_x_row_indices.length){
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_TOO_LONG;
         } else
             dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index = row_index;
+    }
+
+    // check for length constraint (too short)
+    if(index != data->dynamic_values_x_row_indices.length){
+        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        REPORT_TOO_SHORT;
     }
 
     /* LINE 4 */
@@ -250,7 +264,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
             REPORT_BAD_VALUE;
         }
         // check for the length constraint (too long), else it could result in a write to an unallocated block
-        if(index > data->no_cols+1){
+        if(index >= data->no_cols+1){
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             free(data->col_ptr);
             REPORT_TOO_LONG;
@@ -285,7 +299,9 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
             if(!( b > a )){
                 dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
                 free(data->col_ptr);
-                index = index+2; // to account for i) 0-indexing ii) the fact that I'm comparing values under indices "index" and "index+1", but since prev test passed, the value under "index+1" is actually the incorrect one here
+                index = index ? index+2 : index+1;
+                // to account for i) 0-indexing ii) the fact that I'm comparing values under indices "index" and "index+1", but since prev test passed, the value under "index+1" is actually the incorrect one here
+                // if index is 0, ii) does not apply, since there are no previous values that were checked, hence the ternary operator
                 REPORT_BAD_VALUE;
             }
         }
