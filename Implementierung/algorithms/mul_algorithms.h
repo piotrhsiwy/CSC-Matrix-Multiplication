@@ -11,6 +11,7 @@
 #include "mul_gustavson.h"
 #include "mul_naive.h"
 #include "mul_scalar_expanded_preextract_simd.h"
+#include "mul_gustavson_simd.h"
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"
