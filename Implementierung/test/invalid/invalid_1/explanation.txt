@@ -1,0 +1,7 @@
+> v0, v1, v2, ... (line 1)
+    - length: [0, min{UINT64_MAX, no_rows*no_cols}]
+> 0, c1, c2, ... (line 4)
+    - values-range: first value = 0, last value = length of line 2, rest in [0, min{UINT64_MAX, no_rows*no_cols}], (non-strictly) increasing
+    - have to pass sanity check:
+        for all index in [0, no_cols-1]: i[c[index]], ..., i[c[index+1]] are strictly increasing (implies: unique)
+            where i[] and c[] are values from lines 3 and 4 respectively
