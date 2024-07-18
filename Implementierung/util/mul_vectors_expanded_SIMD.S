@@ -23,8 +23,8 @@ mul_vectors_expanded_SIMD:
     pxor xmm0, xmm0
     jmp 2f
 1:
-    movups xmm1, XMMWORD_PTR [rsi]
-    mulps xmm1, XMMWORD_PTR [rdx]
+    movups xmm1, XMMWORD PTR [rsi]
+    mulps xmm1, XMMWORD PTR [rdx]
     addps xmm0, xmm1
     add rdi, -0x4
     add rsi, 0x10
@@ -43,8 +43,8 @@ mul_vectors_expanded_SIMD:
 
     jmp 2f
 1:
-    movd xmm1, DWORD_PTR [rsi]
-    mulss xmm1, DWORD_PTR [rdx]
+    movd xmm1, DWORD PTR [rsi]
+    mulss xmm1, DWORD PTR [rdx]
     addss xmm0, xmm1
     add rdi, -0x1
     add rsi, 0x4
