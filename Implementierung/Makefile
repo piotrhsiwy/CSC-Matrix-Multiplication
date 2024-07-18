@@ -4,7 +4,7 @@ CC := $(shell command -v gcc || command -v clang)
 CFLAGS := -std=c17 -Wall -Wextra -Wpedantic
 
 #TODO this is a mess
-OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_scalar.o mul_scalar_expanded.o mul_scalar_expanded_preextract.o mul_vector.o mul_gustavson.o mul_naive.o matrix_util.o dynamic_array.o signal_io.o compare.o errors.o mul_vectors_expanded_SIMD.o
+OBJS := main.o config.o matrix.o benchmark.o mul_algorithms.o mul_scalar.o mul_scalar_expanded.o mul_scalar_expanded_preextract.o mul_vector.o mul_gustavson.o mul_naive.o matrix_util.o dynamic_array.o signal_io.o compare.o errors.o mul_vectors_expanded_SIMD.o mul_scalar_expanded_preextract_simd.o
 all: release
 	@echo ------------------------------ Program compiled successfully
 
