@@ -19,7 +19,7 @@ const char* matrix_mul_algorithm_names[] = {
         "gustavson",                       // 4
         "naive",                           // 5
         "scalar_expanded_preextract_simd", // 6
-        "matrix_mul_gustavson_simd",       // 7
+        "gustavson_simd",                  // 7
 };
 
 size_t matrix_mul_algorithm_count = sizeof matrix_mul_algorithms / sizeof *matrix_mul_algorithms;
