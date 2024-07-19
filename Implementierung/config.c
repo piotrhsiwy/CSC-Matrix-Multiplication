@@ -84,7 +84,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
         case 'U':
             program_config->is_unattended_benchmark = true;
             err_return_value = allocate_argument(optarg, &program_config->unattended_export_file);
-                RETURN_IF_NOT_OK_SIMPLE(err_return_value);
+            RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'h':
             // TODO soll checken if requested_help und benchmark gleichzeitig
