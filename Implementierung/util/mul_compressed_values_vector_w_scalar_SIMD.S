@@ -28,10 +28,10 @@
 # | ... size 0x10, vector->length times ...
 
 .intel_syntax noprefix
-.global mul_vector_compressed_w_scalar_SIMD
+.global mul_compressed_values_vector_w_scalar_SIMD
 .section .text
 
-mul_vector_compressed_w_scalar_SIMD:
+mul_compressed_values_vector_w_scalar_SIMD:
     lea r8, [rdi + 0x08]
     mov rcx, QWORD PTR [r8]         // rdx  := vector->length, counter
 
