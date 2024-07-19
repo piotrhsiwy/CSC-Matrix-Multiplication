@@ -114,12 +114,14 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->dynamic_values_x_row_indices.length = 0;
     b->dynamic_values_x_row_indices.length = 0;
 
-    for(uint8_t filledPercent = 0; filledPercent <= 100; ++filledPercent) {
-        error err = fill_matrix(a, filledPercent);
+    for(long double filledRelativeBase = 0.; filledRelativeBase <= 1; filledRelativeBase += 0.05) { //Using floating-points in a loop is fine in this case since the resolution is high enough.
+        const long double filledRelativeBaseTransformed = filledRelativeBase * filledRelativeBase;
+
+        error err = fill_matrix(a, filledRelativeBaseTransformed);
         if(err) {
             return err;
         }
-        err = fill_matrix(b, filledPercent);
+        err = fill_matrix(b, filledRelativeBaseTransformed);
         if(err) {
             return err;
         }
@@ -142,9 +144,9 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             }
 
             if(err) {
-                fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), error_to_str(err));
+                fprintf(output, "%lu,%lu,%Lf,%s,-,%s\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id]);
+                fprintf(output, "%lu,%lu,%Lf,%s,%Lf,-\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), (duration.tv_sec / (long double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id]);
             }
 
             //Target 10 seconds of computation but a minimum of 3 iterations. Just an estimation since we're not using nsecs.
