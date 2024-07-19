@@ -51,6 +51,7 @@ int main(const int argc, char** argv)
                                         "\tCtrl-C während der Ausführung: Menü mit folgenden Optionen:\n"
                                             "\t\tTesten fortführen [c]: Führt den Test fort.\n"
                                             "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
+                                            "\t\tNach allen Runs der aktuellen Größe beenden [s]: Testet zuvor noch alle Algorithmen für den aktuellen Row-Parameter und beendet den Test.\n"
                                             "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
                                      "-h oder --help: Gibt diese Hilfe aus.";
 

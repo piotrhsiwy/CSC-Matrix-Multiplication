@@ -50,6 +50,7 @@ __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_
     return OK;
 }
 
+volatile bool continue_unattended_benchmark_current_size;
 volatile bool continue_unattended_benchmark;
 volatile bool was_signal_interrupt_executed = false;
 __attribute__((cold)) void interrupt_handler(const int sig) {
@@ -61,7 +62,7 @@ __attribute__((cold)) void interrupt_handler(const int sig) {
 
     print_sig("\nCtrl-C erkannt.");
     while(true) {
-        print_sig("\nTesten fortführen/Nach diesem Run beenden/Sofort beenden? [c/r/q] ");
+        print_sig("\nTesten fortführen/Nach diesem Run beenden/Nach allen Runs der aktuellen Größe beenden/Sofort beenden? [c/r/s/q] ");
 
         switch(getchar_sig()) {
             case 'c':
@@ -72,6 +73,13 @@ __attribute__((cold)) void interrupt_handler(const int sig) {
             case 'r':
             case 'R':
                 print_sig("Warte auf letzten Run...\n");
+                continue_unattended_benchmark = false;
+                continue_unattended_benchmark_current_size = false;
+                break;
+
+            case 's':
+            case 'S':
+                print_sig("Warte auf letzten Runs in der aktuellen Größe...\n");
                 continue_unattended_benchmark = false;
                 break;
 
@@ -175,6 +183,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
         iterations_per_run[algo_id] = initial_iterations_per_run;
     }
     continue_unattended_benchmark = true;
+    continue_unattended_benchmark_current_size = true;
 
     matrix_data a = EMPTY_MATRIX_INIT;
     matrix_data b = EMPTY_MATRIX_INIT;
@@ -197,7 +206,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
 
         fflush(stdout);
 
-        for(uint64_t col_count = row_count / 2; col_count < (row_count * 2) && continue_unattended_benchmark; col_count += increment) {
+        for(uint64_t col_count = row_count / 2; col_count < (row_count * 2) && continue_unattended_benchmark_current_size; col_count += increment) {
             //TODO: different column counts for a and b
             if(col_count == 0) {
                 continue;
