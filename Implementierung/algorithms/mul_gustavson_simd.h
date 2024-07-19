@@ -4,10 +4,12 @@
 #include <string.h> // memset
 #include "../util/matrix_util.h"
 
-void mul_vector_compressed_w_scalar_SIMD(DYNAMIC_ARRAY(pair)*, const float);
+// Symbol defined in ../mul_vector_compressed_w_scalar_SIMD.S
+void mul_vector_compressed_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, const float);
 
 /**
- *https://people.csail.mit.edu/sanchez/papers/2021.gamma.asplos.pdf 
+ * Just as matrix_mul_gustavson, but uses @b simd method above. Vectorization implemented in this routine
+ * should bring perfomance benefits.
  */
 __attribute__((hot)) void matrix_mul_gustavson_simd(const void*  a, const void*  b, void*  c);
 

@@ -4,7 +4,8 @@
 #include "../util/matrix_util.h"
 
 /**
- * This is an alterantive implementation, the idea was to compare it to algos operating
+ * This is an alterantive implementation, which has more to do with the "traditional"
+ * matrix multiplication, than in the CSC format. The idea was to compare it to algos operating
  * on compressed matrices. It expands each of the input matrices into
  * a 2d array of size no_rows*no_cols and then calculates each cell of c separately
  * and writes it into expanded matrix of c. Then it compresses the matrix and writes the result 

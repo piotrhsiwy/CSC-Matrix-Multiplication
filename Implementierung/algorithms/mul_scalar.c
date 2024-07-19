@@ -18,7 +18,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
         return;
     }
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
-    if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
+    if(matrix_A->values.length == 0 || matrix_B->values.length == 0){
         memset(matrix_C->col_ptr, 0, (matrix_C->no_cols + 1) * sizeof *matrix_C->col_ptr);
         return;
     }
@@ -33,17 +33,34 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
     col_ptr_writer++;
 
     // this is dynamic vector for the row extracted from matrix A
-    DYNAMIC_ARRAY(pair) dynamic_vector_A;
-    if(dynamic_array_new(pair, 4, &dynamic_vector_A)){
-        fprintf(stderr, "Cannot dynamically allocate memory for vector_A field in function %s\n", __FUNCTION__);
+    DYNAMIC_ARRAY(float) values_A;
+    if(dynamic_array_new(float, 4, &values_A)){
+        fprintf(stderr, "Cannot dynamically allocate memory for values_A field in function %s\n", __FUNCTION__);
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
+    }
+    DYNAMIC_ARRAY(uint64_t) indices_A;
+    if(dynamic_array_new(uint64_t, 4, &indices_A)){
+        fprintf(stderr, "Cannot dynamically allocate memory for indices_A field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&values_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
     // this is dynamic vector for the col extracted from matrix B
-    DYNAMIC_ARRAY(pair) dynamic_vector_B;
-    if(dynamic_array_new(pair, 4, &dynamic_vector_B)){
-        fprintf(stderr, "Cannot dynamically allocate memory for vector_B field in function %s\n", __FUNCTION__);
-        dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
+    DYNAMIC_ARRAY(float) values_B;
+    if(dynamic_array_new(float, 4, &values_B)){
+        fprintf(stderr, "Cannot dynamically allocate memory for values_B field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&values_A);
+        dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+        matrix_C->mul_error = OUT_OF_MEMORY;
+        return;
+    }
+    DYNAMIC_ARRAY(uint64_t) indices_B;
+    if(dynamic_array_new(uint64_t, 4, &indices_B)){
+        fprintf(stderr, "Cannot dynamically allocate memory for indices_B field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&values_A);
+        dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+        dynamic_array_destroy((generic_dynamic_array*)&values_B);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -56,15 +73,17 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
 
         // extract column from matrix B. See description of the function in matrix_util.h
         {
-            error error = extract_compressed_col_csc(matrix_B, k, &dynamic_vector_B);
+            error error = extract_compressed_col_csc(matrix_B, k, &values_B, &indices_B);
             if(error != OK){
-                dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-                dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+                dynamic_array_destroy((generic_dynamic_array*)&values_A);
+                dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+                dynamic_array_destroy((generic_dynamic_array*)&values_B);
+                dynamic_array_destroy((generic_dynamic_array*)&indices_B);
                 matrix_C->mul_error = error;
                 return;
             }
         }
-        if(dynamic_vector_B.length == 0){ // the col is empty
+        if(values_B.length == 0){ // the col is empty
             continue;
         }
 
@@ -75,40 +94,57 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
             
             // extract row from matrix A. See description of the function in matrix_util.h
             {
-                error error = extract_compressed_row_csc(matrix_A, i, &dynamic_vector_A);
+                error error = extract_compressed_row_csc(matrix_A, i, &values_A, &indices_A);
                 if(error != OK){
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_B);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_B);
                     matrix_C->mul_error = error;
                     return;
                 }
             }
-            if(dynamic_vector_A.length == 0){
+            if(values_A.length == 0){
                 continue;
             }
 
             // ##################################
             // MULTIPLY THE ROW WITH THE COLUMN AND WRITE THE RESULTS
             // ##################################
-            float value = mul_vectors_compressed(&dynamic_vector_A, &dynamic_vector_B);
+            float value = mul_vectors_compressed(&values_A, &indices_A, &values_B, &indices_B);
             if(value != 0.0f){
-                pair new_pair = {.index = i, .value = value};
-                if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
-                    fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-                    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+                if(dynamic_array_add(float, &matrix_C->values, value)){
+                    fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_B);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_B);
+                    matrix_C->mul_error = OUT_OF_MEMORY;
+                    return;
+                }
+                if(dynamic_array_add(uint64_t, &matrix_C->row_indices, i)){
+                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __FUNCTION__);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+                    dynamic_array_destroy((generic_dynamic_array*)&values_B);
+                    dynamic_array_destroy((generic_dynamic_array*)&indices_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
             }
             // else we don't write anything
-            dynamic_vector_A.length = 0; // "empty" the vector holding the row
+            values_A.length = 0; // "empty" the vector holding the row
+            indices_A.length = 0;
         }
-        *col_ptr_writer = matrix_C->dynamic_values_x_row_indices.length;
+        *col_ptr_writer = matrix_C->values.length;
         col_ptr_writer++;
-        dynamic_vector_B.length = 0; // "empty" the vector holding the column
+        values_B.length = 0; // "empty" the vector holding the row
+        indices_B.length = 0;
     }
 
-    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_A);
-    dynamic_array_destroy((generic_dynamic_array*)&dynamic_vector_B);
+    dynamic_array_destroy((generic_dynamic_array*)&values_A);
+    dynamic_array_destroy((generic_dynamic_array*)&indices_A);
+    dynamic_array_destroy((generic_dynamic_array*)&values_B);
+    dynamic_array_destroy((generic_dynamic_array*)&indices_B);
+    return;
 }

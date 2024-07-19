@@ -5,7 +5,7 @@
 #include "../util/matrix_util.h" // extracting rows, cols, multiplying vectors
 
 /**
- * Multiples two matrices A and B in Compressed Sparse Column Format and saves the result in result
+ * Multiples two matrices A and B in Compressed Sparse Column Format and saves the result in result.
  * 
  * @param a is a pointer to matrix_data containing metadata of the matrix A
  * @param b is a pointer to matrix_data containing metadata of the matrix B

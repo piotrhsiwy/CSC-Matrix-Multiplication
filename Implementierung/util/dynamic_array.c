@@ -55,21 +55,22 @@
     }
 
 DYNAMIC_ARRAY_DECL(float)
+DYNAMIC_ARRAY_DECL(___dynamic_array_float_macro_defined)
 DYNAMIC_ARRAY_DECL(uint64_t)
+DYNAMIC_ARRAY_DECL(___dynamic_array_uint64_t_macro_defined)
 DYNAMIC_ARRAY_DECL(pair)
 DYNAMIC_ARRAY_DECL(___dynamic_array_pair_macro_defined)
 
-
-void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY_2D* arr){
+void dynamic_array_destroy_top_layer(generic_dynamic_array* arr){
+    generic_dynamic_array* base = arr->data;
     for (size_t i = 0; i < arr->length; i++)
     {
-        DYNAMIC_ARRAY(pair) cur = dynamic_array_at(___dynamic_array_pair_macro_defined, arr, i);
-        dynamic_array_destroy( (generic_dynamic_array*)( &cur ) );
+        dynamic_array_destroy( ( base + i ) );
     }
     arr->length = 0;
 }
 
-void dynamic_array_recursive_destroy(DYNAMIC_ARRAY_2D* arr){
+void dynamic_array_recursive_destroy(generic_dynamic_array* arr){
     dynamic_array_destroy_top_layer(arr);
     dynamic_array_destroy((generic_dynamic_array*) arr);
 }

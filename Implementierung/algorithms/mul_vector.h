@@ -12,4 +12,4 @@
  */
 __attribute__((hot)) void matrix_mul_vector(const void*  a, const void*  b, void*  c);
 
-#endif //MUL_SCALAR_EXPANDED_H
+#endif //MUL_VECTOR_H

@@ -18,7 +18,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
         return;
     }
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
-    if(matrix_A->dynamic_values_x_row_indices.length == 0 || matrix_B->dynamic_values_x_row_indices.length == 0){
+    if(matrix_A->values.length == 0 || matrix_B->values.length == 0){
         memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
         return;
     }
@@ -74,9 +74,15 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
             // ##################################
             float value = mul_vectors_expanded(vector_size, vector_A, vector_B);
             if(value != 0.0f){
-                pair new_pair = {.index = i, .value = value};
-                if(dynamic_array_add(pair, &matrix_C->dynamic_values_x_row_indices, new_pair)){
-                    fprintf(stderr, "Cannot add new element to dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
+                if(dynamic_array_add(float, &matrix_C->values, value)){
+                    fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+                    free(vector_A);
+                    free(vector_B);
+                    matrix_C->mul_error = OUT_OF_MEMORY;
+                    return;
+                }
+                if(dynamic_array_add(uint64_t, &matrix_C->row_indices, i)){
+                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __FUNCTION__);
                     free(vector_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;
@@ -86,11 +92,12 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
             // else we don't write anything
             memset(vector_A, 0, sizeof(*vector_A) * vector_size); // reset vector_B
         }
-        *col_ptr_writer = matrix_C->dynamic_values_x_row_indices.length;
+        *col_ptr_writer = matrix_C->values.length;
         col_ptr_writer++;
         memset(vector_B, 0, sizeof(*vector_B) * vector_size); // reset vector_A
     }
 
     free(vector_A);
     free(vector_B);
+    return;
 }

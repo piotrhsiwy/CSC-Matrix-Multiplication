@@ -22,8 +22,14 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     }
     matrix->col_ptr = tmp;
 
-    if(dynamic_array_reserve(pair, 4, &matrix->dynamic_values_x_row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
+    if(dynamic_array_reserve(float, 4, &matrix->values)){
+        fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __FUNCTION__);
+        free(matrix->col_ptr);
+        return OUT_OF_MEMORY;
+    }
+
+    if(dynamic_array_reserve(uint64_t, 4, &matrix->row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
@@ -36,7 +42,8 @@ __attribute__((cold)) void destruct_matrix_data(matrix_data* const matrix)
     // freeing NULL doesnt do anything, no need to check for it
     free(matrix->col_ptr);
     matrix->col_ptr = NULL;
-    dynamic_array_destroy((generic_dynamic_array*)&matrix->dynamic_values_x_row_indices);
+    dynamic_array_destroy((generic_dynamic_array*)&matrix->values);
+    dynamic_array_destroy((generic_dynamic_array*)&matrix->row_indices);
     matrix->no_rows = 0;
     matrix->no_cols = 0;
     matrix->mul_error = UNDEFINED;
@@ -88,7 +95,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     if (token[0] == '-'){
         REPORT_BAD_VALUE;
     }
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE) || errno != 0) {
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0)){
         REPORT_BAD_VALUE;
     }
     errno = 0;
@@ -116,20 +123,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "values";
     index = 0;
 
-    // allocate for dynamic_values_x_row_indices field
-    if(dynamic_array_new(pair, 4, &data->dynamic_values_x_row_indices)){
+    // allocate for values field
+    if(dynamic_array_new(float, 4, &data->values)){
         fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
         return OUT_OF_MEMORY;
     }
 
     if (getline(&line, &line_length, stream) == -1) {
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
         REPORT_TOO_SHORT;
     }
-
-    // TODO what if there is no commas and no value
-    // TODO what if there is no commas and 1 value, need to separate those 2
-
 
     for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
         const float value = strtof(token, NULL);
@@ -146,17 +149,21 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
             fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else {
-            // We catch any invalid numbers here (including '0').
+        } else if(errno != 0){
+            // other error
+            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            REPORT_BAD_VALUE;
+        } else if (value == 0.f) {
+            // zero is not allowed 
+            // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_BAD_VALUE;
         }
         errno = 0;
 
-        pair new_pair = {.index = 0, .value = value}; // index is to be filled later, so I pre-initialize it with 0
-        if(dynamic_array_add(pair, &data->dynamic_values_x_row_indices, new_pair)){
-            fprintf(stderr, "Cannot add element to dynamically sized array dynamic_values_x_row_indices in function %s\n", __FUNCTION__);
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        if(dynamic_array_add(float, &data->values, value)){
+            fprintf(stderr, "Cannot add element to dynamically sized array values in function %s\n", __FUNCTION__);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
             free(line);
             return OUT_OF_MEMORY;
         }
@@ -167,8 +174,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         UINT64_MAX
         : data->no_cols * data->no_rows;
     // check length constraint
-    if(data->dynamic_values_x_row_indices.length > MAX_VALUES_LENGTH ){
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+    if(data->values.length > MAX_VALUES_LENGTH ){
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
         REPORT_TOO_LONG;
     }
 
@@ -177,8 +184,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "row_indices";
     index = 0;
 
+    // allocate for row_indices field
+    if(dynamic_array_new(uint64_t, 4, &data->row_indices)){
+        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        return OUT_OF_MEMORY;
+    }
+
     if (getline(&line, &line_length, stream) == -1) {
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         REPORT_TOO_SHORT;
     }
 
@@ -190,23 +205,28 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         }
         const uint64_t row_index = u64reader(token, NULL, 10);
         if (token[0] == '-'){
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         } else if(errno == ERANGE || row_index > data->no_rows-1 || errno != 0) {
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         }
         errno = 0;
         // check for length constraint (too long) before "at"-ing to dynamic array, else it could result in writing to unallocated block
-        if(index >= MAX_VALUES_LENGTH || index >= data->dynamic_values_x_row_indices.length){
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        if(index >= MAX_VALUES_LENGTH || index >= data->row_indices.length){
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_TOO_LONG;
         } else
-            dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index = row_index;
+            dynamic_array_add(uint64_t, &data->row_indices, row_index);
     }
 
     // check for length constraint (too short)
-    if(index != data->dynamic_values_x_row_indices.length){
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+    if(index != data->row_indices.length){
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         REPORT_TOO_SHORT;
     }
 
@@ -219,13 +239,15 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     uint64_t* temp = malloc(sizeof(*temp) * (data->no_cols + 1));
     if (NULL == temp) {
         fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         return OUT_OF_MEMORY;
     }
     data->col_ptr = temp;
 
     if (getline(&line, &line_length, stream) == -1) {
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         free(data->col_ptr);
         REPORT_TOO_SHORT;
     }
@@ -234,7 +256,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     token = strtok(line, ",");
     uint64_t col_ptr = u64reader(token, NULL, 10);
     if(errno != 0 || col_ptr != 0){
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         free(data->col_ptr);
         REPORT_BAD_VALUE;
     }
@@ -245,20 +268,23 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     for (; token; token = strtok(NULL, ",")) {
         col_ptr = u64reader(token, NULL, 10);
         if (( col_ptr == ULONG_MAX && errno == ERANGE ) || col_ptr > MAX_VALUES_LENGTH || errno != 0) {
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             free(data->col_ptr);
             REPORT_BAD_VALUE;
         }
         errno = 0;
         // check for the "(non-strictly) increasing" constraint
         if(!( col_ptr >= data->col_ptr[index-1] )){
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             free(data->col_ptr);
             REPORT_BAD_VALUE;
         }
         // check for the length constraint (too long), else it could result in a write to an unallocated block
         if(index >= data->no_cols+1){
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             free(data->col_ptr);
             REPORT_TOO_LONG;
         }
@@ -267,15 +293,17 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     
     //check for the "last value == length of line 2" constraint
     index--;
-    if(data->col_ptr[index] != data->dynamic_values_x_row_indices.length){
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+    if(data->col_ptr[index] != data->values.length){
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         free(data->col_ptr);
         REPORT_BAD_VALUE;
     }
     
     //check for the length constraint (too short)
     if(index != data->no_cols){
-        dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+        dynamic_array_destroy((generic_dynamic_array*)&data->values);
+        dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         free(data->col_ptr);
         REPORT_TOO_SHORT;
     }
@@ -289,7 +317,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         for(index = begin; index < end; index++){ 
            float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index;
            float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).index;
-            if(b <= a) {
+            if(!( b > a )){
                 dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
                 free(data->col_ptr);
                 index = index ? index+2 : index+1;
@@ -307,12 +335,13 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
 error fill_matrix(matrix_data *const matrix, const long double filledCellsRelative) {
     const size_t entries = (size_t)(matrix->no_cols * matrix->no_rows * 10 * filledCellsRelative + 5) / 10; // *10, +5, /10 is for rounding
 
-    dynamic_array_reserve(pair, entries, &matrix->dynamic_values_x_row_indices);
-    matrix->dynamic_values_x_row_indices.length = 0;
+    dynamic_array_reserve(float, entries, &matrix->values);
+    matrix->values.length = 0;
+    dynamic_array_reserve(uint64_t, entries, &matrix->row_indices);
+    matrix->row_indices.length = 0;
 
     for(size_t i = 0; i < entries; ++i) {
-        const pair p = {.value=(float)rand() + 0.00001}; //index will be initialized later on
-        dynamic_array_add(pair, &matrix->dynamic_values_x_row_indices, p); //random float bigger than 0
+        dynamic_array_add(float, &matrix->values, (float)rand() + 0.00001); //random float bigger than 0
     }
 
     uint64_t cells_with_space = matrix->no_cols * matrix->no_rows;
@@ -372,7 +401,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
         //The values are stored in a random order -> sort them before setting them as indizes for the values
         qsort(row_indices, filled_cells, sizeof(*row_indices), cmp_u64);
         for(uint64_t i = 0; i < filled_cells; ++i) {
-            dynamic_array_at(DYNAMIC_ARRAY(pair), &matrix->dynamic_values_x_row_indices, i + matrix->col_ptr[col]).index = row_indices[i];
+            dynamic_array_at(uint64_t, &matrix->row_indices, i + matrix->col_ptr[col]) = row_indices[i];
         }
     }
 
@@ -386,33 +415,33 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
 
     // TODO macros???
     // values
-    for (uint64_t i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
+    for (uint64_t i = 0; i < data.values.length; ++i) {
         // TODO error Handling
         if (i == 0) {
-            int ret = fprintf(stream, "%f", dynamic_array_at(pair, &data.dynamic_values_x_row_indices, (size_t)i).value);
+            fprintf(stream, "%f", dynamic_array_at(float, &data.values, (size_t)i));
         } else {
-            int ret = fprintf(stream, ",%f", dynamic_array_at(pair, &data.dynamic_values_x_row_indices, (size_t)i).value);
+            fprintf(stream, ",%f", dynamic_array_at(float, &data.values, (size_t)i));
         }
     }
     fprintf(stream, "\n");
     // row_indices
-    for (size_t i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
+    for (int i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
         // TODO error handling
         if (0 != i) {
-            int ret = fprintf(stream, ",");
+            fprintf(stream, ",");
         }
 
-        int ret = fprintf(stream, FORMAT_UINT_64, dynamic_array_at(pair, &data.dynamic_values_x_row_indices, i).index);
+        fprintf(stream, FORMAT_UINT_64, dynamic_array_at(uint64_t, &data.row_indices, i));
     }
     fprintf(stream, "\n");
     // col_ptr
     for (uint64_t i = 0; i < (data.no_cols + 1); ++i) {
         // TODO error handling
         if (0 != i) {
-            int ret = fprintf(stream, ",");
+            fprintf(stream, ",");
         }
 
-        int ret = fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
+        fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
     return OK;
 }

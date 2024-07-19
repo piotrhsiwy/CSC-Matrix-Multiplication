@@ -43,11 +43,14 @@ typedef struct {
     int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T)* arr);
 
 DYNAMIC_ARRAY_HEADER___(float)
+DYNAMIC_ARRAY_HEADER___(___dynamic_array_float_macro_defined)
 DYNAMIC_ARRAY_HEADER___(uint64_t)
+DYNAMIC_ARRAY_HEADER___(___dynamic_array_uint64_t_macro_defined)
 DYNAMIC_ARRAY_HEADER___(pair)
 DYNAMIC_ARRAY_HEADER___(___dynamic_array_pair_macro_defined)
-#define DYNAMIC_ARRAY_2D DYNAMIC_ARRAY(___dynamic_array_pair_macro_defined)
-#define pair2D ___dynamic_array_pair_macro_defined
+#define DYNAMIC_ARRAY_2D_float DYNAMIC_ARRAY(___dynamic_array_float_macro_defined)
+#define DYNAMIC_ARRAY_2D_uint64_t DYNAMIC_ARRAY(___dynamic_array_uint64_t_macro_defined)
+#define DYNAMIC_ARRAY_2D_pair DYNAMIC_ARRAY(___dynamic_array_pair_macro_defined)
 
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).
@@ -65,11 +68,11 @@ void dynamic_array_destroy(generic_dynamic_array* arr);
 /**
  * Recursivels calls dynamic_array_destroy on a 2D dynamic array
  */
-void dynamic_array_recursive_destroy(DYNAMIC_ARRAY_2D* arr);
+void dynamic_array_recursive_destroy(generic_dynamic_array* arr);
 
 /**
  * calls dynamic_array_destroy on a all elements of a 2D dynamic array
  */
-void dynamic_array_destroy_top_layer(DYNAMIC_ARRAY_2D* arr);
+void dynamic_array_destroy_top_layer(generic_dynamic_array* arr);
 
 #endif //DYNAMIC_ARRAY_H

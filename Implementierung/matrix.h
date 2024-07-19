@@ -11,14 +11,15 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define EMPTY_MATRIX_INIT {.no_rows = 0, .no_cols = 0, .col_ptr = NULL, .dynamic_values_x_row_indices = {.data = NULL, .capacity = 0, .length = 0}}
+#define EMPTY_MATRIX_INIT {.no_rows = 0, .no_cols = 0, .col_ptr = NULL, .values = {.data = NULL, .capacity = 0, .length = 0}, .row_indices = {.data = NULL, .capacity = 0, .length = 0}}
 
 
 typedef struct {
     uint64_t no_rows;
     uint64_t no_cols;
     // size_t length_values; <-- this field is now in dynamic_values_x_row_indices->length
-    DYNAMIC_ARRAY(pair) dynamic_values_x_row_indices;
+    DYNAMIC_ARRAY(float) values;
+    DYNAMIC_ARRAY(uint64_t) row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 

@@ -5,7 +5,7 @@
 #include "../util/matrix_util.h"
 
 /**
- * like matrix_mul_scalar (See mul_scalar.h), but expands the vectors before multiplying, making some
+ * like matrix_mul_scalar (See mul_scalar.h), but @b expands the vectors before multiplying, making some
  * potential optimizations possible. This is only possible if respectively no_rows
  * and no_cols are small enough so that we are able to allocate an array of pairs
  * of that size.

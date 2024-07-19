@@ -17,27 +17,32 @@
 void nested_free(size_t size, float** vectors);
 
 /**
- * foreach i in [0,m-1]
- * element *i* of vector is the sum of all elements in the row *i* in the matrix
- * vector gets overwritten
- */
-void collapse_matrix_horizontal(size_t m, size_t n, float* vector, float** matrix);
+ * Handles the "matrix" aka 2D dynamic arrays of values and indices. For each index *i*
+ * from the set of indices present in the "matrix" accumulate all values with this
+ * index from all the dynamic arrays (at most 1 per array). Place this accumulated
+ * along with index *i* in the result dynamic array. The result is stored in
+ * result_values and result_indices.
+ * 
+ * @param vector_2D_values
+ * @param vector_2D_indices are part of the "matrix"
+ * @param result_values
+ * @param result_indices is where the result is stored
+ * 	
+ * @return
+ *  // TODO 
+ */ 
+error sum_compressed_matrix
+(
+	DYNAMIC_ARRAY_2D_float* const		vector_2D_values,
+	DYNAMIC_ARRAY_2D_uint64_t* const 	vector_2D_indices,
+	DYNAMIC_ARRAY(float)* const 		result_values,
+	DYNAMIC_ARRAY(uint64_t)* const 		result_indices
+);
 
 /**
- * concat & sort
- * TODO: docs
+ * multiply in place each value in the vector (float values) with scalar.
  */
-error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pair)* const result);
-
-/**
- * A = A *horizontal-multiply* B
- */
-void mul_matrix_horizontal(size_t m, size_t n, float** A, float** B);
-
-/**
- * multiply in place each value in the vector (pair.value) with sclar. pair.index stay the same
- */
-void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, float scalar);
+void mul_compressed_values_vector_w_scalar(DYNAMIC_ARRAY(float)* vector, const float scalar);
 
 /**
  * Multiplies a vector with an array of vectors. An array of rows of Matrix A and 1 column of Matrix B
@@ -70,10 +75,18 @@ float mul_vectors_expanded(size_t size, const float* vector_A, const float* vect
  * Multiplies each value with the corresponding value from the other vector with the same index (if present).
  * Results of the multiplication are added to one another and returned from the function
  *
- * @param vector_A dynamically sized array of (index,value) pairs. Pairs are sorted by index in an increasing order!
- * @param vector_B as above
+ * @param values_A
+ * @param indices_A together represent the first (index, value) vector
+ * @param values_B
+ * @param indices_B together represent the second (index, value) vector
  */
-float mul_vectors_compressed(DYNAMIC_ARRAY(pair)* vector_A, DYNAMIC_ARRAY(pair)* vector_B);
+float mul_vectors_compressed
+(
+	DYNAMIC_ARRAY(float)* 		values_A,
+	DYNAMIC_ARRAY(uint64_t)* 	indices_A,
+	DYNAMIC_ARRAY(float)* 		values_B,
+	DYNAMIC_ARRAY(uint64_t)* 	indices_B
+);
 
 /**
  * extracts all rows from a CSC matrix in the same way that extract_expanded_row_csc does, but runs
@@ -111,12 +124,19 @@ size_t extract_expanded_col_csc(const matrix_data* matrix, uint64_t index, float
  * 
  * @param matrix the matrix in Compressed Sparse Column Format (CSC)
  * @param index - index of the row to be extracted
- * @param dynamic_vector - the extracted row will be written here this is
+ * @param value
+ * @param indices - the extracted row will be written here this is
  *   dynamically sized array of (index,value) where indices are the
  *   columns indices of the values in the matrix
  * @return OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails) OK else
  */
-error extract_compressed_row_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
+error extract_compressed_row_csc
+(
+	const matrix_data* const matrix,
+	const uint64_t index,
+	DYNAMIC_ARRAY(float)* values,
+	DYNAMIC_ARRAY(uint64_t)* indices
+);
 
 /**
  * Extracts a column in a compressed form, from a matrix in CSC.
@@ -126,39 +146,15 @@ error extract_compressed_row_csc(const matrix_data* matrix, uint64_t index, DYNA
  * 
  * @param matrix the matrix in Compressed Sparse Column Format (CSC)
  * @param index index of the column to be extracted
- * @param dynamic_vector the extracted row will be written here this is
- *   dynamically sized array of (index,value) where indices are the
- *   row indices of the values in the matrix
+ * @param values the values from the extracted row will be written here this is
+ *   dynamically sized array of values
+ * @param indices the row_indices from the extracted row will be written here this is
+ *   dynamically sized array of uint64_t
  * @return
- *  OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails)
+ *  OUT_OF_MEMORY in case adding new element to either the values or the indices fails (realloc fails)
  *  OK else
  */
-error extract_compressed_col_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(pair)* dynamic_vector);
-
-/**
- * expands a sorted array of (i,v)-pairs to an array of values, where
- * each value is under index i in the array. The former is a direct
- * result of extracting values from a matrix in the Compressed Sparse
- * Column Format (CSC). The latter can be useful e.g. when optimizing
- * matrix-matrix_mul_algorithms for performance. Writes the resulting array to
- * extended. See picture below.
- * Memory management of both compressed and extended has to be handled
- * by the upper layer.
- *
- * @param length_compressed
- * @param compressed - is the array of (i,v)-pairs. They have to be sorted by
- *   index in an increasing order.
- * @param length_extended
- * @param extended - is the array of values of appropriate size where
- *   value v is under index i.
- *	 
- * @return
- * 	DIMENSION_MISMATCH if extended is too small.
- * 	OK else
- * See error_handling/errors.h
- *
- */
-__attribute__((unused)) error expand_vector(uint64_t length_compressed, const pair compressed[restrict length_compressed], uint64_t length_extended, float extended[restrict length_extended]);
+error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(float)* values,  DYNAMIC_ARRAY(uint64_t)* indices);
 
 /**
  * expands a matrix in Compressed Sparse Column Format (CSC) to a regular matrix
