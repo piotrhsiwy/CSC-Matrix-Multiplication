@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -100,4 +101,59 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
         }
     }
     return OK;
+}
+
+void print_config_struct(config option) {
+    printf("");
+}
+
+// to run this unit-test, put it somewhere in the main. Most of the time, the user doesnt want to unit-test so its not included.
+void unit_test_parse_arguments(void) {
+    // do the basics work?
+    const char *input1[9];
+    input1[0] = "./main";
+    input1[1] = "-a";
+    input1[2] = "matrices/A.txt";
+    input1[3] = "-b";
+    input1[4] = "matrices/B.txt";
+    input1[5] = "-o";
+    input1[6] = "matrices/C.txt";
+    input1[7] = "-V";
+    input1[8] = "1";
+    config options1 = {.benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL};
+    error output1 = parse_arguments(7, (char* const*)input1, &options1);
+    if (output1 != OK) {
+        fprintf(stderr, "Testcase 1 should work fine, but it returned an error.\n");
+    }
+    if (strcmp(options1.matrixA_path, "matrices/A.txt") != 0) {
+        fprintf(stderr, "Testcase 1: matrixA_path should be 'matrices/A.txt' but its '%s' instead.\n", options1.matrixA_path);
+    }
+    if (strcmp(options1.matrixB_path, "matrices/B.txt") != 0) {
+        fprintf(stderr, "Testcase 1: matrixB_path should be 'matrices/B.txt' but its '%s' instead.\n", options1.matrixB_path);
+    }
+    if (strcmp(options1.matrix_output_path, "matrices/C.txt") != 0) {
+        fprintf(stderr, "Testcase 1: matrix_output_path should be 'matrices/C.txt' but its '%s' instead.\n", options1.matrix_output_path);
+    }
+    if (options1.algorithm != 1) {
+        fprintf(stderr, "Testcase 1: algorithm should be '1' but is '%ld'.\n", options1.algorithm);
+    }
+    // Cleanup Testcase 1
+    free(options1.matrix_output_path);
+    free(options1.matrixA_path);
+    free(options1.matrixB_path);
+
+    // does help work?
+    const char* input2[2];
+    input2[0] = "./main";
+    input2[1] = "--help";
+    config options2 = {.benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL};
+    error output2 = parse_arguments(1, (char* const*)input2, &options2);
+    if (output2 != OK) {
+        fprintf(stderr, "Testcase 2: should be sucessful, but another returnvalue was returned.\n");
+    }
+    if (options2.requested_help != true) {
+        fprintf(stderr, "Testcase 2: --help passed, but request_help is false.\n");
+    }
+    // TODO more
+    printf("Finished with the unit-test!\n");
 }

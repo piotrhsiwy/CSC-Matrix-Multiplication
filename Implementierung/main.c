@@ -23,6 +23,8 @@ void deallocate_config_buffers(config* options)
 
 int main(const int argc, char** argv)
 {
+    // uncomment this if you want to run the unit tests.
+    //unit_test_parse_arguments();
     config options = { .algorithm = 0, .benchmark_repeat_count = 10000, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
