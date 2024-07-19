@@ -19,13 +19,13 @@
 # |offset    size(B) type    name
 # |0x0       8B      size_t  index
 # |0x8       4B      float   value <-----------
-# |0x12      4B      -       padding
+# |0xc       4B      -       padding
 # |---------------------------------
 # |0x0       8B      size_t  index
 # |0x8       4B      float   value <-----------
-# |0x12      4B      -       padding
+# |0xc       4B      -       padding
 # |---------------------------------
-# | ... size 0x20, vector->length times ...
+# | ... size 0x10, vector->length times ...
 
 .intel_syntax noprefix
 .global mul_vector_compressed_w_scalar_SIMD
@@ -33,25 +33,23 @@
 
 mul_vector_compressed_w_scalar_SIMD:
     lea r8, [rdi + 0x08]
-    mov rdx, QWORD PTR [r8]         // rdx  := vector->length
+    mov rcx, QWORD PTR [r8]         // rdx  := vector->length, counter
 
-    lea rcx, [rdx-1]                // rcx  := counter
     pshufd xmm0, xmm0, 0x00         // xmm0 := s, s, s, s
-    mov r8, QWORD PTR [rdi]         // r8   := &cur_pair
-		lea r9, [0x8*rcx]
-    lea r8, [0x08 + r8 + 0x04*r9]
+    mov r8, QWORD PTR [rdi]         // r8   := &(cur_pair.value)
+    lea r9, [0x8*rcx]
+    lea r8, [-0x08 + r8 + 0x02*r9]
 
     jmp 2f
 1:
-    dec rcx
 
     movd xmm1, DWORD PTR [r8]
-    lea r9, [r8 - 0x20]
-    movd xmm2, DWORD PTR [r8]
-    lea r10, [r9 - 0x20]
-    movd xmm3, DWORD PTR [r8]
-    lea r11, [r10 - 0x20]
-    movd xmm4, DWORD PTR [r8]
+    lea r9, [r8 - 0x10]
+    movd xmm2, DWORD PTR [r9]
+    lea r10, [r9 - 0x10]
+    movd xmm3, DWORD PTR [r10]
+    lea r11, [r10 - 0x10]
+    movd xmm4, DWORD PTR [r11]
     shufps xmm1, xmm2, 0x44 // == 0b 01 00 01 00
     # now xmm1 ==   0,  f2,  0,  f1  
     #               127-----------0
@@ -73,11 +71,11 @@ mul_vector_compressed_w_scalar_SIMD:
     movd DWORD PTR[r11], xmm1
 
     add rcx, -0x4
-    add r8, -0x80
+    mov r8, r11
     // OPT maybe faster to only keep track of rcx and recalculate address every time?
 
 2:
-    cmp rcx, 4
+    cmp rcx, 4 // we can get -1 here!
     jb .Lscalar
     jmp 1b
 
@@ -89,13 +87,10 @@ mul_vector_compressed_w_scalar_SIMD:
     mulss xmm1, xmm0
     movd DWORD PTR [r8], xmm1
     dec rcx
-    add r8, -0x20
+    add r8, -0x10
 2:
     test rcx, rcx
     jnz 1b
-    
-    # process the last value
-    movd xmm1, DWORD PTR [r8]
-    mulss xmm1, xmm0
-    movd DWORD PTR [r8], xmm1
+
+.Lend:
 ret
