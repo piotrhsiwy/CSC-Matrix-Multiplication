@@ -32,12 +32,12 @@ error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pai
 /**
  * A = A *horizontal-multiply* B
  */
-void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B);
+void mul_matrix_horizontal(size_t m, size_t n, float** A, float** B);
 
 /**
  * multiply in place each value in the vector (pair.value) with sclar. pair.index stay the same
  */
-void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float scalar);
+void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, float scalar);
 
 /**
  * Multiplies a vector with an array of vectors. An array of rows of Matrix A and 1 column of Matrix B
@@ -49,11 +49,11 @@ void mul_vector_compressed_w_scalar(DYNAMIC_ARRAY(pair)* vector, const float sca
  * @param all_vectors is the matrix containing all rows from matrix A in the multiplication
  */
 error mul_vector_transposed_w_matrix(
-	const size_t how_many_vectors,
-	const size_t vector_size,
-	float* const vector, // [vector_size]
-	float** const all_vectors, // [how_many_vectors][vector_size]
-	float* const result) // [how_many_vectors]
+	size_t how_many_vectors,
+	size_t vector_size,
+	float* vector, // [vector_size]
+	float** all_vectors, // [how_many_vectors][vector_size]
+	float* result) // [how_many_vectors]
 ;
 
 /**
@@ -64,7 +64,7 @@ error mul_vector_transposed_w_matrix(
  * @param vector_A
  * @param vector_B
  */
-float mul_vectors_expanded(size_t size, float* vector_A, float* vector_B);
+float mul_vectors_expanded(size_t size, const float* vector_A, const float* vector_B);
 
 /**
  * Multiplies each value with the corresponding value from the other vector with the same index (if present).
@@ -158,7 +158,7 @@ error extract_compressed_col_csc(const matrix_data* matrix, uint64_t index, DYNA
  * See error_handling/errors.h
  *
  */
-error expand_vector(uint64_t length_compressed, const pair compressed[restrict length_compressed], uint64_t length_extended, float extended[restrict length_extended]);
+__attribute__((unused)) error expand_vector(uint64_t length_compressed, const pair compressed[restrict length_compressed], uint64_t length_extended, float extended[restrict length_extended]);
 
 /**
  * expands a matrix in Compressed Sparse Column Format (CSC) to a regular matrix
@@ -178,6 +178,6 @@ void expand_matrix(const matrix_data* compressed, float *const * expanded);
  * @param compressed - to-be-written matrix in the CSC format. See matrix.h
  * 
  */
-error compress_matrix(float** const expanded, matrix_data* compressed);
+error compress_matrix(float** expanded, matrix_data* compressed);
 
 #endif // MATRIX_UTIL_H

@@ -120,7 +120,7 @@ error mul_vector_transposed_w_matrix(
 	return OK;
 }
 
-float mul_vectors_expanded(size_t size, float* const vector_A, float* const vector_B){
+float mul_vectors_expanded(size_t size, const float* const vector_A, const float* const vector_B){
 	float acc = 0.0f;
 	for(size_t i = 0; i < size; i++){
 		acc += vector_A[i] * vector_B[i];
@@ -225,7 +225,7 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
 	return OK;
 }
 
-error expand_vector(const uint64_t length_compressed, const pair compressed[restrict length_compressed], const uint64_t length_extended, float extended[restrict length_extended]){
+__attribute__((unused)) error expand_vector(const uint64_t length_compressed, const pair compressed[restrict length_compressed], const uint64_t length_extended, float extended[restrict length_extended]){
 	if(compressed[length_compressed-1].index >= length_extended){
 		return DIMENSION_MISMATCH;
 	}
