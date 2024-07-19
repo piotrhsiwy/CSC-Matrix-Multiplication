@@ -146,7 +146,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
-                mul_compressed_values_vector_w_scalar_SIMD(&new_col_values, dynamic_array_at(float, &colB_values, i));
+                //mul_compressed_values_vector_w_scalar_SIMD(&new_col_values, dynamic_array_at(float, &colB_values, i)); //TODO: comment back in (currently not compiling)
                 dynamic_array_unbind((generic_dynamic_array*)&new_col_values);
                 dynamic_array_unbind((generic_dynamic_array*)&new_col_indices);
             } else{

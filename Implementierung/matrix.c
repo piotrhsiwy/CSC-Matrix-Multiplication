@@ -67,7 +67,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Zeile %d ist zu kurz. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE
 
     typedef uint64_t (*u64reader_t)(const char *restrict , char **restrict , int );
-    u64reader_t u64reader = 0;
+    u64reader_t u64reader;
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify" //if condition is clear at compile time --> clang tidy complains
     if (UINT64_WIDTH / 8 == sizeof(unsigned long)) {
@@ -149,14 +149,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
             fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else if(errno != 0){
+        } else if(errno != 0) {
             // other error
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         } else if (value == 0.f) {
             // zero is not allowed 
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         }
         errno = 0;
@@ -275,7 +277,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         }
         errno = 0;
         // check for the "(non-strictly) increasing" constraint
-        if(!( col_ptr >= data->col_ptr[index-1] )){
+        if(col_ptr < data->col_ptr[index - 1]){
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             free(data->col_ptr);
@@ -315,10 +317,11 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         size_t begin = data->col_ptr[i];
         size_t end = ( data->col_ptr[i+1] == 0 ) ? 0 : data->col_ptr[i+1]-1; // begin == end == 0, then straight "-1" results in silent wrap-up and we get 0xfffffffffff in end
         for(index = begin; index < end; index++){ 
-           float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index;
-           float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).index;
-            if(!( b > a )){
-                dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
+           uint64_t a = dynamic_array_at(pair, &data->row_indices, index);
+           uint64_t b = dynamic_array_at(pair, &data->row_indices, index + 1);
+            if(b <= a) {
+                dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
+                dynamic_array_destroy((generic_dynamic_array*)&data->values);
                 free(data->col_ptr);
                 index = index ? index+2 : index+1;
                 // to account for i) 0-indexing ii) the fact that I'm comparing values under indices "index" and "index+1", but since prev test passed, the value under "index+1" is actually the incorrect one here
@@ -425,7 +428,7 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     }
     fprintf(stream, "\n");
     // row_indices
-    for (int i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
+    for (size_t i = 0; i < data.row_indices.length; ++i) {
         // TODO error handling
         if (0 != i) {
             fprintf(stream, ",");

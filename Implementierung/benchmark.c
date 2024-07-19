@@ -12,7 +12,8 @@
 
 always_inline void execute_algorithm_and_reset(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
     algorithm(a, b, result);
-    result->dynamic_values_x_row_indices.length = 0;
+    result->row_indices.length = 0;
+    result->values.length = 0;
 }
 __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
     // We don't want to benchmark the memory allocator --> preallocate.
@@ -121,8 +122,10 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     a->no_rows = b->no_cols = rows;
 
     //Reset arrays without freeing memory since we'll still use it
-    a->dynamic_values_x_row_indices.length = 0;
-    b->dynamic_values_x_row_indices.length = 0;
+    a->row_indices.length = 0;
+    a->values.length = 0;
+    b->row_indices.length = 0;
+    b->values.length = 0;
 
     for(long double filledRelativeBase = 0.; filledRelativeBase <= 1; filledRelativeBase += 0.05) { //Using floating-points in a loop is fine in this case since the resolution is high enough.
         const long double filledRelativeBaseTransformed = filledRelativeBase * filledRelativeBase;

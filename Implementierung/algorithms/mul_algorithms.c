@@ -40,6 +40,6 @@ const char* id_to_name(const unsigned int algorithm_id) {
     return matrix_mul_algorithm_names[algorithm_id];
 }
 
-__attribute__((unused)) always_inline void matr_mult_csc(const void *a, const void *b, void *result) {
+__attribute__((unused)) always_inline void matr_mult_csc(void *a, void *b, void *result) {
     matrix_mul_algorithms[0](a, b, result);
 }

@@ -49,6 +49,6 @@ extern size_t matrix_mul_algorithm_count;
  * @param b The second matrix
  * @param result The matrix to store the result and possible errors in
  */
-__attribute__((unused)) void matr_mult_csc(const void* a, const void* b, void* result);
+__attribute__((unused)) void matrix_mult_csc(void* a, void* b, void* result);
 
 #endif //GRA24CAPSPROJEKT_T064_MUL_ALGORITHMS_H
