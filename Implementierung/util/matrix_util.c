@@ -69,7 +69,6 @@ error sum_compressed_matrix
 
 	return OK;	
 }
-// TODO alternatively scatter to an extended vector and then add up
 
 void mul_compressed_values_vector_w_scalar(DYNAMIC_ARRAY(float)* vector, const float scalar){
 	for (size_t i = 0; i < vector->length; i++)
@@ -78,8 +77,6 @@ void mul_compressed_values_vector_w_scalar(DYNAMIC_ARRAY(float)* vector, const f
 	}
 }
 
-// TODO this can be done with SIMD faster?
-// TODO should we return any erorrs here?
 static void mul_matrix_horizontal(const size_t m, const size_t n, float** const A, float** const B){
 	// note the order of for-loops
 	for(size_t i = 0; i < m; i++){
@@ -89,8 +86,6 @@ static void mul_matrix_horizontal(const size_t m, const size_t n, float** const 
 	}
 }
 
-// TODO this can be done with SIMD faster?
-// TODO should we return any erorrs here?
 static void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vector, float** const matrix){
 	memset(vector, 0, m * sizeof(*vector));
 	for(size_t i = 0; i < m; i++){
@@ -120,7 +115,7 @@ error mul_vector_transposed_w_matrix(
             nested_free(i, copied_vector);
             return OUT_OF_MEMORY;
         }
-        memmove(new_vector, vector, sizeof(*vector) * vector_size); // TODO should/can we use memcpy here?
+        memmove(new_vector, vector, sizeof(*vector) * vector_size);
         copied_vector[i] = new_vector;
     }
 
@@ -169,7 +164,6 @@ float mul_vectors_compressed
 }
 
 void extract_expanded_all_rows_csc(const matrix_data* const matrix, float* const * const all_vectors){	
-	// TODO it is impossible to build in the "is-the-row-empty?"-check here, unless I use some other bool field or sth
 	for(uint64_t j = 0; j < matrix->values.length; j++) {
 		size_t index_in_vector = 0;
 		while(( index_in_vector < matrix->no_cols+1 ) && ( j >= matrix->col_ptr[index_in_vector + 1] )){
