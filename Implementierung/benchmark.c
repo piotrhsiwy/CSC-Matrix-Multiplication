@@ -81,7 +81,7 @@ __attribute__((cold)) void interrupt_handler(const int sig) {
 
             case 's':
             case 'S':
-                print_sig("Warte auf letzten Runs in der aktuellen Größe...\n");
+                print_sig("Warte auf letzte Runs in der aktuellen Größe...\n");
                 continue_unattended_benchmark = false;
                 break;
 
