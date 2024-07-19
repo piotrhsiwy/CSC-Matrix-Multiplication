@@ -1,6 +1,6 @@
 #include "mul_naive.h"
 
-__attribute__((hot)) void matrix_mul_naive(const void*  a, const void*  b, void*  c){
+__attribute__((hot)) void matrix_mul_naive(const void *const a, const void *const b, void *const restrict c) {
 
     const matrix_data* const matrix_A = (const matrix_data* const) a;
     const matrix_data* const matrix_B = (const matrix_data* const) b;

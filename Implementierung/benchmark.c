@@ -8,11 +8,14 @@
 #define SEC_IN_NANOS 1000000000l
 
 
-error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
+__attribute__((always_inline)) void execute_algorithm_and_reset(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
+    algorithm(a, b, result);
+    result->dynamic_values_x_row_indices.length = 0;
+}
+__attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
     // We don't want to benchmark the memory allocator --> preallocate.
     // This should also load the function (instr.) and structures (data) into cache.
-    algorithm(a, b, result);
-    result->dynamic_values_x_row_indices.length = 0; //algorithm expects the array to be empty
+    execute_algorithm_and_reset(algorithm, a, b, result);
 
     struct timespec start;
     if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
@@ -22,8 +25,7 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
     }
 
     for(uint32_t i = 0; i < iterations; ++i) {
-        algorithm(a, b, result);
-        result->dynamic_values_x_row_indices.length = 0; //algorithm expects the array to be empty the next time
+        execute_algorithm_and_reset(algorithm, a, b, result);
         if(result->mul_error != OK) {
             return result->mul_error;
         }
@@ -50,7 +52,7 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
 
 volatile bool continue_unattended_benchmark;
 volatile bool was_signal_interrupt_executed = false;
-void interrupt_handler(const int sig) {
+__attribute__((cold)) void interrupt_handler(const int sig) {
     was_signal_interrupt_executed = true; //let the time measurement know that the duration has been tempered with
 
     if(sig != SIGINT) {
@@ -154,8 +156,8 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             }
 
             run_duration->tv_sec += duration.tv_sec;
-            run_duration->tv_sec += run_duration->tv_nsec / SEC_IN_NANOS;
             run_duration->tv_nsec += duration.tv_nsec;
+            run_duration->tv_sec += run_duration->tv_nsec / SEC_IN_NANOS;
             run_duration->tv_nsec %= SEC_IN_NANOS;
         }
     }
