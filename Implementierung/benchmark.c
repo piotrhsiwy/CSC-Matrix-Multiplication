@@ -12,6 +12,7 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
     // We don't want to benchmark the memory allocator --> preallocate.
     // This should also load the function (instr.) and structures (data) into cache.
     algorithm(a, b, result);
+    result->dynamic_values_x_row_indices.length = 0; //algorithm expects the array to be empty
 
     struct timespec start;
     if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
@@ -22,6 +23,7 @@ error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data 
 
     for(uint32_t i = 0; i < iterations; ++i) {
         algorithm(a, b, result);
+        result->dynamic_values_x_row_indices.length = 0; //algorithm expects the array to be empty the next time
         if(result->mul_error != OK) {
             return result->mul_error;
         }

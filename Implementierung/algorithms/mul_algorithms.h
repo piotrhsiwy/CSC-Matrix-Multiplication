@@ -15,8 +15,10 @@
 
 /**
  * A function that multiplies two given matrices in the order "<result> = <a> x <b>"
+ * a, b and result must be of type matrix_data*.
+ * dynamic_values_x_row_indices in result must be empty before calling any implementation of this prototype.
  */
-typedef void (*matrix_multiplier) (const void*  a, const void*  b, void*  result);
+typedef void (*matrix_multiplier) (const void* a, const void* b, void* result);
 
 /**
  * Converts the given id to a pointer to the implementation of the multiplication algorithm
