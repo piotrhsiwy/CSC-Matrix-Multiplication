@@ -55,13 +55,15 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     char* token;
 
     // See: CSC_format_definition.md for format constraints. This function strictly follows that definition
-    #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line_index, index); return INVALID_VALUE;
-    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Zeile %d ist zu lang. Lese CSC_format_definition.md\n", line_index); return INVALID_LINE_LENGTH;
-    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Zeile %d ist zu kurz. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE;
+    #define REPORT_BAD_VALUE free(line); fprintf(stderr, "Der Wert des Felds %s in Zeile %d unter Index %lu ist inkorrekt. Lese CSC_format_definition.md\n", field, line_index, index); return INVALID_VALUE
+    #define REPORT_TOO_LONG free(line); fprintf(stderr, "Die Zeile %d ist zu lang. Lese CSC_format_definition.md\n", line_index); return INVALID_LINE_LENGTH
+    #define REPORT_TOO_SHORT free(line); fprintf(stderr, "Die Zeile %d ist zu kurz. Lese CSC_format_definition.md\n", line_index); return UNEXPECTED_END_OF_LINE
 
     typedef uint64_t (*u64reader_t)(const char *restrict , char **restrict , int );
     u64reader_t u64reader = 0;
-    if(UINT64_WIDTH/8 == sizeof(unsigned long)) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "Simplify" //if condition is clear at compile time --> clang tidy complains
+    if (UINT64_WIDTH / 8 == sizeof(unsigned long)) {
         u64reader = (u64reader_t)strtoul;
     } else {
         free(line);
@@ -69,6 +71,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         return NO_U64READER_FUNC;
         // uint64_t has different width than both ul and ull?
     }
+#pragma clang diagnostic pop
 
 
     /* LINE 1 */
@@ -85,7 +88,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     if (token[0] == '-'){
         REPORT_BAD_VALUE;
     }
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0)){
+    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE) || errno != 0) {
         REPORT_BAD_VALUE;
     }
     errno = 0;
@@ -296,7 +299,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         for(index = begin; index < end; index++){ 
            float a = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index).index;
            float b = dynamic_array_at(pair, &data->dynamic_values_x_row_indices, index+1).index;
-            if(!( b > a )){
+            if(b <= a) {
                 dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
                 free(data->col_ptr);
                 index = index ? index+2 : index+1;
@@ -403,7 +406,7 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     }
     fprintf(stream, "\n");
     // row_indices
-    for (int i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
+    for (size_t i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
         // TODO error handling
         if (0 != i) {
             int ret = fprintf(stream, ",");

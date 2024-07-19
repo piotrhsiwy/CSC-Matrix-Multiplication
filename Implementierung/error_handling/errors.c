@@ -28,4 +28,6 @@ const char* error_to_str(const error err) {
     case NO_U64READER_FUNC:
         return "No u64reader function";
     }
+
+    return "Unexpected error code";
 }

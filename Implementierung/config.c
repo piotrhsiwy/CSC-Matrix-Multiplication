@@ -56,29 +56,20 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
         }
         // So muss nicht im Switch die Variable erstellt werden
         // ist glaube ich erst mit c23 erlaubt, aber wir nutzen c17
-        size_t length_argument;
-        char* temp;
         error err_return_value;
         // zeigt was gerade geparst wurde
         switch (ret_val) {
         case 'a':
             err_return_value = allocate_argument(optarg, &program_config->matrixA_path);
-            // TODO how to handle this?
-            // are there other possible errors
-            // Just abort??
-            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
+            RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'b':
             err_return_value = allocate_argument(optarg, &program_config->matrixB_path);
-            // TODO how to handle this?
-            // Just abort?
-            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
+            RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'o':
             err_return_value = allocate_argument(optarg, &program_config->matrix_output_path);
-            // TODO how to handle this?
-            // Just abort
-            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
+            RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'V':
             // TODO handle invalid arguments (i.e. things that arent a number)
@@ -93,7 +84,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
         case 'U':
             program_config->is_unattended_benchmark = true;
             err_return_value = allocate_argument(optarg, &program_config->unattended_export_file);
-            RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
+                RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'h':
             // TODO soll checken if requested_help und benchmark gleichzeitig

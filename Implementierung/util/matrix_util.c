@@ -22,31 +22,6 @@ void collapse_matrix_horizontal(const size_t m, const size_t n, float* const vec
 	}
 }
 
-static void swap(const size_t i, const size_t j, pair arr[]){
-	pair temp = arr[i];
-	arr[i] = arr[j];
-	arr[j] = temp;
-}
-
-// TODO optimize this
-static void sort(const size_t count, pair arr[count]){
-	for (size_t i = 0; i < count; i++)
-	{
-		pair min = arr[i];
-		size_t min_index = i;
-		for (size_t j = i+1; j < count; j++)
-		{
-			if(arr[j].index < min.index)
-			{
-				min = arr[j];
-				min_index = j;
-			}
-		}
-		if(i != min_index){
-			swap(i, min_index, arr);
-		}
-	}
-}
 
 error sum_compressed_matrix(DYNAMIC_ARRAY_2D* const vector_2d, DYNAMIC_ARRAY(pair)* const result){
 	if(!vector_2d->length){

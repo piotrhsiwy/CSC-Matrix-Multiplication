@@ -1,14 +1,16 @@
 #include "benchmark.h"
 #include "util/signal_io.h"
+#include "util/attributes.h"
 
 #include <errno.h>
 #include <signal.h>
 #include <stdlib.h>
 
+
 #define SEC_IN_NANOS 1000000000l
 
 
-__attribute__((always_inline)) void execute_algorithm_and_reset(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
+always_inline void execute_algorithm_and_reset(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
     algorithm(a, b, result);
     result->dynamic_values_x_row_indices.length = 0;
 }

@@ -29,7 +29,6 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
     uint64_t* col_ptr_writer = matrix_C->col_ptr; // use this to write to col_ptr array
     *col_ptr_writer = 0; // initialize col_ptr
     col_ptr_writer++;
-    uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     // this is dynamic-array for the values from the col extracted from matrix A
     DYNAMIC_ARRAY_2D colA_vector;

@@ -30,7 +30,6 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract_simd(const void 
     uint64_t* col_ptr_writer = matrix_C->col_ptr; // use this to write to col_ptr array
     *col_ptr_writer = 0; // initialize col_ptr
     col_ptr_writer++;
-    uint64_t values_index = 0; // use this to write to values and row_indices arrays
 
     // these are vectors for all the rows extracted from matrix A
     size_t vector_size = matrix_A->no_cols;

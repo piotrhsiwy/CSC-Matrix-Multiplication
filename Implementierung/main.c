@@ -159,15 +159,8 @@ int main(const int argc, char** argv)
     }
 
     if (OK != output.mul_error) {
-        const char * const prefix = "Multiplication failed: ";
-        switch (output.mul_error) {
-        case OUT_OF_MEMORY:
-            fprintf(stderr, "%sran out of memory.", prefix);
-            break;
-        case DIMENSION_MISMATCH:
-            fprintf(stderr, "%sDimensions of the matrices dont match.", prefix);
-            break;
-        }
+        fprintf(stderr, "Multiplication failed: %s\n", error_to_str(output.mul_error));
+
         deallocate_config_buffers(&options);
         destruct_matrix_data(&a);
         destruct_matrix_data(&b);
