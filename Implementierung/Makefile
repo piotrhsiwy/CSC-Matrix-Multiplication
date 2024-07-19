@@ -92,6 +92,9 @@ vg4:
 .PHONY: vg5
 vg5:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5
+.PHONY: vgBench
+vgBench:
+	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -U tmp.csv -B 10
 
 .PHONY: pf0
 pf0:
