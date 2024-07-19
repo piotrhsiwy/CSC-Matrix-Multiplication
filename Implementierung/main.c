@@ -89,11 +89,13 @@ int main(const int argc, char** argv)
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     if (!matrix_a_file) {
+        deallocate_config_buffers(&options);
         fprintf(stderr, "Cannot open file %s\n", options.matrixA_path);
         return CANNOT_OPEN_FILE;
     }
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
     if (!matrix_b_file) {
+        deallocate_config_buffers(&options);
         fprintf(stderr, "Cannot open file %s\n", options.matrixB_path);
         return CANNOT_OPEN_FILE;
     }
@@ -138,7 +140,8 @@ int main(const int argc, char** argv)
     }
 
     if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)){
-        //TODO: print error
+        // Error messages are always printed on the level when the error is generated -> which is not good
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     if (options.is_benchmark) {
