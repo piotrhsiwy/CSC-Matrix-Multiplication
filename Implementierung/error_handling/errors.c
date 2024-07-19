@@ -12,7 +12,7 @@ const char* error_to_str(const error err) {
     case UNEXPECTED_END_OF_LINE:
         return "Unexpected end of line";
     case CANNOT_OPEN_FILE:
-        return "Cannot open file";
+        return "Datei '%s' kann nicht geöffnet werden";
     case CANNOT_CLOSE_FILE:
         return "Cannot close file";
     case INVALID_VALUE:

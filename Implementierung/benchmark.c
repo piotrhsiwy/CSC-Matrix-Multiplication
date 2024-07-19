@@ -209,14 +209,19 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
         fflush(stdout);
 
         for(uint64_t col_count = row_count / 2; col_count < (row_count * 2) && continue_unattended_benchmark_current_size; col_count += increment) {
-            //TODO: different column counts for a and b
             if(col_count == 0) {
                 continue;
             }
 
-            //TODO: handle error
-            unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &run_duration);
+            error err = unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &run_duration);
             fflush(output); //reduce data-loss in case of Ctrl-C/q
+            if (err == DIMENSION_MISMATCH || err == COULD_NOT_FETCH_TIME) {
+                fprintf(stderr, "\nKritischer Fehler: %s\n", error_to_str(err));
+
+                //quit
+                continue_unattended_benchmark = false;
+                break;
+            }
         }
     }
     printf("\n");

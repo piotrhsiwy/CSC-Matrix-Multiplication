@@ -71,7 +71,7 @@ int main(const int argc, char** argv)
     }
     // Did the user pass all required options?
     if (NULL == options.matrixA_path) {
-        // TODO bessere Fehlermeldung
+        // TODO bessere Fehlermeldung, v. A. wenn -U ohne Parameter angegeben wird.
         fprintf(stderr, "Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
@@ -90,13 +90,13 @@ int main(const int argc, char** argv)
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     if (!matrix_a_file) {
-        fprintf(stderr, "Cannot open file %s\n", options.matrixA_path);
+        fprintf(stderr, "Datei '%s' kann nicht geöffnet werden\n", options.matrixA_path);
         deallocate_config_buffers(&options);
         return CANNOT_OPEN_FILE;
     }
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
     if (!matrix_b_file) {
-        fprintf(stderr, "Cannot open file %s\n", options.matrixB_path);
+        fprintf(stderr, "Datei '%s' kann nicht geöffnet werden\n", options.matrixB_path);
         deallocate_config_buffers(&options);
         return CANNOT_OPEN_FILE;
     }
@@ -105,14 +105,15 @@ int main(const int argc, char** argv)
     matrix_data b;
     error err_a = read_matrix_from_fd(matrix_a_file, &a);
     if (OK != err_a) {
-        // TODO proper error handling
+        fprintf(stderr, "Fehler beim Lesen von A: %s\n", error_to_str(err_a));
+
         if (fclose(matrix_a_file)) {
-            fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+            fprintf(stderr, "Konnte Datei nicht schließen %s\n", options.matrixA_path);
             deallocate_config_buffers(&options);
             return CANNOT_CLOSE_FILE;
         }
         if (fclose(matrix_b_file)) {
-            fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+            fprintf(stderr, "Konnte Datei nicht schließen %s\n", options.matrixB_path);
             deallocate_config_buffers(&options);
             return CANNOT_CLOSE_FILE;
         }
@@ -120,14 +121,16 @@ int main(const int argc, char** argv)
     }
     error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_b) {
+        fprintf(stderr, "Fehler beim Lesen von B: %s\n", error_to_str(err_a));
+
         destruct_matrix_data(&a);
         deallocate_config_buffers(&options);
         if (fclose(matrix_a_file)) {
-            fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+            fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixA_path);
             return CANNOT_CLOSE_FILE;
         }
         if (fclose(matrix_b_file)) {
-            fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+            fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixB_path);
             return CANNOT_CLOSE_FILE;
         }
         return EXIT_FAILURE;
@@ -170,24 +173,23 @@ int main(const int argc, char** argv)
 
     // now write the output
     // TODO evtl printen??
-    // TODO handle fopen failing (also for matrixA + matrixB)
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
     if (!matrix_output_file) {
-        fprintf(stderr, "Cannot open file %s\n", options.matrix_output_path);
+        fprintf(stderr, "Datei '%s' kann nicht geöffnet werden\n", options.matrix_output_path);
         return CANNOT_OPEN_FILE;
     }
     error err_output = write_matrix_to_fd(matrix_output_file, output);
 
     if (fclose(matrix_a_file)) {
-        fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+        fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixA_path);
         return CANNOT_CLOSE_FILE;
     }
     if (fclose(matrix_b_file)) {
-        fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+        fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixB_path);
         return CANNOT_CLOSE_FILE;
     }
     if (fclose(matrix_output_file)) {
-        fprintf(stderr, "Cannot close file %s\n", options.matrix_output_path);
+        fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrix_output_path);
         return CANNOT_CLOSE_FILE;
     }
 
@@ -198,7 +200,7 @@ int main(const int argc, char** argv)
     destruct_matrix_data(&output);
 
     if (OK != err_output) {
-        // TODO better error handling
+        fprintf(stderr, "Fehler beim Schreiben von Ergebnis: %s\n", error_to_str(err_output));
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

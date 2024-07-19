@@ -1,37 +1,41 @@
 #include "dynamic_array.h"
 
 #define DYNAMIC_ARRAY_DECL(T)                                                                                \
+    int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {         \
+        if (capacity <= arr->capacity) {                                                                     \
+            return 0;                                                                                        \
+        }                                                                                                    \
+        T* buf = (T*)realloc(arr->data, capacity * sizeof(T)); /*zeroing free memory would be overkill*/     \
+        if (!buf) {                                                                                          \
+            int err = errno;                                                                                 \
+            errno = 0;                                                                                       \
+            return err;                                                                                      \
+        }                                                                                                    \
+                                                                                                             \
+        arr->data = buf;                                                                                     \
+        arr->capacity = capacity;                                                                            \
+        return 0;                                                                                            \
+    }                                                                                                        \
     int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) *const arr, T v) {                         \
         if(arr->capacity <= arr->length) {                                                                   \
-            T* buf = (T*)reallocarray(arr->data, arr->capacity * 2, sizeof(T));                              \
-            if(!buf){                                                                                        \
-                int err = errno;                                                                             \
-                errno = 0;                                                                                   \
-                return err; /*TODO: try increasing by only 1*/                                               \
-            } else{                                                                                          \
-                arr->data = buf;                                                                             \
-                arr->capacity *= 2;                                                                          \
-                T* uninitialized_from = arr->data + arr->length;                                             \
-                size_t unitialized_how_many = ( arr->capacity - arr->length ) * sizeof(T);                   \
-                memset(uninitialized_from, 0, unitialized_how_many);                                         \
+            if (dynamic_array_reserve(T, arr->capacity * 2, arr)) {                                          \
+                int err = dynamic_array_reserve(T, arr->capacity + 1, arr);                                  \
+                if (err) {                                                                                   \
+                    return err;                                                                              \
+                }                                                                                            \
             }                                                                                                \
         }                                                                                                    \
         arr->data[arr->length] = v;                                                                          \
         arr->length++;                                                                                       \
         return 0;                                                                                            \
     }                                                                                                        \
-    /* the capacity might not be multiple of 2 after concat! */                                              \
     int ___dynamic_array_##T##_macro_defined_concat(                                                         \
-        DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src){                                                \
-        if(dest->capacity < dest->length + src-> length){                                                    \
-            T* buf = reallocarray(dest->data, dest->length + src->length, sizeof(T));                        \
-            if(!buf){                                                                                        \
-                int err = errno;                                                                             \
-                errno = 0;                                                                                   \
+        DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src) {                                               \
+        if(dest->capacity < dest->length + src->length) {                                                    \
+            int err = dynamic_array_reserve(T, dest->length + src->length, dest);                            \
+            if (err) {                                                                                       \
                 return err;                                                                                  \
             }                                                                                                \
-            dest->data = buf;                                                                                \
-            dest->capacity = dest->length + src->length;                                                     \
         }                                                                                                    \
         T* uninitialized_from = dest->data + dest->length;                                                   \
         size_t how_many_copy = src->length * sizeof(T);                                                      \
@@ -45,25 +49,9 @@
             errno = 0;                                                                                       \
             return err;                                                                                      \
         }                                                                                                    \
-        memset(arr->data, 0, capacity * sizeof(T));                                                          \
         arr->length = 0;                                                                                     \
         arr->capacity = capacity;                                                                            \
-        return 0;                                                                                            \
-    }                                                                                                        \
-    int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) *const arr) {         \
-        if (capacity <= arr->capacity) {                                                                     \
-            return 0;                                                                                        \
-        }                                                                                                    \
-        T* buf = (T*)realloc(arr->data, capacity * sizeof(T));                                               \
-        if (!buf) {                                                                                          \
-            int err = errno;                                                                                 \
-            errno = 0;                                                                                       \
-            return err;                                                                                      \
-        }                                                                                                    \
-                                                                                                             \
-        arr->data = buf;                                                                                     \
-        arr->capacity = capacity;                                                                            \
-        return 0;                                                                                            \
+        return 0; /*zeroing memory would be overkill*/                                                       \
     }
 
 DYNAMIC_ARRAY_DECL(float)

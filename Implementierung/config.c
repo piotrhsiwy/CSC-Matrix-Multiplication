@@ -4,6 +4,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 struct option options_struct[] = {
     { "help", no_argument, 0, 'h' }
@@ -28,14 +29,12 @@ __attribute__((cold)) error allocate_argument(const char* const optarg_to_proces
     return OK;
 }
 // TODO refactor to use long everywhere
-__attribute__((cold)) long parse_number(const char* const optarg_to_process)
-{
-    const long value = strtol(optarg_to_process, NULL, 10);
+__attribute__((cold)) long parse_number(const char* const optarg_to_process) {
     errno = 0;
+    const long value = strtol(optarg_to_process, NULL, 10);
     if (errno) {
-        // TODO handle error;
-        // Hier müsste der Error geprintet werden
-        // vgl errno_funktionen
+        fprintf(stderr, "Ungültige Zahl: %s (errno von strtol: %d)\n", optarg_to_process, errno);
+        errno = 0;
     }
     // TODO do we actually care?
     // we dont care about negative numbers or numbers above INT32_MAX
