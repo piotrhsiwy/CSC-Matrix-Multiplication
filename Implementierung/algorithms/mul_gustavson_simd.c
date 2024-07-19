@@ -1,5 +1,6 @@
 #include "mul_gustavson.h"
 
+
 __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const void *const b, void *const restrict c){
 
     const matrix_data* const matrix_A = (const matrix_data* const) a;

@@ -4,6 +4,11 @@
 #include <string.h> // memset
 #include "../util/matrix_util.h"
 
+// this is a wrapper to provide the exact interface specified in the task description
+void matrix_mult_csc(const void* a, const void* b, void* result){
+    matrix_mul_gustavson_simd(a, b, result);
+}
+
 // Symbol defined in ../mul_vector_compressed_w_scalar_SIMD.S
 void mul_vector_compressed_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, const float);
 
