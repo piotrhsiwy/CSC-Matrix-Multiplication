@@ -14,7 +14,7 @@ typedef struct {
     bool requested_help;
     bool is_benchmark;
     bool is_unattended_benchmark;
-    char *unattended_export_dir;
+    char *unattended_export_file;
     long benchmark_repeat_count;
 } config;
 

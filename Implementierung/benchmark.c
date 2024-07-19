@@ -102,7 +102,7 @@ void interrupt_handler(const int sig) {
     }
 }
 
-error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, const uint32_t iterations_per_run, FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data *const c, struct timespec *const run_duration) {
+error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, uint32_t iterations_per_run[const matrix_mul_algorithm_count], FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data *const c, struct timespec *const run_duration) {
     a->no_cols = b->no_rows = cols;
     a->no_rows = b->no_cols = rows;
 
@@ -111,7 +111,6 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     b->dynamic_values_x_row_indices.length = 0;
 
     for(uint8_t filledPercent = 0; filledPercent <= 100; ++filledPercent) {
-        //TODO: handle errors
         error err = fill_matrix(a, filledPercent);
         if(err) {
             return err;
@@ -129,7 +128,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
             struct timespec duration;
-            err = execute_benchmark(a, b, c, iterations_per_run, algo, &duration);
+            err = execute_benchmark(a, b, c, iterations_per_run[algo_id], algo, &duration);
             if(was_signal_interrupt_executed) {
                 was_signal_interrupt_executed = false;
 
@@ -141,7 +140,15 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
             if(err) {
                 fprintf(output, "%lu,%lu,%d,%s,-,%s\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), error_to_str(err));
             } else {
-                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run);
+                fprintf(output, "%lu,%lu,%d,%s,%f,-\n", rows, cols, 100 - filledPercent, id_to_name(algo_id), (duration.tv_sec / (double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id]);
+            }
+
+            //Target 10 seconds of computation but a minimum of 3 iterations. Just an estimation since we're not using nsecs.
+            if(duration.tv_sec > 0) {
+                iterations_per_run[algo_id] = 10 * iterations_per_run[algo_id] / duration.tv_sec;
+                if (iterations_per_run[algo_id] < 3) {
+                    iterations_per_run[algo_id] = 3;
+                }
             }
 
             run_duration->tv_sec += duration.tv_sec;
@@ -153,10 +160,14 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
 
     return OK;
 }
-error unattended_benchmark(const uint32_t iterations_per_run, const char *const export_csv) {
+error unattended_benchmark(const uint32_t initial_iterations_per_run, const char *const export_csv) {
     signal(SIGINT, interrupt_handler);
     srand(123456789); //We want predictable numbers in our matrices.
 
+    uint32_t* iterations_per_run = alloca(matrix_mul_algorithm_count * sizeof *iterations_per_run);
+    for(uint32_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
+        iterations_per_run[algo_id] = initial_iterations_per_run;
+    }
     continue_unattended_benchmark = true;
 
     matrix_data a = EMPTY_MATRIX_INIT;

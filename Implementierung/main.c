@@ -17,13 +17,13 @@ void deallocate_config_buffers(config* options)
     options->matrixA_path = NULL;
     free(options->matrixB_path);
     options->matrixB_path = NULL;
-    free(options->unattended_export_dir);
-    options->unattended_export_dir = NULL;
+    free(options->unattended_export_file);
+    options->unattended_export_file = NULL;
 }
 
 int main(const int argc, char** argv)
 {
-    config options = { .algorithm = 0, .benchmark_repeat_count = 100, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_dir = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
+    config options = { .algorithm = 0, .benchmark_repeat_count = 10000, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
         switch (err_parse_config) {
@@ -44,11 +44,11 @@ int main(const int argc, char** argv)
                                      "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
                                      "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
                                         "\t0: der normale Algorithmus. TODO was macht er\n"
-                                     "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrixen. Diese Daten werden dann ausgegeben.\n"
+                                     "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrizen. Diese Daten werden dann ausgegeben.\n"
                                      "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n"
                                      "-U <Pfad zu Ausgabe-Datei>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte in der angegebenen csv-Datei.\n"
-                                        "\tMuss in Kombination mit -B verwendet werden, um Anzahl anzugeben (default ist 100). Dabei werden die Ergebnisse jedoch nicht in stdout ausgegeben.\n"
-                                        "\tCtrl-C wärend der Ausführung: Menü mit folgenden Optionen:\n"
+                                        "\tKann in Kombination mit -B verwendet werden, um Startanzahl der Iterationen pro Messung anzugeben (default ist 10000). Die Anzahl der Iterationen wird automatisch basierend auf der Dauer später einzeln angepasst. Dabei werden die Ergebnisse jedoch nicht in stdout ausgegeben.\n"
+                                        "\tCtrl-C während der Ausführung: Menü mit folgenden Optionen:\n"
                                             "\t\tTesten fortführen [c]: Führt den Test fort.\n"
                                             "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
                                             "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
@@ -59,12 +59,12 @@ int main(const int argc, char** argv)
         return EXIT_SUCCESS;
     }
     if (options.is_unattended_benchmark) {
-        if (options.unattended_export_dir == NULL) {
+        if (options.unattended_export_file == NULL) {
             // getopt will already print an error message. No need to print one ourselves
             deallocate_config_buffers(&options);
             return EXIT_FAILURE;
         }
-        unattended_benchmark(options.benchmark_repeat_count, options.unattended_export_dir);
+        unattended_benchmark(options.benchmark_repeat_count, options.unattended_export_file);
         deallocate_config_buffers(&options);
         return EXIT_SUCCESS;
     }

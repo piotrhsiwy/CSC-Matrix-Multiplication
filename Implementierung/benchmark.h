@@ -24,10 +24,11 @@ __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_
 /**
  * Performs benchmarks each algorithm on multiple matrix sizes and sparseness and exports the results to the given
  * directory.
- * @param iterations_per_run The amount of iterations to run for each combination of parameters
+ * @param initial_iterations_per_run The amount of multiplications performed for each measurement. This value will be
+ *                                   automatically adapted internally to reach a specific time target later on.
  * @param export_csv The file where the benchmarking results will be stored
  * @return The error if one occurred, OK otherwise.
  */
-error unattended_benchmark(uint32_t iterations_per_run, const char* export_csv);
+error unattended_benchmark(uint32_t initial_iterations_per_run, const char* export_csv);
 
 #endif //GRA24CAPSPROJEKT_T064_BENCHMARK_H

@@ -92,7 +92,7 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
             break;
         case 'U':
             program_config->is_unattended_benchmark = true;
-            err_return_value = allocate_argument(optarg, &program_config->unattended_export_dir);
+            err_return_value = allocate_argument(optarg, &program_config->unattended_export_file);
             RETURN_IF_NOT_OK(err_return_value, OUT_OF_MEMORY);
             break;
         case 'h':
