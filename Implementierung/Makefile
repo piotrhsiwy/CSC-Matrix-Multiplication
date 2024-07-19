@@ -85,13 +85,19 @@ vg2:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C2.txt -V 2
 .phony: vg3
 vg3:
-	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/a.txt -b matrices/b.txt -o matrices/c3.txt -v 3
+	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C3.txt -V b
 .PHONY: vg4
 vg4:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C4.txt -V 4
 .PHONY: vg5
 vg5:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C5.txt -V 5
+.PHONY: vgBench
+vg6:
+	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C6.txt -V 6
+.PHONY: vgBench
+vg7:
+	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -a matrices/A.txt -b matrices/B.txt -o matrices/C7.txt -V 7
 .PHONY: vgBench
 vgBench:
 	valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./main -U tmp.csv -B 10
