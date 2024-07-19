@@ -134,32 +134,22 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
         const float value = strtof(token, NULL);
 
-        if(*token == '\n'){
-           // the value erray is empty -> all the values in the matrix are zeros
+        if(*token == '\n') {
+           // the value array is empty -> all the values in the matrix are zeros
            errno = 0;
            break;
         }
 
-        if(( value == HUGE_VALF || value == -HUGE_VALF ) && errno == ERANGE){
-            // overflow -> warn about rounding
-            // TODO
+        if((value == HUGE_VALF || value == -HUGE_VALF ) && errno == ERANGE) {
+            fprintf(stderr, "Warnung: Überlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE){
-            // underflow -> warn about rounding
-            // TODO
+        } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
+            fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else if(errno != 0){
-            // other error
+        } else {
+            // We catch any invalid numbers here (including '0').
             dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
             REPORT_BAD_VALUE;
-        } else if (value == 0.f) {
-            // zero is not allowed 
-            // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
-            dynamic_array_destroy((generic_dynamic_array*)&data->dynamic_values_x_row_indices);
-            REPORT_BAD_VALUE;
-        } else{
-            // +inf, -inf and NaN
-            // TODO
         }
         errno = 0;
 
@@ -393,7 +383,7 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
 {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
-    // methode, um ein Array zu schreiben lohnt sich nicht, denn es gibt keine Generics
+
     // TODO macros???
     // values
     for (uint64_t i = 0; i < data.dynamic_values_x_row_indices.length; ++i) {
