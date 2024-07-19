@@ -89,14 +89,14 @@ int main(const int argc, char** argv)
     // read the matrixes from the specified paths
     FILE* matrix_a_file = fopen(options.matrixA_path, "r");
     if (!matrix_a_file) {
-        deallocate_config_buffers(&options);
         fprintf(stderr, "Cannot open file %s\n", options.matrixA_path);
+        deallocate_config_buffers(&options);
         return CANNOT_OPEN_FILE;
     }
     FILE* matrix_b_file = fopen(options.matrixB_path, "r");
     if (!matrix_b_file) {
-        deallocate_config_buffers(&options);
         fprintf(stderr, "Cannot open file %s\n", options.matrixB_path);
+        deallocate_config_buffers(&options);
         return CANNOT_OPEN_FILE;
     }
 
@@ -105,13 +105,14 @@ int main(const int argc, char** argv)
     error err_a = read_matrix_from_fd(matrix_a_file, &a);
     if (OK != err_a) {
         // TODO proper error handling
-        deallocate_config_buffers(&options);
         if (fclose(matrix_a_file)) {
             fprintf(stderr, "Cannot close file %s\n", options.matrixA_path);
+            deallocate_config_buffers(&options);
             return CANNOT_CLOSE_FILE;
         }
         if (fclose(matrix_b_file)) {
             fprintf(stderr, "Cannot close file %s\n", options.matrixB_path);
+            deallocate_config_buffers(&options);
             return CANNOT_CLOSE_FILE;
         }
         return EXIT_FAILURE;
