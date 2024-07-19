@@ -146,6 +146,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
+            //TODO: cross-check results
             struct timespec duration;
             err = execute_benchmark(a, b, c, iterations_per_run[algo_id], algo, &duration);
             if(was_signal_interrupt_executed) {
