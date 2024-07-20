@@ -22,6 +22,7 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
+    memset(matrix->col_ptr, 0, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
 
     if(dynamic_array_reserve(float, 4, &matrix->values)){
         fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __FUNCTION__);
@@ -441,7 +442,6 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
         if (0 != i) {
             fprintf(stream, ",");
         }
-
         fprintf(stream, FORMAT_UINT_64, data.col_ptr[i]);
     }
     return OK;
