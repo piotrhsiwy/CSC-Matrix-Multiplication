@@ -1,6 +1,7 @@
 #include "benchmark.h"
 #include "util/signal_io.h"
 #include "util/attributes.h"
+#include "util/rng.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -10,15 +11,15 @@
 #define SEC_IN_NANOS 1000000000l
 
 
-always_inline void execute_algorithm_and_reset(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
-    algorithm(a, b, result);
+always_inline void reset_result_and_execute_algorithm(const matrix_multiplier algorithm, const matrix_data* a, const matrix_data* b, matrix_data *const restrict result) {
     result->row_indices.length = 0;
     result->values.length = 0;
+    algorithm(a, b, result);
 }
 __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_data* b, matrix_data *const result, const uint32_t iterations, const matrix_multiplier algorithm, struct timespec *const duration) {
     // We don't want to benchmark the memory allocator --> preallocate.
     // This should also load the function (instr.) and structures (data) into cache.
-    execute_algorithm_and_reset(algorithm, a, b, result);
+    reset_result_and_execute_algorithm(algorithm, a, b, result);
 
     struct timespec start;
     if (clock_gettime(CLOCK_MONOTONIC, &start) == -1) {
@@ -28,7 +29,7 @@ __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_
     }
 
     for(uint32_t i = 0; i < iterations; ++i) {
-        execute_algorithm_and_reset(algorithm, a, b, result);
+        reset_result_and_execute_algorithm(algorithm, a, b, result);
         if(result->mul_error != OK) {
             return result->mul_error;
         }
@@ -117,7 +118,7 @@ __attribute__((cold)) void interrupt_handler(const int sig) {
     }
 }
 
-error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, uint32_t iterations_per_run[const matrix_mul_algorithm_count], FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data *const c, struct timespec *const run_duration) {
+error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t cols, uint32_t iterations_per_run[const matrix_mul_algorithm_count], FILE *const output, matrix_data *const a, matrix_data *const b, matrix_data cs[const 2], struct timespec *const run_duration) {
     a->no_cols = b->no_rows = cols;
     a->no_rows = b->no_cols = rows;
 
@@ -130,6 +131,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     for(long double filledRelativeBase = 0.; filledRelativeBase <= 1; filledRelativeBase += 0.05) { //Using floating-points in a loop is fine in this case since the resolution is high enough.
         const long double filledRelativeBaseTransformed = filledRelativeBase * filledRelativeBase;
 
+        rng_start_values rng_state = get_current_rng_seed();
         error err = fill_matrix(a, filledRelativeBaseTransformed);
         if(err) {
             return err;
@@ -138,17 +140,21 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
         if(err) {
             return err;
         }
-        err = allocate_matrix_data(a->no_rows, b->no_cols, c);
+        err = allocate_matrix_data(a->no_rows, b->no_cols, &cs[0]);
+        if(err) {
+            return err;
+        }
+        err = allocate_matrix_data(a->no_rows, b->no_cols, &cs[1]);
         if(err) {
             return err;
         }
 
+        size_t res_index = 0;
         for(size_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
             const matrix_multiplier algo = matrix_mul_algorithms[algo_id];
 
-            //TODO: cross-check results
             struct timespec duration;
-            err = execute_benchmark(a, b, c, iterations_per_run[algo_id], algo, &duration);
+            err = execute_benchmark(a, b, &cs[res_index % 2], iterations_per_run[algo_id], algo, &duration);
             if(was_signal_interrupt_executed) {
                 was_signal_interrupt_executed = false;
 
@@ -157,10 +163,26 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
                 continue;
             }
 
-            if(err) {
-                fprintf(output, "%lu,%lu,%Lf,%s,-,%s\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), error_to_str(err));
+            matrix_data *const current_result = &cs[res_index % 2];
+            const matrix_data *const previous_result = &cs[(res_index + 1) % 2];
+            if(res_index > 0 &&
+                    (current_result->values.length != previous_result->values.length
+                    || current_result->row_indices.length != previous_result->row_indices.length
+                    || current_result->no_cols != previous_result->no_cols
+                    || current_result->no_rows != previous_result->no_rows
+                    || memcmp(current_result->values.data, previous_result->values.data, current_result->values.length * sizeof *current_result->values.data) != 0
+                    || memcmp(current_result->row_indices.data, previous_result->row_indices.data, current_result->row_indices.length * sizeof *current_result->row_indices.data) != 0
+                    || memcmp(current_result->col_ptr, previous_result->col_ptr, (current_result->no_cols + 1) * sizeof *current_result->col_ptr) != 0)
+              ) {
+                current_result->mul_error = INCONSISTENT_RESULTS;
             } else {
-                fprintf(output, "%lu,%lu,%Lf,%s,%Lf,-\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), (duration.tv_sec / (long double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id]);
+                ++res_index;
+            }
+
+            if(err) {
+                fprintf(output, "%lu,%lu,%Lf,%s,-,(%d; %ld),%s\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), rng_state.initial_seed, rng_state.index_in_series, error_to_str(err));
+            } else {
+                fprintf(output, "%lu,%lu,%Lf,%s,%Lf,(%d; %ld),-\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), (duration.tv_sec / (long double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id], rng_state.initial_seed, rng_state.index_in_series);
             }
 
             //Target 10 seconds of computation but a minimum of 3 iterations. Just an estimation since we're not using nsecs.
@@ -182,7 +204,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
 }
 error unattended_benchmark(const uint32_t initial_iterations_per_run, const char *const export_csv) {
     signal(SIGINT, interrupt_handler);
-    srand(123456789); //We want predictable numbers in our matrices.
+    init_rng();
 
     uint32_t* iterations_per_run = alloca(matrix_mul_algorithm_count * sizeof *iterations_per_run);
     for(uint32_t algo_id = 0; algo_id < matrix_mul_algorithm_count; ++algo_id) {
@@ -194,10 +216,10 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
     matrix_data a = EMPTY_MATRIX_INIT;
     matrix_data b = EMPTY_MATRIX_INIT;
 
-    matrix_data c = EMPTY_MATRIX_INIT;
+    matrix_data cs[] = { EMPTY_MATRIX_INIT, EMPTY_MATRIX_INIT };
 
     FILE *const output = fopen(export_csv, "w");
-    fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Error\n");
+    fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Matrix-Seed (initial seed; rng index),Error\n");
 
     struct timespec run_duration = {.tv_sec = 0, .tv_nsec = 0};
     for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; ++row_count) {
@@ -217,7 +239,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
                 continue;
             }
 
-            error err = unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, &c, &run_duration);
+            error err = unattended_benchmark_for_dimensions(row_count, col_count, iterations_per_run, output, &a, &b, cs, &run_duration);
             fflush(output); //reduce data-loss in case of Ctrl-C/q
             if (err == DIMENSION_MISMATCH || err == COULD_NOT_FETCH_TIME) {
                 fprintf(stderr, "\nKritischer Fehler: %s\n", error_to_str(err));
@@ -232,7 +254,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
 
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
-    destruct_matrix_data(&c);
+    destruct_matrix_data(&cs);
 
     fclose(output);
     signal(SIGINT, SIG_DFL); //reset signal handler

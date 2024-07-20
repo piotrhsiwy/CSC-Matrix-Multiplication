@@ -3,6 +3,7 @@
 #include "util/format.h"
 #include "util/dynamic_array.h"
 #include "util/compare.h"
+#include "util/rng.h"
 
 #include <errno.h>
 #include <limits.h>
@@ -155,7 +156,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
             dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         } else if (value == 0.f) {
-            // zero is not allowed 
+            // zero is not allowed
+            //TODO: zero is actually allowed
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
@@ -344,7 +346,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
     matrix->row_indices.length = 0;
 
     for(size_t i = 0; i < entries; ++i) {
-        dynamic_array_add(float, &matrix->values, (float)rand() + 0.00001); //random float bigger than 0
+        dynamic_array_add(float, &matrix->values, (float)next_random_number() + 0.00001); //random float bigger than 0
     }
 
     uint64_t cells_with_space = matrix->no_cols * matrix->no_rows;
@@ -360,7 +362,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
     }
 
     for(size_t i = 0; i < entries; ++i) {
-        size_t cell_offset = rand() % cells_with_space;
+        size_t cell_offset = next_random_number() % cells_with_space;
         cells_with_space--;
 
         for(size_t col = 0; col < matrix->no_cols; ++col) {
@@ -389,7 +391,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
         //
         // (Both are equivalent.)
         for(uint64_t i = 0; i < filled_cells; ++i) {
-            row_indices[i] = rand() % free_cells;
+            row_indices[i] = next_random_number() % free_cells;
             --free_cells;
             //TODO: directly insert into correct position (binary search insertion)
             qsort(row_indices, i, sizeof(*row_indices), cmp_u64);

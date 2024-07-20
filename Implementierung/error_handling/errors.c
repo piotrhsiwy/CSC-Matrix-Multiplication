@@ -19,6 +19,8 @@ const char* error_to_str(const error err) {
         return "Invalid value";
     case DIMENSION_MISMATCH:
         return "Dimension mismatch";
+    case INCONSISTENT_RESULTS:
+        return "Inconsistent Results between algorithms";
     case COULD_NOT_FETCH_TIME:
         return "Could not fetch time";
     case UNDEFINED:
