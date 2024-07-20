@@ -150,14 +150,16 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
             fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
+        } else if( isinff(value) || isnanf(value) ){
+            // inf, -inf or NaN
+            dynamic_array_destroy((generic_dynamic_array*)&data->values);
+            REPORT_BAD_VALUE;
         } else if(errno != 0) {
             // other error
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             REPORT_BAD_VALUE;
         } else if (value == 0.f) {
-            // zero is not allowed
-            //TODO: zero is actually allowed
-            // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
+            // zero is not allowed 
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             REPORT_BAD_VALUE;
         }
@@ -416,10 +418,8 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
 
-    // TODO macros???
     // values
     for (uint64_t i = 0; i < data.values.length; ++i) {
-        // TODO error Handling
         if (i == 0) {
             fprintf(stream, "%f", dynamic_array_at(float, &data.values, (size_t)i));
         } else {
@@ -429,7 +429,6 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     fprintf(stream, "\n");
     // row_indices
     for (size_t i = 0; i < data.row_indices.length; ++i) {
-        // TODO error handling
         if (0 != i) {
             fprintf(stream, ",");
         }
@@ -439,7 +438,6 @@ __attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_
     fprintf(stream, "\n");
     // col_ptr
     for (uint64_t i = 0; i < (data.no_cols + 1); ++i) {
-        // TODO error handling
         if (0 != i) {
             fprintf(stream, ",");
         }

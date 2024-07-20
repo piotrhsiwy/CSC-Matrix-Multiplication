@@ -1,2 +1,0 @@
-CAVEAT: the resulting matrix is NOT a diagonal matrix in this case!, because Multiplication
-of special values with a 0, like inf*0 DOES NOT result in 0, but NaN instead!
