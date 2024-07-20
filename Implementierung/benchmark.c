@@ -185,12 +185,13 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
                 fprintf(output, "%lu,%lu,%Lf,%s,%Lf,(%d; %ld),-\n", rows, cols, 1. - filledRelativeBaseTransformed, id_to_name(algo_id), (duration.tv_sec / (long double)SEC_IN_NANOS + duration.tv_nsec) / iterations_per_run[algo_id], rng_state.initial_seed, rng_state.index_in_series);
             }
 
-            //Target 10 seconds of computation but a minimum of 3 iterations. Just an estimation since we're not using nsecs.
+            //Target 3 seconds of computation but a minimum of 3 iterations. Just an estimation since we're not using nsecs.
             if(duration.tv_sec > 0) {
-                iterations_per_run[algo_id] = 10 * iterations_per_run[algo_id] / duration.tv_sec;
+                iterations_per_run[algo_id] = 3 * iterations_per_run[algo_id] / duration.tv_sec;
                 if (iterations_per_run[algo_id] < 3) {
                     iterations_per_run[algo_id] = 3;
                 }
+                printf("current iterations for algo %ld: %d\n", algo_id, iterations_per_run[algo_id]);
             }
 
             run_duration->tv_sec += duration.tv_sec;
