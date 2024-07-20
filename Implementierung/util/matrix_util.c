@@ -146,8 +146,8 @@ float mul_vectors_compressed
 		// I can use the fact that the incides are increasing in both arrays
 		float 	 cur_val_A = dynamic_array_at(float, values_A, i);
 		uint64_t cur_ind_A = dynamic_array_at(uint64_t, indices_A, i);
-		float 	 cur_val_B = dynamic_array_at(float, values_B, i);
-		uint64_t cur_ind_B = dynamic_array_at(uint64_t, indices_B, i);
+		float 	 cur_val_B = dynamic_array_at(float, values_B, j);
+		uint64_t cur_ind_B = dynamic_array_at(uint64_t, indices_B, j);
 		if(cur_ind_A > cur_ind_B){
 			j++;
 			continue;

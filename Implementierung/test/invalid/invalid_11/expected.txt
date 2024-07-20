@@ -1,1 +1,2 @@
 Der Wert des Felds values in Zeile 2 unter Index 0 ist inkorrekt. Lese CSC_format_definition.md
+Fehler beim Lesen von A: Invalid value

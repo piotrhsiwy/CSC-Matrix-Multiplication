@@ -60,7 +60,7 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
         fprintf(stderr, "Cannot dynamically allocate memory for colB_indices field in function %s\n", __FUNCTION__);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-        dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
+        dynamic_array_destroy((generic_dynamic_array*)&colB_values);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -72,8 +72,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
         if(error != OK){
             dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
             dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-            dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-            dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+            dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
             matrix_C->mul_error = error;
             return;
         }
@@ -90,8 +90,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
                 fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __FUNCTION__);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
                 matrix_C->mul_error = OUT_OF_MEMORY;
                 return;
             }
@@ -100,8 +100,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
                 fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __FUNCTION__);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
                 dynamic_array_destroy((generic_dynamic_array*)&new_col_values);
                 matrix_C->mul_error = OUT_OF_MEMORY;
                 return;
@@ -113,8 +113,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
             if(error != OK){
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-                dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+                dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
                 dynamic_array_destroy((generic_dynamic_array*)&new_col_values);
                 dynamic_array_destroy((generic_dynamic_array*)&new_col_indices);
                 matrix_C->mul_error = error;
@@ -127,8 +127,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
                     fprintf(stderr, "Cannot add new element to colA_values_vector in function %s\n", __FUNCTION__);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-                    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-                    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+                    dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+                    dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col_values);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col_indices);
                     matrix_C->mul_error = OUT_OF_MEMORY;
@@ -138,8 +138,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
                     fprintf(stderr, "Cannot add new element to colA_indices_vector in function %s\n", __FUNCTION__);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-                    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-                    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+                    dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+                    dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col_values);
                     dynamic_array_destroy((generic_dynamic_array*)&new_col_indices);
                     matrix_C->mul_error = OUT_OF_MEMORY;
@@ -162,8 +162,8 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
         if (error != OK) {
             dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
             dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-            dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-            dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+            dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+            dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
             matrix_C->mul_error = error;
             return;
         } 
@@ -178,10 +178,11 @@ __attribute__((hot)) void matrix_mul_gustavson(const void *const a, const void *
         *col_ptr_writer = matrix_C->values.length;
         col_ptr_writer++;
         colB_values.length = 0; // reset the compressed col from B
+        colB_indices.length = 0; // reset the compressed col from B
     }
     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
-    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_values);
-    dynamic_array_recursive_destroy((generic_dynamic_array*)&colB_indices);
+    dynamic_array_destroy((generic_dynamic_array*)&colB_values);
+    dynamic_array_destroy((generic_dynamic_array*)&colB_indices);
     matrix_C->mul_error = OK; 
 }

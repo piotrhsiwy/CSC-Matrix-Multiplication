@@ -1,1 +1,3 @@
-Die Zeile 3 ist zu kurz. Lese CSC_format_definition.md
+Warnung: Überlauf -> Wert '4.123E+38' wird gerundet.
+Die Zeile 4 ist zu kurz. Lese CSC_format_definition.md
+Fehler beim Lesen von A: Unexpected end of line

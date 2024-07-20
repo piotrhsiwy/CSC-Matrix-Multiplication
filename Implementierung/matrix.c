@@ -152,13 +152,11 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if(errno != 0) {
             // other error
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
-            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         } else if (value == 0.f) {
             // zero is not allowed 
             // TODO can we disambiguate wether it was a zero or an invalid number format?? maybe errno?? read some manpages
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
-            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;
         }
         errno = 0;
@@ -217,7 +215,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         }
         errno = 0;
         // check for length constraint (too long) before "at"-ing to dynamic array, else it could result in writing to unallocated block
-        if(index >= MAX_VALUES_LENGTH || index >= data->row_indices.length){
+        if(index >= MAX_VALUES_LENGTH || index >= data->values.length){
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_TOO_LONG;
