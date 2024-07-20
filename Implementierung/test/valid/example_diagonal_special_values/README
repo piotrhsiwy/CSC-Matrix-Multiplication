@@ -1,10 +1,2 @@
-3,3
-9.0,1.18e-38,4.123E+38,76534.0
-0,0,0,2
-0,3,3,4
-
-### from ../../../CSC_format_definition.md
-> 0, c1, c2, ... (line 4)
-    #9 have to pass sanity check:
-        for all index in [0, no_cols-1]: i[c[index]], ..., i[c[index+1]] are strictly increasing (implies: unique)
-            where i[] and c[] are values from lines 3 and 4 respectively
+CAVEAT: the resulting matrix is NOT a diagonal matrix in this case!, because Multiplication
+of special values with a 0, like inf*0 DOES NOT result in 0, but NaN instead!

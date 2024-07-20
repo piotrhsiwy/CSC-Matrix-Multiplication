@@ -1,2 +1,4 @@
+Warnung: Unterlauf -> Wert '1.17e-38' wird gerundet.
+Warnung: Überlauf -> Wert '4.123E+38' wird gerundet.
 Matrix size mismatch
-Multiplication failed: Dimensions of the matrices dont match.
+Multiplication failed: Dimension mismatch

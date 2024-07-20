@@ -1,1 +1,3 @@
+Warnung: Überlauf -> Wert '4.123E+38' wird gerundet.
 Die Zeile 3 ist zu lang. Lese CSC_format_definition.md
+Fehler beim Lesen von A: Invalid line length

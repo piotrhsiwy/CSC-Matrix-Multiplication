@@ -37,7 +37,7 @@ done
 for dir in valid/* ; do
     for alg in $(seq 0 7); do
         echo "----------------------------- Testcase $dir Alg $alg -----------------------------"
-        ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt 2>$dir/log.txt
+        ${BINARY_TO_TEST} -a $dir/A.txt -b $dir/B.txt -o $dir/C.txt -V ${alg} 2>$dir/log.txt
         if [ $? = 0 ]; then
             # echo "+ return value is correctly EXIT_SUCCESS (ret $?). Checking stderr output..."
             if [ ! -s "$dir/log.txt" ]; then
