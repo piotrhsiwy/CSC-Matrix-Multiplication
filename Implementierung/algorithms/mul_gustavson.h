@@ -11,11 +11,10 @@
  * more space efficient than any algorithm that expands any vector to 
  * its' true size in its' operation. This corresponds well with the benefits of
  * the CSC/RSC format itself.
- *  @c + Secondly it minimizes the so-called @c concordant traversals, as per [1]
+ *  @c + Secondly it maximizes the count of the so-called @c concordant traversals, as per [1]
  * and [2]. In the case of CSC format and under the constraints of our
  * matrix_data struct (See matrix.h), that would be when when we try to
- * explicitely load a *row* of a matrix. This should result in bad memory
- * locality, which in turn would sharply limit performance. Instead, we extract
+ * explicitely load a single *col* of a matrix,as opposed to a row. Therefore we extract
  * a col from B (efficient fetch) and all the cols from A (efficient fetch)
  * for which the value in col from B is not zero. After multiplying and Summing
  * up the results, this will yield a full column of the result matrix.
