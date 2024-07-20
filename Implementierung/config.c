@@ -103,8 +103,8 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
     return OK;
 }
 
-void print_config_struct(config option) {
-    printf("");
+void print_config_struct(__attribute__((unused))config option) {
+    // printf("");
 }
 
 // to run this unit-test, put it somewhere in the main. Most of the time, the user doesnt want to unit-test so its not included.

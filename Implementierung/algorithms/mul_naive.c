@@ -7,14 +7,14 @@ __attribute__((hot)) void matrix_mul_naive(const void *const a, const void *cons
 
     float** expanded_A = malloc(( matrix_A->no_cols ) * sizeof(*expanded_A));
     if(!expanded_A){
-        fprintf(stderr, "Cannot allocate memory for field expanded_A in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for field expanded_A in function %s\n", __func__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
     for (size_t col = 0; col < matrix_A->no_cols; col++) {
         float* temp = malloc(( matrix_A->no_rows ) * sizeof(*temp));
         if(!temp){
-            fprintf(stderr, "Cannot allocate memory for field expanded_A[%lu] in function %s\n", col, __FUNCTION__);
+            fprintf(stderr, "Cannot allocate memory for field expanded_A[%lu] in function %s\n", col, __func__);
             nested_free(col, expanded_A);
             matrix_C->mul_error = OUT_OF_MEMORY;
             return;
@@ -25,7 +25,7 @@ __attribute__((hot)) void matrix_mul_naive(const void *const a, const void *cons
     
     float** expanded_B = malloc(( matrix_B->no_cols * matrix_B->no_rows )* sizeof(*expanded_B));
     if(!expanded_B){
-        fprintf(stderr, "Cannot allocate memory for field expanded_B in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for field expanded_B in function %s\n", __func__);
         nested_free(matrix_A->no_cols, expanded_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -33,7 +33,7 @@ __attribute__((hot)) void matrix_mul_naive(const void *const a, const void *cons
     for (size_t col = 0; col < matrix_B->no_cols; col++) {
         float* temp = malloc(( matrix_B->no_rows ) * sizeof(*temp));
         if(!temp){
-            fprintf(stderr, "Cannot allocate memory for field expanded_B[%lu] in function %s\n", col, __FUNCTION__);
+            fprintf(stderr, "Cannot allocate memory for field expanded_B[%lu] in function %s\n", col, __func__);
             nested_free(matrix_A->no_cols, expanded_A);
             nested_free(col, expanded_B);
             matrix_C->mul_error = OUT_OF_MEMORY;
@@ -45,7 +45,7 @@ __attribute__((hot)) void matrix_mul_naive(const void *const a, const void *cons
 
     float** expanded_C = malloc(( matrix_C->no_cols * matrix_C->no_rows )* sizeof(*expanded_C)); //TODO: Shouldn't this just be matrix_C->no_cols * sizeof? (I just fixed a memory-error here that was caused by wrong types but this still does not make sense.)
     if(!expanded_C){
-        fprintf(stderr, "Cannot allocate memory for field expanded_C in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for field expanded_C in function %s\n", __func__);
         nested_free(matrix_A->no_cols, expanded_A);
         nested_free(matrix_B->no_cols, expanded_B);
         matrix_C->mul_error = OUT_OF_MEMORY;
@@ -54,7 +54,7 @@ __attribute__((hot)) void matrix_mul_naive(const void *const a, const void *cons
     for (size_t col = 0; col < matrix_C->no_cols; col++) {
         float* temp = malloc(( matrix_C->no_rows ) * sizeof(*temp));
         if(!temp){
-            fprintf(stderr, "Cannot allocate memory for field expanded_C[%lu] in function %s\n", col, __FUNCTION__);
+            fprintf(stderr, "Cannot allocate memory for field expanded_C[%lu] in function %s\n", col, __func__);
             nested_free(matrix_A->no_cols, expanded_A);
             nested_free(matrix_B->no_cols, expanded_B);
             nested_free(col, expanded_C);

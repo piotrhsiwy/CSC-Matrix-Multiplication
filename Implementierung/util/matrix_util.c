@@ -105,13 +105,13 @@ error mul_vector_transposed_w_matrix(
 	// copied_vectors is a matrix where every row is equal to *vector*. One can think about it as single transposed and copied column from matrix B
     float** copied_vector = malloc(sizeof(*copied_vector)* how_many_vectors);
     if(!copied_vector){
-        fprintf(stderr, "Cannot allocate memory for copied_vector in function %s.\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for copied_vector in function %s.\n", __func__);
         return OUT_OF_MEMORY;
     }
     for(size_t i = 0; i < how_many_vectors; i++){
         float* new_vector = malloc(sizeof(*vector) * vector_size);
         if(!new_vector){
-            fprintf(stderr, "Cannot allocate memory for copied_vector[%lu] vector field in function %s.\n", i, __FUNCTION__);
+            fprintf(stderr, "Cannot allocate memory for copied_vector[%lu] vector field in function %s.\n", i, __func__);
             nested_free(i, copied_vector);
             return OUT_OF_MEMORY;
         }
@@ -215,7 +215,7 @@ error extract_compressed_row_csc
 ){
 	for(uint64_t j = 0; j < matrix->values.length; j++){
 		if(dynamic_array_at(uint64_t, &matrix->row_indices, j) == index){
-			uint64_t ind;
+			uint64_t ind = 0;
 			for(uint64_t l = 0; l < matrix->no_cols+1; l++){
 				if(matrix->col_ptr[l] <= j && matrix->col_ptr[l+1] > j){
 					ind = l;
@@ -225,12 +225,12 @@ error extract_compressed_row_csc
 			float value = dynamic_array_at(float, &matrix->values, j);
 			if(dynamic_array_add(float, values, value))
 			{
-				fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+				fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
 				return OUT_OF_MEMORY;
 			}
 			if(dynamic_array_add(uint64_t, indices, ind))
 			{
-				fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+				fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
 				return OUT_OF_MEMORY;
 			}
 		}
@@ -244,12 +244,12 @@ error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t
 		uint64_t row_index = dynamic_array_at(uint64_t, &matrix->row_indices, j);
 		if(dynamic_array_add(float, values, value))
 		{
-			fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+			fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
 			return OUT_OF_MEMORY;
 		}
 		if(dynamic_array_add(uint64_t, indices, row_index))
 		{
-			fprintf(stderr, "Cannot add new element to indices in function %s\n", __FUNCTION__);
+			fprintf(stderr, "Cannot add new element to indices in function %s\n", __func__);
 			return OUT_OF_MEMORY;
 	}
 	}
@@ -286,12 +286,12 @@ static error compress_vector
 		if(value != 0){
 			if(dynamic_array_add(float, values, value))
 			{
-				fprintf(stderr, "Cannot add an element to dynamic array values in function %s\n", __FUNCTION__);
+				fprintf(stderr, "Cannot add an element to dynamic array values in function %s\n", __func__);
 				return OUT_OF_MEMORY;
 			}
 			if(dynamic_array_add(uint64_t, indices, index))
 			{
-				fprintf(stderr, "Cannot add an element to dynamic array values in function %s\n", __FUNCTION__);
+				fprintf(stderr, "Cannot add an element to dynamic array values in function %s\n", __func__);
 				return OUT_OF_MEMORY;
 			}
 		}

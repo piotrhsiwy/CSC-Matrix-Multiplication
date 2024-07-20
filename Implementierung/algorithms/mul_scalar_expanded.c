@@ -36,7 +36,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
     size_t vector_size = matrix_A->no_cols;
     float* vector_A = malloc(sizeof(*vector_A) * vector_size);
     if(!vector_A){
-        fprintf(stderr, "Cannot allocate memory for vector_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for vector_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __func__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
@@ -44,7 +44,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
     // this is vector for the col extracted from matrix B
     float* vector_B = malloc(sizeof(*vector_B) * vector_size);
     if(!vector_B){
-        fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __func__);
         free(vector_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -75,14 +75,14 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
             float value = mul_vectors_expanded(vector_size, vector_A, vector_B);
             if(value != 0.0f){
                 if(dynamic_array_add(float, &matrix_C->values, value)){
-                    fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
                     free(vector_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
                 if(dynamic_array_add(uint64_t, &matrix_C->row_indices, i)){
-                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __func__);
                     free(vector_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;

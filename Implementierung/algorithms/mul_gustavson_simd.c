@@ -35,14 +35,14 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
     // this is dynamic-array for the values from the col extracted from matrix A
     DYNAMIC_ARRAY_2D_float colA_values_vector;
     if(dynamic_array_new(___dynamic_array_float_macro_defined, 4, &colA_values_vector)){
-        fprintf(stderr, "Cannot dynamically allocate memory for colA_values_vector in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for colA_values_vector in function %s\n", __func__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
     // this is dynamic-array for the indices from the col extracted from matrix A
     DYNAMIC_ARRAY_2D_uint64_t colA_indices_vector;
     if(dynamic_array_new(___dynamic_array_uint64_t_macro_defined, 4, &colA_indices_vector)){
-        fprintf(stderr, "Cannot dynamically allocate memory for colA_indices_vector in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for colA_indices_vector in function %s\n", __func__);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -50,7 +50,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
     // this is dynamic-array for the values of the col extracted from matrix B
     DYNAMIC_ARRAY(float) colB_values;
     if(dynamic_array_new(float, 4, &colB_values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for colB_values field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for colB_values field in function %s\n", __func__);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
         matrix_C->mul_error = OUT_OF_MEMORY;
@@ -59,7 +59,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
     // this is dynamic-array for the indices of the col extracted from matrix B
     DYNAMIC_ARRAY(uint64_t) colB_indices;
     if(dynamic_array_new(uint64_t, 4, &colB_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for colB_indices field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for colB_indices field in function %s\n", __func__);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
         dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
         dynamic_array_destroy((generic_dynamic_array*)&colB_values);
@@ -89,7 +89,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
             // they have to be _new'd on every run, because we possibly (if col no empty) will have to allocate new ones for every extract column
             DYNAMIC_ARRAY(float) new_col_values = {.data = 0, .length = 0, .capacity = 0}; // to @ignore 'use of uinitialized value when reallocating in dynamic_array_new'
             if(dynamic_array_new(float, 4, &new_col_values)){
-                fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __FUNCTION__);
+                fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __func__);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB_values);
@@ -99,7 +99,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
             }
             DYNAMIC_ARRAY(uint64_t) new_col_indices = {.data = 0, .length = 0, .capacity = 0}; // to @ignore 'use of uinitialized value when reallocating in dynamic_array_new'
             if(dynamic_array_new(uint64_t, 4, &new_col_indices)){
-                fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __FUNCTION__);
+                fprintf(stderr, "Cannot dynamically allocate memory for new_col_values field in function %s\n", __func__);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                 dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
                 dynamic_array_destroy((generic_dynamic_array*)&colB_values);
@@ -126,7 +126,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
             if(new_col_values.length) {
                 // add it to the 2D dynamic_arrays if the column is not empty. Note that new_col_values.length === new_col_indices.length
                 if(dynamic_array_add(___dynamic_array_float_macro_defined, &colA_values_vector, new_col_values)){
-                    fprintf(stderr, "Cannot add new element to colA_values_vector in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to colA_values_vector in function %s\n", __func__);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
                     dynamic_array_destroy((generic_dynamic_array*)&colB_values);
@@ -137,7 +137,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
                     return;
                 }
                 if(dynamic_array_add(___dynamic_array_uint64_t_macro_defined, &colA_indices_vector, new_col_indices)){
-                    fprintf(stderr, "Cannot add new element to colA_indices_vector in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to colA_indices_vector in function %s\n", __func__);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_values_vector);
                     dynamic_array_recursive_destroy((generic_dynamic_array*)&colA_indices_vector);
                     dynamic_array_destroy((generic_dynamic_array*)&colB_values);
