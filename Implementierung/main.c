@@ -119,6 +119,7 @@ int main(const int argc, char** argv)
             deallocate_config_buffers(&options);
             return CANNOT_CLOSE_FILE;
         }
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
     error err_b = read_matrix_from_fd(matrix_b_file, &b);
@@ -135,6 +136,7 @@ int main(const int argc, char** argv)
             fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixB_path);
             return CANNOT_CLOSE_FILE;
         }
+        deallocate_config_buffers(&options);
         return EXIT_FAILURE;
     }
 
