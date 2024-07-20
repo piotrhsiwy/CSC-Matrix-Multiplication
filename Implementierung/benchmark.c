@@ -254,7 +254,8 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
 
     destruct_matrix_data(&a);
     destruct_matrix_data(&b);
-    destruct_matrix_data(&cs);
+    destruct_matrix_data(&cs[0]);
+    destruct_matrix_data(&cs[1]);
 
     fclose(output);
     signal(SIGINT, SIG_DFL); //reset signal handler

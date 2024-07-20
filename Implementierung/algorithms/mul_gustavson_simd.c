@@ -19,6 +19,7 @@ __attribute__((hot)) void matrix_mul_gustavson_simd(const void *const a, const v
         // one of the matrices has length_values == 0. That means all values in the result matrix are also 0;
     if(matrix_A->values.length == 0 || matrix_B->values.length == 0){
         memset(matrix_C->col_ptr, 0, matrix_C->no_cols+1);
+        matrix_C->mul_error = OK;
         return;
     }
 
