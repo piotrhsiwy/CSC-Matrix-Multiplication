@@ -124,10 +124,9 @@ int main(const int argc, char** argv)
     }
     error err_b = read_matrix_from_fd(matrix_b_file, &b);
     if (OK != err_b) {
-        fprintf(stderr, "Fehler beim Lesen von B: %s\n", error_to_str(err_a));
+        fprintf(stderr, "Fehler beim Lesen von B: %s\n", error_to_str(err_b));
 
         destruct_matrix_data(&a);
-        deallocate_config_buffers(&options);
         if (fclose(matrix_a_file)) {
             fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixA_path);
             return CANNOT_CLOSE_FILE;
@@ -145,12 +144,16 @@ int main(const int argc, char** argv)
     if (!algorithm) {
         fprintf(stderr, "Unbekannter Algorithmus. Siehe -h bzw. --help für mehr Informationen.\n");
         deallocate_config_buffers(&options);
+        destruct_matrix_data(&a);
+        destruct_matrix_data(&b);
         return EXIT_FAILURE;
     }
 
     if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)){
         // Error messages are always printed on the level when the error is generated -> which is not good
         deallocate_config_buffers(&options);
+        destruct_matrix_data(&a);
+        destruct_matrix_data(&b);
         return EXIT_FAILURE;
     }
     if (options.is_benchmark) {

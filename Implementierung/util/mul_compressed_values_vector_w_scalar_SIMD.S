@@ -36,7 +36,7 @@ mul_compressed_values_vector_w_scalar_SIMD:
 
     jmp 2f
 1:
-    movups xmm1, XMMWORD PTR [rdi]
+    movups xmm1, XMMWORD PTR [r8]
     mulps xmm1, xmm0
     movups XMMWORD PTR[r8], xmm1
     add r8, 0x10
