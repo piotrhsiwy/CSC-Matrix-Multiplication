@@ -191,7 +191,6 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
                 if (iterations_per_run[algo_id] < 3) {
                     iterations_per_run[algo_id] = 3;
                 }
-                printf("current iterations for algo %ld: %d\n", algo_id, iterations_per_run[algo_id]);
             }
 
             run_duration->tv_sec += duration.tv_sec;
