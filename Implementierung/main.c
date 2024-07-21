@@ -39,7 +39,6 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
     if (options.requested_help) {
-        // TODO add all the algorithms and what they do
         const char* const help_str = "Help Message\n\n"
                                      "Das Programm unterstützt folgende Optionen:\n"
                                      "-a <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die multipliziert werden soll liegt.\n"
