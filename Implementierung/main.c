@@ -181,6 +181,14 @@ int main(const int argc, char** argv)
         destruct_matrix_data(&a);
         destruct_matrix_data(&b);
         destruct_matrix_data(&output);
+        if (fclose(matrix_a_file)) {
+            fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixA_path);
+            return CANNOT_CLOSE_FILE;
+        }
+        if (fclose(matrix_b_file)) {
+            fprintf(stderr, "Datei '%s' kann nicht geschlossen werden\n", options.matrixB_path);
+            return CANNOT_CLOSE_FILE;
+        }
         return EXIT_FAILURE;
     }
 
