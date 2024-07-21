@@ -27,15 +27,17 @@ __attribute__((cold)) error allocate_argument(const char* const optarg_to_proces
     *target = buffer;
     return OK;
 }
-__attribute__((cold)) long parse_number(const char* const optarg_to_process)
+__attribute__((cold)) error parse_number(const char* const optarg_to_process, long* result)
 {
     errno = 0;
     const long value = strtol(optarg_to_process, NULL, 10);
     if (errno) {
         fprintf(stderr, "Ungültige Zahl: %s (errno von strtol: %d)\n", optarg_to_process, errno);
         errno = 0;
+        return INVALID_VALUE;
     }
-    return value;
+    *result = value;
+    return OK;
 }
 
 __attribute__((cold)) error parse_arguments(const int argc, char* const* const argv, config* const program_config)
@@ -68,13 +70,19 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
             break;
         case 'V':
             // TODO handle invalid arguments (i.e. things that arent a number)
-            program_config->algorithm = parse_number(optarg);
+            err_return_value = parse_number(optarg, &program_config->algorithm);
+            if (err_return_value != OK) {
+                fprintf(stderr, "You tried to pass something thats not a number to select the algorithm.\n Falling back to the default.");
+                program_config->algorithm = 0;
+            }
             break;
         case 'B':
             program_config->is_benchmark = true;
-            program_config->benchmark_repeat_count = parse_number(optarg);
-            // TODO how do optional arguments work??
-            // i dont think this works if -B used without argument
+            err_return_value = parse_number(optarg, &program_config->benchmark_repeat_count);
+            if (OK != err_return_value) {
+                fprintf(stderr, "You tried to pass something thats not a number to set the times the benchmark should be repeated.\nFalling back to the default.");
+                program_config->benchmark_repeat_count = 1;
+            }
             break;
         case 'U':
             program_config->is_unattended_benchmark = true;
