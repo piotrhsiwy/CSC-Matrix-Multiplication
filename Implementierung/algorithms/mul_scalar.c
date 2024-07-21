@@ -35,13 +35,13 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
     // this is dynamic vector for the row extracted from matrix A
     DYNAMIC_ARRAY(float) values_A;
     if(dynamic_array_new(float, 4, &values_A)){
-        fprintf(stderr, "Cannot dynamically allocate memory for values_A field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for values_A field in function %s\n", __func__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
     DYNAMIC_ARRAY(uint64_t) indices_A;
     if(dynamic_array_new(uint64_t, 4, &indices_A)){
-        fprintf(stderr, "Cannot dynamically allocate memory for indices_A field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for indices_A field in function %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&values_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -49,7 +49,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
     // this is dynamic vector for the col extracted from matrix B
     DYNAMIC_ARRAY(float) values_B;
     if(dynamic_array_new(float, 4, &values_B)){
-        fprintf(stderr, "Cannot dynamically allocate memory for values_B field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for values_B field in function %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&values_A);
         dynamic_array_destroy((generic_dynamic_array*)&indices_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
@@ -57,7 +57,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
     }
     DYNAMIC_ARRAY(uint64_t) indices_B;
     if(dynamic_array_new(uint64_t, 4, &indices_B)){
-        fprintf(stderr, "Cannot dynamically allocate memory for indices_B field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for indices_B field in function %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&values_A);
         dynamic_array_destroy((generic_dynamic_array*)&indices_A);
         dynamic_array_destroy((generic_dynamic_array*)&values_B);
@@ -114,7 +114,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
             float value = mul_vectors_compressed(&values_A, &indices_A, &values_B, &indices_B);
             if(value != 0.0f){
                 if(dynamic_array_add(float, &matrix_C->values, value)){
-                    fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
                     dynamic_array_destroy((generic_dynamic_array*)&values_A);
                     dynamic_array_destroy((generic_dynamic_array*)&indices_A);
                     dynamic_array_destroy((generic_dynamic_array*)&values_B);
@@ -123,7 +123,7 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
                     return;
                 }
                 if(dynamic_array_add(uint64_t, &matrix_C->row_indices, i)){
-                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __func__);
                     dynamic_array_destroy((generic_dynamic_array*)&values_A);
                     dynamic_array_destroy((generic_dynamic_array*)&indices_A);
                     dynamic_array_destroy((generic_dynamic_array*)&values_B);

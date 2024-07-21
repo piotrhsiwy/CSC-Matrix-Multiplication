@@ -2,7 +2,7 @@
 main
 
 vgcore*
-perf.data*
+perf*
 
 Cdebug.txt
 C0.txt

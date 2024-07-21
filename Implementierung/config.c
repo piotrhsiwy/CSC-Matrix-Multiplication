@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 
 struct option options_struct[] = {
@@ -105,8 +104,8 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
 }
 
 //TODO: use or remove
-void print_config_struct(config option) {
-    printf("");
+void print_config_struct(__attribute__((unused))config option) {
+    // printf("");
 }
 
 //TODO: use

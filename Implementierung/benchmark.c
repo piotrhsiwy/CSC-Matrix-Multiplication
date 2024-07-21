@@ -222,7 +222,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
     fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Matrix-Seed (initial seed; rng index),Error\n");
 
     struct timespec run_duration = {.tv_sec = 0, .tv_nsec = 0};
-    for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; ++row_count) {
+    for(uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; row_count+=10) {
         //Cover 10 equally spaced values in range #rows/2 to #rows*2 for #columns
         uint64_t increment = (row_count / 2) / 5;
         if(increment < 1) {

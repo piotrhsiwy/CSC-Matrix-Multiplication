@@ -35,14 +35,14 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const void *cons
     size_t vector_size = matrix_A->no_cols;
     float** all_vectors_A = malloc(sizeof(*all_vectors_A)* matrix_A->no_rows);
     if(!all_vectors_A){
-        fprintf(stderr, "Cannot allocate memory for all_vectors_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for all_vectors_A field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", __func__);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
     }
     for(size_t i = 0; i < matrix_A->no_rows; i++){
         float* vector = malloc(sizeof(*vector) * vector_size);
         if(!vector){
-            fprintf(stderr, "Cannot allocate memory for all_vectors_A[%lu] vector field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", i, __FUNCTION__);
+            fprintf(stderr, "Cannot allocate memory for all_vectors_A[%lu] vector field in function %s.\nThis could be due to key limitation of this implementation. See mul_scalar_expanded.h", i, __func__);
             nested_free(i, all_vectors_A);
             matrix_C->mul_error = OUT_OF_MEMORY;
             return;
@@ -54,7 +54,7 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const void *cons
     // this is vector for the col extracted from matrix B
     float* vector_B = malloc(sizeof(*vector_B) * vector_size);
     if(!vector_B){
-        fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot allocate memory for vector_B field in function %s\n", __func__);
         nested_free(matrix_A->no_rows, all_vectors_A);
         matrix_C->mul_error = OUT_OF_MEMORY;
         return;
@@ -83,14 +83,14 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract(const void *cons
             float value = mul_vectors_expanded(vector_size, all_vectors_A[i], vector_B);
             if(value != 0.0f){
                 if(dynamic_array_add(float, &matrix_C->values, value)){
-                    fprintf(stderr, "Cannot add new element to values in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to values in function %s\n", __func__);
                     nested_free(matrix_A->no_rows, all_vectors_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;
                     return;
                 }
                 if(dynamic_array_add(uint64_t, &matrix_C->row_indices, i)){
-                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __FUNCTION__);
+                    fprintf(stderr, "Cannot add new element to row_indices in function %s\n", __func__);
                     nested_free(matrix_A->no_rows, all_vectors_A);
                     free(vector_B);
                     matrix_C->mul_error = OUT_OF_MEMORY;

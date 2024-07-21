@@ -18,7 +18,7 @@ with the following semantics:
     #2 values-range: [1, UINT64_MAX]
 > v0, v1, v2, ... (line 2)
     #3 length: [0, min{UINT64_MAX, no_rows*no_cols}]
-    #4 values-range: float - {0.0f}
+    #4 values-range: float - {0.0f, inf, -inf, nan}
 > i0, i1, i2, ... (line 3)
     #5 length: same as of the previous line
     #6 values-range: [0, no_rows-1]

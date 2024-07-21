@@ -16,21 +16,23 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     matrix->no_cols = no_cols;
     matrix->mul_error = UNDEFINED;
 
+    //TODO: german output
     void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
     if(!(tmp)){
-        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __func__);
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
+    memset(matrix->col_ptr, 0, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
 
     if(dynamic_array_reserve(float, 4, &matrix->values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __func__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
 
     if(dynamic_array_reserve(uint64_t, 4, &matrix->row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __func__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
@@ -75,7 +77,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         u64reader = (u64reader_t)strtoul;
     } else {
         free(line);
-        fprintf(stderr, "Keine Funktion um die Daten vom Typ uint64_t zu lesen in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Keine Funktion um die Daten vom Typ uint64_t zu lesen in function %s\n", __func__);
         return NO_U64READER_FUNC;
         // uint64_t has different width than both ul and ull?
     }
@@ -124,9 +126,10 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "values";
     index = 0;
 
+    //TODO: german output
     // allocate for values field
     if(dynamic_array_new(float, 4, &data->values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __func__);
         return OUT_OF_MEMORY;
     }
 
@@ -157,7 +160,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         errno = 0;
 
         if(dynamic_array_add(float, &data->values, value)){
-            fprintf(stderr, "Cannot add element to dynamically sized array values in function %s\n", __FUNCTION__);
+            fprintf(stderr, "Cannot add element to dynamically sized array values in function %s\n", __func__);
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             free(line);
             return OUT_OF_MEMORY;
@@ -179,9 +182,10 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "row_indices";
     index = 0;
 
+    //TODO: german output
     // allocate for row_indices field
     if(dynamic_array_new(uint64_t, 4, &data->row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&data->values);
         return OUT_OF_MEMORY;
     }
@@ -229,7 +233,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     // allocate for no_cols field
     uint64_t* temp = malloc(sizeof(*temp) * (data->no_cols + 1));
     if (NULL == temp) {
-        fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __FUNCTION__);
+        fprintf(stderr, "Cannot dynamically allocate memory for cols field in function %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&data->values);
         dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
         return OUT_OF_MEMORY;
