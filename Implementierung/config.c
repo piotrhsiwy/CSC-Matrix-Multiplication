@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 struct option options_struct[] = {
     { "help", no_argument, 0, 'h' }
 };
@@ -23,13 +22,11 @@ __attribute__((cold)) error allocate_argument(const char* const optarg_to_proces
     if (NULL == buffer) {
         return OUT_OF_MEMORY;
     }
-    // TODO use a string function instead
     memcpy(buffer, optarg_to_process, length);
     buffer[length] = '\0';
     *target = buffer;
     return OK;
 }
-// TODO refactor to use long everywhere
 __attribute__((cold)) long parse_number(const char* const optarg_to_process) {
     errno = 0;
     const long value = strtol(optarg_to_process, NULL, 10);
@@ -37,8 +34,6 @@ __attribute__((cold)) long parse_number(const char* const optarg_to_process) {
         fprintf(stderr, "Ungültige Zahl: %s (errno von strtol: %d)\n", optarg_to_process, errno);
         errno = 0;
     }
-    // TODO do we actually care?
-    // we dont care about negative numbers or numbers above INT32_MAX
     return value;
 }
 
@@ -87,11 +82,14 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
             RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'h':
-            // TODO soll checken if requested_help und benchmark gleichzeitig
             program_config->requested_help = true;
             break;
         case ':':
             // is it actually B or did the user forget the argument for something else
+            if ('B' != optopt) {
+                fprintf(stderr, "You forgot to pass a required argument to '%c'", optopt);
+                break;
+            }
             program_config->is_benchmark = true;
             program_config->benchmark_repeat_count = 1;
             break;
@@ -103,12 +101,6 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
     return OK;
 }
 
-//TODO: use or remove
-void print_config_struct(__attribute__((unused))config option) {
-    // printf("");
-}
-
-//TODO: use
 // to run this unit-test, put it somewhere in the main. Most of the time, the user doesnt want to unit-test so its not included.
 void unit_test_parse_arguments(void) {
     // do the basics work?
@@ -156,6 +148,5 @@ void unit_test_parse_arguments(void) {
     if (options2.requested_help != true) {
         fprintf(stderr, "Testcase 2: --help passed, but request_help is false.\n");
     }
-    // TODO more
     printf("Finished with the unit-test!\n");
 }
