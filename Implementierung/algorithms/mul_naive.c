@@ -24,7 +24,7 @@ __attribute__((hot)) void matr_mult_csc_V5(const void* const a, const void* cons
         memset(temp, 0, (matrix_A->no_rows) * sizeof(*temp));
     }
 
-    float** expanded_B = malloc((matrix_B->no_cols * matrix_B->no_rows) * sizeof(*expanded_B));
+    float** expanded_B = malloc((matrix_B->no_cols) * sizeof(*expanded_B));
     if (!expanded_B) {
         fprintf(stderr, "Cannot allocate memory for field expanded_B in function %s\n", __func__);
         nested_free(matrix_A->no_cols, expanded_A);
@@ -44,7 +44,7 @@ __attribute__((hot)) void matr_mult_csc_V5(const void* const a, const void* cons
         memset(temp, 0, (matrix_B->no_rows) * sizeof(*temp));
     }
 
-    float** expanded_C = malloc((matrix_C->no_cols * matrix_C->no_rows) * sizeof(*expanded_C)); // TODO: Shouldn't this just be matrix_C->no_cols * sizeof? (I just fixed a memory-error here that was caused by wrong types but this still does not make sense.)
+    float** expanded_C = malloc((matrix_C->no_cols));
     if (!expanded_C) {
         fprintf(stderr, "Cannot allocate memory for field expanded_C in function %s\n", __func__);
         nested_free(matrix_A->no_cols, expanded_A);
