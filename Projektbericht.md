@@ -28,7 +28,7 @@ Es wurde parallel mit zwei verschiedenen Systemen und CPU-Architekturen die Perf
 
 Dazu wurde eine *Benchmarking-Funktionalität* in das Programm eingebaut: *-U <csv-Datei-Pfad>*. Dabei werden Matrizen
 unterschiedlicher Größe und Dichte automatisch generiert und mehrfach multipliziert. Die Dauer der Ausführung der
-jeweiligen Algorithmen wird in der angegebenen Datei gespeichert und die Ergebnisse überprüft.
+jeweiligen Algorithmen wird in der angegebenen Datei gespeichert und die Ergebnisse der Multipliktion überprüft.
 
 ## Arbeitsaufteilung
 Für verschiedene Algorithmen war *Piotr Siwy* verantwortlich, wobei die Ideen für die meisten Algorithmen
