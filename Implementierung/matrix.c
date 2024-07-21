@@ -148,7 +148,8 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     }
 
     for (token = strtok(line, ","); token; token = strtok(NULL, ","), index++) {
-        const float value = strtof(token, NULL);
+        char* end;
+        const float value = strtof(token, &end);
 
         if (*token == '\n') {
             // the value array is empty -> all the values in the matrix are zeros
@@ -162,7 +163,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if (value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
             fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else if (isinff(value) || isnanf(value) || errno != 0 || value == 0.f) {
+        } else if (isinff(value) || isnanf(value) || end == token) {
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             REPORT_BAD_VALUE;
         }
