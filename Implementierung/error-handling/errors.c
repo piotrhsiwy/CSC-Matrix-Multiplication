@@ -1,7 +1,7 @@
 #include "errors.h"
 
-
-const char* error_to_str(const error err) {
+const char* error_to_str(const error err)
+{
     switch (err) {
     case OK:
         return "OK";

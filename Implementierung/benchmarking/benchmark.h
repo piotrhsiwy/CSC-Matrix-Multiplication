@@ -7,7 +7,6 @@
 
 #include <time.h>
 
-
 /**
  * Performs a matrix multiplication multiple times and measures the time
  * @param a the first matrix of the multiplication

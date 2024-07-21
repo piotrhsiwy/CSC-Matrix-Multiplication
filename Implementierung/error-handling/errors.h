@@ -23,8 +23,10 @@ typedef enum {
 
 } error;
 
-#define RETURN_IF_NOT_OK(value, return_value)  if (OK != (value)) return (return_value)
-#define RETURN_IF_NOT_OK_SIMPLE(value)  RETURN_IF_NOT_OK(value, value)
+#define RETURN_IF_NOT_OK(value, return_value) \
+    if (OK != (value))                        \
+    return (return_value)
+#define RETURN_IF_NOT_OK_SIMPLE(value) RETURN_IF_NOT_OK(value, value)
 
 const char* error_to_str(error error);
 

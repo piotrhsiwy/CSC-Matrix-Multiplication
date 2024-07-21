@@ -139,4 +139,4 @@ clean:
 
 .PHONY: format
 format:
-	clang-format -i config.c config.h benchmark.c benchmark.h main.c matrix.c matrix.h util/*  algorithms/*
+	clang-format -i config.c config.h main.c matrix.c matrix.h util/*  algorithms/*
