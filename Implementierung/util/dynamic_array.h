@@ -1,7 +1,11 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMacroInspection"
 #define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc. Clan Tidy is stupid: NOLINT(*-reserved-identifier)
+#pragma clang diagnostic pop
+
 #include <string.h> // memset
 #include <stdint.h> // size_t, uint64_t
 #include <errno.h> // errno

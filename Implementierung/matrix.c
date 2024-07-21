@@ -72,6 +72,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     u64reader_t u64reader;
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "Simplify" //if condition is clear at compile time --> clang tidy complains
+#pragma ide diagnostic ignored "UnreachableCode" //if condition is clear at compile time --> clang tidy complains
     if (UINT64_WIDTH / 8 == sizeof(unsigned long)) {
         u64reader = (u64reader_t)strtoul;
     } else {
@@ -80,6 +81,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         return NO_U64READER_FUNC;
         // uint64_t has different width than both ul and ull?
     }
+#pragma clang diagnostic pop
 #pragma clang diagnostic pop
 
 
