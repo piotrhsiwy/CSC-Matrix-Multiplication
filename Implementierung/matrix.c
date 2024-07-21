@@ -16,23 +16,22 @@ __attribute__((cold)) error allocate_matrix_data(const uint64_t no_rows, const u
     matrix->no_cols = no_cols;
     matrix->mul_error = UNDEFINED;
 
-    //TODO: german output
     void* tmp = realloc(matrix->col_ptr, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
     if(!(tmp)){
-        fprintf(stderr, "Out of memory for col_ptr field in function %s\n", __func__);
+        fprintf(stderr, "Nicht genug Arbeitsspeicher für col_ptr in Funktion %s\n", __func__);
         return OUT_OF_MEMORY;
     }
     matrix->col_ptr = tmp;
     memset(matrix->col_ptr, 0, sizeof(*matrix->col_ptr) * (matrix->no_cols + 1));
 
     if(dynamic_array_reserve(float, 4, &matrix->values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for values field in function %s\n", __func__);
+        fprintf(stderr, "Nicht genug Arbeitsspeicher für values in Funktion %s\n", __func__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
 
     if(dynamic_array_reserve(uint64_t, 4, &matrix->row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __func__);
+        fprintf(stderr, "Nicht genug Arbeitsspeicher für row_indices in Funktion %s\n", __func__);
         free(matrix->col_ptr);
         return OUT_OF_MEMORY;
     }
@@ -126,10 +125,9 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "values";
     index = 0;
 
-    //TODO: german output
     // allocate for values field
     if(dynamic_array_new(float, 4, &data->values)){
-        fprintf(stderr, "Cannot dynamically allocate memory for dynamic_values_x_row_indices field in function %s\n", __func__);
+        fprintf(stderr, "Nicht genug Arbeitsspeicher für dynamic_values_x_row_indices in Funktion %s\n", __func__);
         return OUT_OF_MEMORY;
     }
 
@@ -160,7 +158,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         errno = 0;
 
         if(dynamic_array_add(float, &data->values, value)){
-            fprintf(stderr, "Cannot add element to dynamically sized array values in function %s\n", __func__);
+            fprintf(stderr, "Nicht genug Arbeitsspeicher für values in Funktion %s\n", __func__);
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             free(line);
             return OUT_OF_MEMORY;
@@ -182,10 +180,9 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     field = "row_indices";
     index = 0;
 
-    //TODO: german output
     // allocate for row_indices field
     if(dynamic_array_new(uint64_t, 4, &data->row_indices)){
-        fprintf(stderr, "Cannot dynamically allocate memory for row_indices field in function %s\n", __func__);
+        fprintf(stderr, "Nicht genug Arbeitsspeicher für row_indices in Funktion %s\n", __func__);
         dynamic_array_destroy((generic_dynamic_array*)&data->values);
         return OUT_OF_MEMORY;
     }
@@ -384,7 +381,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
         for(uint64_t i = 0; i < filled_cells; ++i) {
             row_indices[i] = next_random_number() % free_cells;
             --free_cells;
-            //TODO: directly insert into correct position (binary search insertion)
+            //Binary search insertion would be (a lot) faster but overkill for this simple function.
             qsort(row_indices, i, sizeof(*row_indices), cmp_u64);
 
             for(uint64_t j = 0; j < i; ++j) {
@@ -404,8 +401,7 @@ error fill_matrix(matrix_data *const matrix, const long double filledCellsRelati
     return OK;
 }
 
-__attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_data data)
-{
+__attribute__((cold)) error write_matrix_to_fd(FILE* const stream, const matrix_data data) {
     // write the noRows,NoCols
     fprintf(stream, "%lu,%lu\n", data.no_rows, data.no_cols);
 
