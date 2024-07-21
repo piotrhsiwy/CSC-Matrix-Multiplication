@@ -46,7 +46,14 @@ int main(const int argc, char** argv)
                                      "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
                                      "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
                                      "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
-                                     "\t0: der normale Algorithmus. TODO was macht er\n"
+                                     "\t0: scalar - rechnet auf komprimierte Vektoren.\n",
+                                     "\t1: scalar_expanded - rechnet auf expandierte Vektoren.\n",
+                                     "\t2: scalar_expanded_preextract - rechnet auf expandierte Vektoren. Pre-caches alle rows aus A vor der Bearbeitung.\n",
+                                     "\t3: vector - wie scalar_expanded_preextract, aber versuch eine Ergebnis-Spalte in einem call zu berechnen.\n",
+                                     "\t4: gustavson - Grundimplementation der Gustavsons Algorithmus. Extrahiert im Laufe der Berechnung nur Spalten aus beide A und B.\n",
+                                     "\t5: naive - Unsere Referenzimplementierung. Wie scalar_expanded_preextract, aber rechnet und speichert das Ergebnis in Expandierte Form. Nur nach der Berechnung wird es Komprimiert.\n",
+                                     "\t6: scalar_expanded_preextract_simd - Wie scalar_expanded_prextract, aber ruft eine SIMD Implemtierung beim Multiplizieren von Vektoren.\n",
+                                     "\t7: gustavson_simd - Wie gustavson, aber ruft eine SIMD Implemtierung beim Multiplizieren von Komprimierten Vektor mit einem Skalar.\n",
                                      "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrizen. Diese Daten werden dann ausgegeben.\n"
                                      "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n"
                                      "-U <Pfad zu Ausgabe-Datei>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte in der angegebenen csv-Datei.\n"
