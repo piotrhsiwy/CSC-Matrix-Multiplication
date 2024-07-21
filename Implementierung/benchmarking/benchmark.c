@@ -214,7 +214,7 @@ error unattended_benchmark(const uint32_t initial_iterations_per_run, const char
     matrix_data cs[] = { EMPTY_MATRIX_INIT, EMPTY_MATRIX_INIT };
 
     FILE* const output = fopen(export_csv, "w");
-    fprintf(output, "#Rows,#Columns,Sparseness [%% empty],Algorithm,Duration [nsec],Matrix-Seed (initial seed; rng index),Error\n");
+    fprintf(output, "#Rows,#Columns,Sparseness [relative Cells empty],Algorithm,Duration [nsec],Matrix-Seed (initial seed; rng index),Error\n");
 
     struct timespec run_duration = { .tv_sec = 0, .tv_nsec = 0 };
     for (uint64_t row_count = 1; row_count < UINT64_MAX / 2 && continue_unattended_benchmark; row_count += 1) {
