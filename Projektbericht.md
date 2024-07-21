@@ -42,7 +42,7 @@ Projektbericht. Um das Beheben sinnvoller und Ignorieren fälschlicher Warnungen
 kümmerte er sich ebenfalls. Letzteres wurden von allen anderen mit bearbeitet. Der verbundene Quellcode befindet sich
 überwiegend in *util/* und *benchmarking/*.
 
-Für das Parsen von Argumenten, Speichern von Matrizen und Tests war *Lars Ellinger* zuständig. Er entwickelte auch ein
+Für das Parsen von Argumenten, Speichern von Matrizen, Tests sowie dem Rahmenprogramm war *Lars Ellinger* zuständig. Er entwickelte auch ein
 Programm zur Visualisierung der Benchmark-Ergebnisse und die Grafiken für die Präsentation. Außerdem kümmerte er sich um
 einheitliche Code-Formatierung mittels clang-format und erstellte das *Makefile*. Der Quellcode ist in den entsprechenden
 Ordnern zu finden.
