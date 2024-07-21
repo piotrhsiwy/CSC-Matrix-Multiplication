@@ -1,12 +1,11 @@
 #ifndef MUL_GUSTAFSON_SIMD_H
 #define MUL_GUSTAFSON_SIMD_H
 
-#include <string.h> // memset
 #include "../util/matrix_util.h"
-
+#include <string.h> // memset
 
 // Symbol defined in ../mul_compressed_values_vector_w_scalar_SIMD.S
-void mul_compressed_values_vector_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, float);
+void mul_compressed_values_vector_w_scalar_SIMD(DYNAMIC_ARRAY(float) *, float);
 
 /**
  * Just as matrix_mul_gustavson, but uses @b simd method above. Vectorization implemented in this routine
@@ -14,4 +13,4 @@ void mul_compressed_values_vector_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, float);
  */
 __attribute__((hot)) void matrix_mul_gustavson_simd(const void* a, const void* b, void* c);
 
-#endif //MUL_GUSTAFSON_SIMD_H
+#endif // MUL_GUSTAFSON_SIMD_H
