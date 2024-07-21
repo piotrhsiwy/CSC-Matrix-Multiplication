@@ -24,7 +24,7 @@ void deallocate_config_buffers(config* options)
 int main(const int argc, char** argv)
 {
     // uncomment this if you want to run the unit tests.
-    //unit_test_parse_arguments();
+    // unit_test_parse_arguments();
     config options = { .algorithm = 0, .benchmark_repeat_count = 10000, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrixA_path = NULL, .matrixB_path = NULL, .matrix_output_path = NULL };
     error err_parse_config = parse_arguments(argc, argv, &options);
     if (OK != err_parse_config) {
@@ -45,16 +45,16 @@ int main(const int argc, char** argv)
                                      "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
                                      "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
                                      "-V <Zahl>: Wählt den Algorithmus, der zur Multiplikation verwendet werden soll. Folgende sind verfügbar: \n"
-                                        "\t0: der normale Algorithmus. TODO was macht er\n"
+                                     "\t0: der normale Algorithmus. TODO was macht er\n"
                                      "-B : misst die Laufzeit der Verschiedenen Algorithmen auf einigen Matrizen. Diese Daten werden dann ausgegeben.\n"
                                      "-B <Zahl>: Wie '-B', aber die Berechnung wird <Zahl> mal durchgeführt.\n"
                                      "-U <Pfad zu Ausgabe-Datei>: Für automatisch Benchmarks mit verschiedenen werden und Algorithmen aus und speichert die Werte in der angegebenen csv-Datei.\n"
-                                        "\tKann in Kombination mit -B verwendet werden, um Startanzahl der Iterationen pro Messung anzugeben (default ist 10000). Die Anzahl der Iterationen wird automatisch basierend auf der Dauer später einzeln angepasst. Dabei werden die Ergebnisse jedoch nicht in stdout ausgegeben.\n"
-                                        "\tCtrl-C während der Ausführung: Menü mit folgenden Optionen:\n"
-                                            "\t\tTesten fortführen [c]: Führt den Test fort.\n"
-                                            "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
-                                            "\t\tNach allen Runs der aktuellen Größe beenden [s]: Testet zuvor noch alle Algorithmen für den aktuellen Row-Parameter und beendet den Test.\n"
-                                            "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
+                                     "\tKann in Kombination mit -B verwendet werden, um Startanzahl der Iterationen pro Messung anzugeben (default ist 10000). Die Anzahl der Iterationen wird automatisch basierend auf der Dauer später einzeln angepasst. Dabei werden die Ergebnisse jedoch nicht in stdout ausgegeben.\n"
+                                     "\tCtrl-C während der Ausführung: Menü mit folgenden Optionen:\n"
+                                     "\t\tTesten fortführen [c]: Führt den Test fort.\n"
+                                     "\t\tNach diesem Run beenden [r]: Testet zuvor noch alle Algorithmen für die aktuellen Parameter und beendet den Test.\n"
+                                     "\t\tNach allen Runs der aktuellen Größe beenden [s]: Testet zuvor noch alle Algorithmen für den aktuellen Row-Parameter und beendet den Test.\n"
+                                     "\t\tSofort beenden [q]: Beendet das Program sofort. (Mögl. Datenverlust)\n\n"
                                      "-h oder --help: Gibt diese Hilfe aus.";
 
         printf("%s\n", help_str);
@@ -149,7 +149,7 @@ int main(const int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)){
+    if (OK != allocate_matrix_data(a.no_rows, b.no_cols, &output)) {
         // Error messages are always printed on the level when the error is generated -> which is not good
         deallocate_config_buffers(&options);
         destruct_matrix_data(&a);

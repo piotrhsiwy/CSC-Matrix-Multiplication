@@ -10,19 +10,25 @@
 #include "error_handling/errors.h"
 #include "util/dynamic_array.h"
 
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#define EMPTY_MATRIX_INIT {.no_rows = 0, .no_cols = 0, .col_ptr = NULL, .values = {.data = NULL, .capacity = 0, .length = 0}, .row_indices = {.data = NULL, .capacity = 0, .length = 0}}
-
+#define EMPTY_MATRIX_INIT                                                                                                                  \
+    {                                                                                                                                      \
+        .no_rows = 0, .no_cols = 0, .col_ptr = NULL, .values = { .data = NULL, .capacity = 0, .length = 0 }, .row_indices = {.data = NULL, \
+            .capacity = 0,                                                                                                                 \
+            .length = 0 }                                                                                                                  \
+    }
 
 typedef struct {
     uint64_t no_rows;
     uint64_t no_cols;
     // size_t length_values; <-- this field is now in dynamic_values_x_row_indices->length
-    DYNAMIC_ARRAY(float) values;
-    DYNAMIC_ARRAY(uint64_t) row_indices;
+    DYNAMIC_ARRAY(float)
+    values;
+    DYNAMIC_ARRAY(uint64_t)
+    row_indices;
     // len (*colPtr) = noCols + 1
     uint64_t* col_ptr;
 
@@ -36,7 +42,7 @@ typedef struct {
 /**
  * Allocate storage for all the fields of the matrix and fill the no_rows and no_cols fields appropriately.
  * The mul_error field will be filled with UNDEFINED.
- * 
+ *
  * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
  */
 error allocate_matrix_data(uint64_t no_rows, uint64_t no_cols, matrix_data* matrix);
