@@ -6,11 +6,11 @@
 #define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc. Clan Tidy is stupid: NOLINT(*-reserved-identifier)
 #pragma clang diagnostic pop
 
-#include <string.h> // memset
-#include <stdint.h> // size_t, uint64_t
-#include <errno.h> // errno
-#include <stdlib.h> // reallocarray, free
 #include "pair.h"
+#include <errno.h> // errno
+#include <stdint.h> // size_t, uint64_t
+#include <stdlib.h> // reallocarray, free
+#include <string.h> // memset
 
 // Where do we use this?
 // - in matrix_mul_algorithms/mul_scalar.c we use it to allocate unknown-length arrays that are part of the matrix_data: row_indices and values
@@ -39,12 +39,12 @@ typedef struct {
         size_t length;                                                                                                 \
         size_t capacity;                                                                                               \
     } DYNAMIC_ARRAY(T);                                                                                                \
-    int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T)* arr, T v);                                          \
-    void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T)* arr, const size_t index, const T v);         \
-    int ___dynamic_array_##T##_macro_defined_concat(DYNAMIC_ARRAY(T)* dest, const DYNAMIC_ARRAY(T)* src);              \
-    T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T)* arr, const size_t index);  \
-    int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T)* arr);                              \
-    int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T)* arr);
+    int ___dynamic_array_##T##_macro_defined_add(DYNAMIC_ARRAY(T) * arr, T v);                                         \
+    void ___dynamic_array_##T##_macro_defined_set(const DYNAMIC_ARRAY(T) * arr, const size_t index, const T v);        \
+    int ___dynamic_array_##T##_macro_defined_concat(DYNAMIC_ARRAY(T) * dest, const DYNAMIC_ARRAY(T) * src);            \
+    T __attribute__((pure)) ___dynamic_array_##T##_macro_defined_at(const DYNAMIC_ARRAY(T) * arr, const size_t index); \
+    int ___dynamic_array_##T##_macro_defined_new(size_t capacity, DYNAMIC_ARRAY(T) * arr);                             \
+    int ___dynamic_array_##T##_macro_defined_reserve(size_t capacity, DYNAMIC_ARRAY(T) * arr);
 
 DYNAMIC_ARRAY_HEADER___(float)
 DYNAMIC_ARRAY_HEADER___(___dynamic_array_float_macro_defined)
@@ -78,4 +78,4 @@ void dynamic_array_recursive_destroy(generic_dynamic_array* arr);
  */
 void dynamic_array_destroy_top_layer(generic_dynamic_array* arr);
 
-#endif //DYNAMIC_ARRAY_H
+#endif // DYNAMIC_ARRAY_H
