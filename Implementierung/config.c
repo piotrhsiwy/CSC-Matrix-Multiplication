@@ -45,7 +45,6 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
         // : nach buchstabe -> required_argument, :: -> optional argument
         // nichts nach buchstaben -> kein argument
         const int ret_val = getopt_long(argc, argv, ":a:b:o:V:B:U:h", options_struct, &option_index);
-        // TODO check errno maybe?
         if (-1 == ret_val) {
             // alle optionen wurden abgearbeitet
             break;
