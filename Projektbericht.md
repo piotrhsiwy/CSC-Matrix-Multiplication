@@ -1,10 +1,5 @@
 # Projektbericht: Multiplikation dünnbesetzter Matrizen
 
-### Autoren
-- Piotr Siwy
-- Dominik Pecher
-- Lars Ellinger
-
 ## Ziel des Projekts
 Es sollten verschiedene Algorithmen zur Matrixmultiplikation dünnbesetzter Matrizen im CSC Format zu entwickelt und/oder
 optimiert und verglichen werden. Dazu sollten der mit C Standard C17 und gcc als Compiler verwendet werden.
@@ -16,8 +11,7 @@ und *make* müssen dazu installiert sein.
 ```bash
 cd ./Implementierung
 make release
-./main --help
-./main -a matrixA.txt -a matrixB.txt -o ergebnis.txt #Beispielausführung
+./main -a matrixA.txt -a matrixB.txt -o ergebnis.txt
 ```
 
 ## Arbeitsweise
@@ -43,18 +37,18 @@ Das Projekt wurde in drei große Bereiche unterteilt, wovon jeder einen übernom
 jedem Teilbereich kleine Änderungen übernommen und/oder ausgeholfen.
 
 Für verschiedene Implementierung Algorithmen war *Piotr Siwy* verantwortlich, wobei die Ideen für die meisten Algorithmen
-in den Meetings jeweils gesammelt und von allen Mitgliedern verbessert wurden. Darüber hinaus war er für verschiedene
-Hilfsfunktionen zu Matrizen verantwortlich, welche nicht explizit genannt werden. **TODO: weitere Gebiete?**
+in den Meetings jeweils gesammelt und von allen Mitgliedern verbessert wurden. Darüber hinaus erstellte er verschiedene
+Hilfsfunktionen zu Matrizen. **TODO: weitere Gebiete?**
 
 Für das Erstellen von Benchmarks (sowohl -V als auch -U) und alles direkt damit Verbundene war *Dominik Pecher*
-verantwortlich. Zudem kümmerte er sich um das Einlesen von Matrizen, Umsetzung von adaptiven dynamischen Arrays in C
-ohne Templates und die Struktur des Projektberichts. Um das Beheben sinnvoller und Ignorieren fälschlicher Warnungen
-sowie Debugging von Memory-Leaks kümmerte er sich ebenfalls. Die letzten beiden Punkte wurden jedoch von allen Anderen
-mit bearbeitet. **TODO: weitere Gebiete?**
+verantwortlich. Zudem kümmerte er sich um das Einlesen von Matrizen, Umsetzung von adaptiven dynamischen Arrays ohne
+Templates und die Struktur des Projektberichts. Um das Beheben sinnvoller und Ignorieren fälschlicher Warnungen sowie
+Debugging von Memory-Leaks kümmerte er sich ebenfalls. Die letzten beiden Punkte wurden von allen Anderen mit 
+bearbeitet. **TODO: weitere Gebiete?**
 
-Für das Parsen von Argumenten, Speichern von Matrizen und Benchmarks war *Lars Ellinger* zuständig. Des Weiteren war es
-seine Aufgabe ein Programm zur Visualisierung der Benchmark-Ergebnisse und damit die Grafiken für die Präsentation
-zu erstellen. Außerdem kümmerte er sich um einheitliche Code-Formatierung mittels Clang-Tidy und erstellte das
+Für das Parsen von Argumenten, Speichern von Matrizen und Benchmarks war *Lars Ellinger* zuständig. Es entwickelte
+auch ein Programm zur Visualisierung der Benchmark-Ergebnisse und die Grafiken für die Präsentation. Außerdem kümmerte
+er sich um einheitliche Code-Formatierung mittels Clang-Tidy und erstellte das
 *Makefile*. **TODO: weitere Gebiete?**
 
 Alle nicht genannten Aufgabengebiete können nicht überwiegend einer bestimmten Person zugeordnet werden.
