@@ -81,5 +81,4 @@ seine Aufgabe ein Programm zur Visualisierung der Benchmark-Ergebnisse und damit
 zu erstellen. Außerdem kümmerte er sich um einheitliche Code-Formatierung mittels Clang-Tidy und erstellte das
 *Makefile*. **TODO: weitere Gebiete?**
 
-Alle nicht genannten Aufgabengebiete können nicht überwiegend einer bestimmten Person zugeordnet werden, wodurch es
-sich dabei um reine Gemeinschaftsarbeit handelt.
+Alle nicht genannten Aufgabengebiete können nicht überwiegend einer bestimmten Person zugeordnet werden.
