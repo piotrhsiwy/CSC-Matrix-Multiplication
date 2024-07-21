@@ -11,6 +11,6 @@
  * @param b is a pointer to matrix_data containing metadata of the matrix B
  * @param results is a pointer to matrix_data containing metadata of the resulting matrix after the fuction is executed
  */
-void matrix_mul_scalar(const void* a, const void* b, void* c);
+void matr_mult_csc_internal(const void* a, const void* b, void* c);
 
 #endif // MUL_SCALAR_H

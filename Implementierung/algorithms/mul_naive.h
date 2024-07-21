@@ -10,6 +10,6 @@
  * a 2d array of size no_rows*no_cols and then calculates each cell of c separately
  * and writes it into expanded matrix of c. Then it compresses the matrix and writes the result
  */
-__attribute__((hot)) void matrix_mul_naive(const void* a, const void* b, void* c);
+__attribute__((hot)) void matr_mult_csc_V5(const void* a, const void* b, void* c);
 
 #endif // MUL_MUL_NAIVE_H

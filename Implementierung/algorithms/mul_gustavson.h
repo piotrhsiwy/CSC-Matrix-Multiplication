@@ -30,6 +30,6 @@
 of deep neural networks. Synthesis Lectures on Computer Architecture, 15(2), 2020
  * [3] https://www.researchgate.net/figure/Gustavson-algorithm-Sparse-matrix-matrix-multiplication-is-performed-in-a-row-wise_fig4_327077990#:~:text=Gustavson%20algorithm%3A%20Sparse%20matrix%E2%80%93matrix%20multiplication%20is%20performed%20in%20a,based%20on%20their%20column%20indices.
  */
-__attribute__((hot)) void matrix_mul_gustavson(const void* a, const void* b, void* c);
+__attribute__((hot)) void matr_mult_csc_V4(const void* a, const void* b, void* c);
 
 #endif // MUL_GUSTAFSON_H

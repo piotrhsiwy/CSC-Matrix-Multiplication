@@ -1,6 +1,6 @@
 #include "mul_vector.h"
 
-__attribute__((hot)) void matrix_mul_vector(const void* const a, const void* const b, void* const restrict c)
+__attribute__((hot)) void matr_mult_csc_V3(const void* const a, const void* const b, void* const restrict c)
 {
 
     const matrix_data* const matrix_A = (const matrix_data* const)a;

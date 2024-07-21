@@ -10,6 +10,6 @@
  * improve performance. It also silently utilizes the @b preextract optimization, that was
  * introduced for the first time in mul_scalar_expanded_preextract.
  */
-__attribute__((hot)) void matrix_mul_vector(const void* a, const void* b, void* c);
+__attribute__((hot)) void matr_mult_csc_V3(const void* a, const void* b, void* c);
 
 #endif // MUL_VECTOR_H

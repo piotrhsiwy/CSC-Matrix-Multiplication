@@ -2,14 +2,14 @@
 #include "../util/attributes.h"
 
 matrix_multiplier matrix_mul_algorithms[] = {
-    matrix_mul_scalar, // 0
-    matrix_mul_scalar_expanded, // 1
-    matrix_mul_scalar_expanded_preextract, // 2
-    matrix_mul_vector, // 3
-    matrix_mul_gustavson, // 4
-    matrix_mul_naive, // 5
-    matrix_mul_scalar_expanded_preextract_simd, // 6
-    matrix_mul_gustavson_simd, // 7
+    matr_mult_csc_internal,
+    matr_mult_csc_V1,
+    matr_mult_csc_V2,
+    matr_mult_csc_V3,
+    matr_mult_csc_V4,
+    matr_mult_csc_V5,
+    matr_mult_csc_V6,
+    matr_mult_csc_V7,
 };
 const char* matrix_mul_algorithm_names[] = {
     "scalar", // 0

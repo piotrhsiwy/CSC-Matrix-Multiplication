@@ -1,6 +1,6 @@
 #include "mul_scalar_expanded_preextract_simd.h"
 
-__attribute__((hot)) void matrix_mul_scalar_expanded_preextract_simd(const void* const a, const void* const b, void* const restrict c)
+__attribute__((hot)) void matr_mult_csc_V6(const void* const a, const void* const b, void* const restrict c)
 {
 
     const matrix_data* const matrix_A = (const matrix_data* const)a;
