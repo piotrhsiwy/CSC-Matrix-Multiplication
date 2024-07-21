@@ -1,8 +1,8 @@
 #ifndef MUL_SCALAR_EXPANDED_H
 #define MUL_SCALAR_EXPANDED_H
 
-#include <string.h> // memset
 #include "../util/matrix_util.h"
+#include <string.h> // memset
 
 /**
  * like matrix_mul_scalar (See mul_scalar.h), but @b expands the vectors before multiplying, making some
@@ -10,6 +10,6 @@
  * and no_cols are small enough so that we are able to allocate an array of pairs
  * of that size.
  * */
-__attribute__((hot)) void matrix_mul_scalar_expanded(const void*  a, const void*  b, void*  c);
+__attribute__((hot)) void matrix_mul_scalar_expanded(const void* a, const void* b, void* c);
 
-#endif //MUL_SCALAR_EXPANDED_H
+#endif // MUL_SCALAR_EXPANDED_H

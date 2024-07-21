@@ -27,7 +27,8 @@ __attribute__((cold)) error allocate_argument(const char* const optarg_to_proces
     *target = buffer;
     return OK;
 }
-__attribute__((cold)) long parse_number(const char* const optarg_to_process) {
+__attribute__((cold)) long parse_number(const char* const optarg_to_process)
+{
     errno = 0;
     const long value = strtol(optarg_to_process, NULL, 10);
     if (errno) {
@@ -102,9 +103,10 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
 }
 
 // to run this unit-test, put it somewhere in the main. Most of the time, the user doesnt want to unit-test so its not included.
-void unit_test_parse_arguments(void) {
+void unit_test_parse_arguments(void)
+{
     // do the basics work?
-    const char *input1[9];
+    const char* input1[9];
     input1[0] = "./main";
     input1[1] = "-a";
     input1[2] = "matrices/A.txt";
@@ -114,7 +116,7 @@ void unit_test_parse_arguments(void) {
     input1[6] = "matrices/C.txt";
     input1[7] = "-V";
     input1[8] = "1";
-    config options1 = {.benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL};
+    config options1 = { .benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL };
     error output1 = parse_arguments(7, (char* const*)input1, &options1);
     if (output1 != OK) {
         fprintf(stderr, "Testcase 1 should work fine, but it returned an error.\n");
@@ -140,7 +142,7 @@ void unit_test_parse_arguments(void) {
     const char* input2[2];
     input2[0] = "./main";
     input2[1] = "--help";
-    config options2 = {.benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL};
+    config options2 = { .benchmark_repeat_count = 10000, .algorithm = 0, .requested_help = false, .is_benchmark = false, .is_unattended_benchmark = false, .unattended_export_file = NULL, .matrix_output_path = NULL, .matrixB_path = NULL, .matrixA_path = NULL };
     error output2 = parse_arguments(1, (char* const*)input2, &options2);
     if (output2 != OK) {
         fprintf(stderr, "Testcase 2: should be sucessful, but another returnvalue was returned.\n");

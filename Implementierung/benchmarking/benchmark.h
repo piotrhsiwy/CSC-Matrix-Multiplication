@@ -1,9 +1,9 @@
 #ifndef GRA24CAPSPROJEKT_T064_BENCHMARK_H
 #define GRA24CAPSPROJEKT_T064_BENCHMARK_H
 
-#include "../matrix.h"
 #include "../algorithms/mul_algorithms.h"
 #include "../config.h"
+#include "../matrix.h"
 
 #include <time.h>
 
@@ -31,4 +31,4 @@ __attribute__((hot)) error execute_benchmark(const matrix_data* a, const matrix_
  */
 error unattended_benchmark(uint32_t initial_iterations_per_run, const char* export_csv);
 
-#endif //GRA24CAPSPROJEKT_T064_BENCHMARK_H
+#endif // GRA24CAPSPROJEKT_T064_BENCHMARK_H

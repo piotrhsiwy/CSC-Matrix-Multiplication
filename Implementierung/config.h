@@ -5,7 +5,6 @@
 
 #include <stdbool.h>
 
-
 typedef struct {
     long algorithm;
     char* matrixA_path;
@@ -14,7 +13,7 @@ typedef struct {
     bool requested_help;
     bool is_benchmark;
     bool is_unattended_benchmark;
-    char *unattended_export_file;
+    char* unattended_export_file;
     long benchmark_repeat_count;
 } config;
 
@@ -25,9 +24,9 @@ typedef struct {
  * @param program_config the struct whose values should be updated
  * @returns Possible Values: OK | OUT_OF_MEMORY
  */
-error parse_arguments(int argc, char *const * argv, config* program_config);
+error parse_arguments(int argc, char* const* argv, config* program_config);
 
-//TODO: use or remove
+// TODO: use or remove
 void unit_test_parse_arguments(void);
 
-#endif //GRA24CAPSPROJEKT_T064_CONFIG_H
+#endif // GRA24CAPSPROJEKT_T064_CONFIG_H
