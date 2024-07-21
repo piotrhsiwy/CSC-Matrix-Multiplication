@@ -31,22 +31,21 @@ unterschiedlicher Größe und Dichte automatisch generiert und mehrfach multipli
 Algorithmen werden in der angegebenen Datei dokumentiert und die Ergebnisse überprüft.
 
 ## Arbeitsaufteilung
-Das Projekt wurde in drei große Bereiche unterteilt, wovon jeder einen übernommen hat. Jedoch hat jedes Mitglied in
-jedem Teilbereich kleine Änderungen übernommen und/oder ausgeholfen.
-
 Für verschiedene Implementierung Algorithmen war *Piotr Siwy* verantwortlich, wobei die Ideen für die meisten Algorithmen
 in den Meetings jeweils gesammelt und von allen Mitgliedern verbessert wurden. Darüber hinaus erstellte er verschiedene
-Hilfsfunktionen zu Matrizen. **TODO: weitere Gebiete?**
+Hilfsfunktionen zu Matrizen. Zudem optimierte der diese mittels u. A. Profiling. Der Quellcode dazu befindet sich
+überwiegend in *algorithms/*.**TODO: weitere Gebiete?**
 
-Für das Erstellen von Benchmarks (sowohl -V als auch -U) und alles direkt damit Verbundene war *Dominik Pecher*
-verantwortlich. Zudem kümmerte er sich um das Einlesen von Matrizen, Umsetzung von adaptiven dynamischen Arrays ohne
-Templates und die Struktur des Projektberichts. Um das Beheben sinnvoller und Ignorieren fälschlicher Warnungen sowie
-Debugging von Memory-Leaks kümmerte er sich ebenfalls. Die letzten beiden Punkte wurden von allen Anderen mit 
-bearbeitet. **TODO: weitere Gebiete?**
+Für das Erstellen von Benchmarks und alles direkt damit Verbundene war *Dominik Pecher* verantwortlich. Zudem kümmerte
+er sich um das Einlesen von Matrizen, Umsetzung von adaptiven dynamischen Arrays ohne Templates, weitere
+utility-Funktionen und die Struktur des Projektberichts. Um das Beheben sinnvoller und Ignorieren fälschlicher Warnungen
+sowie Debugging von Memory-Leaks kümmerte er sich ebenfalls. Letztere wurden von allen Anderen mit bearbeitet. Der
+verbundene Quellcode befindet sich überwiegend in *util/* und *benchmarking/*. **TODO: weitere Gebiete?**
 
-Für das Parsen von Argumenten, Speichern von Matrizen und Benchmarks war *Lars Ellinger* zuständig. Es entwickelte
-auch ein Programm zur Visualisierung der Benchmark-Ergebnisse und die Grafiken für die Präsentation. Außerdem kümmerte
-er sich um einheitliche Code-Formatierung mittels Clang-Tidy und erstellte das
-*Makefile*. **TODO: weitere Gebiete?**
+Für das Parsen von Argumenten, Speichern von Matrizen und Tests war *Lars Ellinger* zuständig. Es entwickelte auch ein
+Programm zur Visualisierung der Benchmark-Ergebnisse und die Grafiken für die Präsentation. Außerdem kümmerte er sich um
+einheitliche Code-Formatierung mittels Clang-Tidy und erstellte das *Makefile*. Der Quellcode ist in den entsprechenden
+Ordnern zu finden.**TODO: weitere Gebiete?**
 
-Alle nicht genannten Aufgabengebiete können nicht überwiegend einer bestimmten Person zugeordnet werden.
+Alle nicht genannten Aufgabengebiete können nicht überwiegend einer bestimmten Person zugeordnet werden. Zudem hat jedes
+Mitglied in anderen Teilbereichen kleine Änderungen vorgenommen und ausgeholfen.

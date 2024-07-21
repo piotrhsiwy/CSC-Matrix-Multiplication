@@ -1,9 +1,9 @@
 #ifndef GRA24CAPSPROJEKT_T064_BENCHMARK_H
 #define GRA24CAPSPROJEKT_T064_BENCHMARK_H
 
-#include "matrix.h"
-#include "algorithms/mul_algorithms.h"
-#include "config.h"
+#include "../matrix.h"
+#include "../algorithms/mul_algorithms.h"
+#include "../config.h"
 
 #include <time.h>
 

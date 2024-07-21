@@ -1,7 +1,7 @@
 #include "benchmark.h"
-#include "util/signal_io.h"
-#include "util/attributes.h"
-#include "util/rng.h"
+#include "../util/signal_io.h"
+#include "../util/attributes.h"
+#include "../util/rng.h"
 
 #include <errno.h>
 #include <signal.h>

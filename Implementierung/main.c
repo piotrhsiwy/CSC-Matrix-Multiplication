@@ -1,5 +1,5 @@
 #include "algorithms/mul_algorithms.h"
-#include "benchmark.h"
+#include "benchmarking/benchmark.h"
 #include "config.h"
 #include "matrix.h"
 
