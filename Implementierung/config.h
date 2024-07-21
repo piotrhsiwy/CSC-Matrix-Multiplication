@@ -27,6 +27,7 @@ typedef struct {
  */
 error parse_arguments(int argc, char *const * argv, config* program_config);
 
+//TODO: use or remove
 void unit_test_parse_arguments(void);
 
 #endif //GRA24CAPSPROJEKT_T064_CONFIG_H

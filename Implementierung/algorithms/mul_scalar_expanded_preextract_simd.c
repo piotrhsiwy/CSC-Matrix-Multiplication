@@ -107,5 +107,4 @@ __attribute__((hot)) void matrix_mul_scalar_expanded_preextract_simd(const void 
     nested_free(matrix_A->no_rows, all_vectors_A);
     free(vector_B);
     matrix_C->mul_error = OK;
-    return;
 }

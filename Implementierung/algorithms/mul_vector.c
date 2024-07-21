@@ -124,5 +124,4 @@ __attribute__((hot)) void matrix_mul_vector(const void *const a, const void *con
     free(vector_B);
     free(result);
     matrix_C->mul_error = OK;
-    return;
 }

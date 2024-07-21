@@ -199,8 +199,8 @@ size_t extract_expanded_col_csc(const matrix_data* const matrix, const uint64_t 
 	size_t number_of_elements = 0;
 	for(uint64_t j = matrix->col_ptr[index]; j < matrix->col_ptr[index+1]; j++){
 		float value = dynamic_array_at(float, &matrix->values, j);
-		uint64_t index = dynamic_array_at(uint64_t, &matrix->row_indices, j);;
-		vector[index] = value; // note that vector is always large enough
+		uint64_t value_index = dynamic_array_at(uint64_t, &matrix->row_indices, j);
+		vector[value_index] = value; // note that vector is always large enough
 		number_of_elements++;
 	}
 	return number_of_elements;

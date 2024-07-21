@@ -1,8 +1,11 @@
 #ifndef GRA24CAPSPROJEKT_T064_MATRIX_H
 #define GRA24CAPSPROJEKT_T064_MATRIX_H
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMacroInspection"
 // we need this because getline is not part of C-standard, see man 3 getline vs man 3 fgets
-#define _POSIX_C_SOURCE 200809L
+#define _POSIX_C_SOURCE 200809L // NOLINT(*-reserved-identifier)
+#pragma clang diagnostic pop
 
 #include "error_handling/errors.h"
 #include "util/dynamic_array.h"
@@ -36,7 +39,7 @@ typedef struct {
  * 
  * @return OUT_OF_MEMORY if one of the allocations failed due to lack of memory OK otherwise
  */
-error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matrix_data* const matrix);
+error allocate_matrix_data(uint64_t no_rows, uint64_t no_cols, matrix_data* matrix);
 
 /**
  * Free all fields of the matrix, including
@@ -45,7 +48,7 @@ error allocate_matrix_data(const uint64_t no_rows, const uint64_t no_cols, matri
  * Zero the fields
  *  no_cols
  *  no_rows
- * Set the mul_erorr field to undefined
+ * Set the mul_error field to undefined
  */
 void destruct_matrix_data(matrix_data* data);
 

@@ -99,5 +99,4 @@ __attribute__((hot)) void matrix_mul_scalar_expanded(const void *const a, const 
 
     free(vector_A);
     free(vector_B);
-    return;
 }

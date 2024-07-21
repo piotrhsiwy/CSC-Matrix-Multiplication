@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
-#define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc
+#define _GNU_SOURCE // needed if we use reallocarray() instead of realloc. See man realloc. Clan Tidy is stupid: NOLINT(*-reserved-identifier)
 #include <string.h> // memset
 #include <stdint.h> // size_t, uint64_t
 #include <errno.h> // errno
@@ -50,7 +50,6 @@ DYNAMIC_ARRAY_HEADER___(pair)
 DYNAMIC_ARRAY_HEADER___(___dynamic_array_pair_macro_defined)
 #define DYNAMIC_ARRAY_2D_float DYNAMIC_ARRAY(___dynamic_array_float_macro_defined)
 #define DYNAMIC_ARRAY_2D_uint64_t DYNAMIC_ARRAY(___dynamic_array_uint64_t_macro_defined)
-#define DYNAMIC_ARRAY_2D_pair DYNAMIC_ARRAY(___dynamic_array_pair_macro_defined)
 
 /**
  * Clears all fields of the given array (including als pointers to allocated memory).

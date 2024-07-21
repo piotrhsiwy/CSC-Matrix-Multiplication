@@ -1,5 +1,9 @@
-#include <stdlib.h>
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cert-msc50-cpp"
+
 #include "rng.h"
+
+#include <stdlib.h>
 
 
 unsigned int start_seed;
@@ -26,3 +30,5 @@ int next_random_number(void) {
     ++index_in_series;
     return rand();
 }
+
+#pragma clang diagnostic pop

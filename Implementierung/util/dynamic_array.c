@@ -59,7 +59,6 @@ DYNAMIC_ARRAY_DECL(___dynamic_array_float_macro_defined)
 DYNAMIC_ARRAY_DECL(uint64_t)
 DYNAMIC_ARRAY_DECL(___dynamic_array_uint64_t_macro_defined)
 DYNAMIC_ARRAY_DECL(pair)
-DYNAMIC_ARRAY_DECL(___dynamic_array_pair_macro_defined)
 
 void dynamic_array_destroy_top_layer(generic_dynamic_array* arr){
     generic_dynamic_array* base = arr->data;

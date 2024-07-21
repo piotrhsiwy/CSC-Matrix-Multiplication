@@ -96,7 +96,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
     if (token[0] == '-'){
         REPORT_BAD_VALUE;
     }
-    if (data->no_rows == 0 || (data->no_rows == ULONG_MAX && errno == ERANGE || errno != 0)){
+    if (data->no_rows == 0 || ((data->no_rows == ULONG_MAX && errno == ERANGE) || errno != 0)){
         REPORT_BAD_VALUE;
     }
     errno = 0;
@@ -150,16 +150,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
         } else if( value <= __FLT_MIN__ && value >= -__FLT_MIN__ && errno == ERANGE) {
             fprintf(stderr, "Warnung: Unterlauf -> Wert '%s' wird gerundet.\n", token);
             errno = 0;
-        } else if( isinff(value) || isnanf(value) ){
-            // inf, -inf or NaN
-            dynamic_array_destroy((generic_dynamic_array*)&data->values);
-            REPORT_BAD_VALUE;
-        } else if(errno != 0) {
-            // other error
-            dynamic_array_destroy((generic_dynamic_array*)&data->values);
-            REPORT_BAD_VALUE;
-        } else if (value == 0.f) {
-            // zero is not allowed 
+        } else if(isinff(value) || isnanf(value) || errno != 0 || value == 0.f) {
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             REPORT_BAD_VALUE;
         }
@@ -208,11 +199,7 @@ __attribute__((cold)) error read_matrix_from_fd(FILE* const stream, matrix_data*
            break;
         }
         const uint64_t row_index = u64reader(token, NULL, 10);
-        if (token[0] == '-'){
-            dynamic_array_destroy((generic_dynamic_array*)&data->values);
-            dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
-            REPORT_BAD_VALUE;
-        } else if(errno == ERANGE || row_index > data->no_rows-1 || errno != 0) {
+        if (token[0] == '-' || errno == ERANGE || row_index > data->no_rows-1 || errno != 0) {
             dynamic_array_destroy((generic_dynamic_array*)&data->values);
             dynamic_array_destroy((generic_dynamic_array*)&data->row_indices);
             REPORT_BAD_VALUE;

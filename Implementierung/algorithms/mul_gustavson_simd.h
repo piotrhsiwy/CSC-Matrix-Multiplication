@@ -6,12 +6,12 @@
 
 
 // Symbol defined in ../mul_compressed_values_vector_w_scalar_SIMD.S
-void mul_compressed_values_vector_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, const float);
+void mul_compressed_values_vector_w_scalar_SIMD(DYNAMIC_ARRAY(float)*, float);
 
 /**
  * Just as matrix_mul_gustavson, but uses @b simd method above. Vectorization implemented in this routine
  * should bring perfomance benefits.
  */
-__attribute__((hot)) void matrix_mul_gustavson_simd(const void*  a, const void*  b, void*  c);
+__attribute__((hot)) void matrix_mul_gustavson_simd(const void* a, const void* b, void* c);
 
 #endif //MUL_GUSTAFSON_SIMD_H

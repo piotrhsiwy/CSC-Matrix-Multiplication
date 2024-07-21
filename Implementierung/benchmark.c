@@ -128,7 +128,7 @@ error unattended_benchmark_for_dimensions(const uint64_t rows, const uint64_t co
     b->row_indices.length = 0;
     b->values.length = 0;
 
-    for(long double filledRelativeBase = 0.; filledRelativeBase <= 1; filledRelativeBase += 0.05) { //Using floating-points in a loop is fine in this case since the resolution is high enough.
+    for(long double filledRelativeBase = 0.; filledRelativeBase <= 1; filledRelativeBase += 0.05) { //Using floating-points in a loop is fine in this case since the resolution is high enough. NOLINT(*-flp30-c)
         const long double filledRelativeBaseTransformed = filledRelativeBase * filledRelativeBase;
 
         rng_start_values rng_state = get_current_rng_seed();

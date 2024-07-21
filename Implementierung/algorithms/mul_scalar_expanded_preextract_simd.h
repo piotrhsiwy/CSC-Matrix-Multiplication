@@ -5,7 +5,7 @@
 #include "../util/matrix_util.h"
 
 // Symbol defined in ../mul_vectors_expanded_SIMD.S
-float mul_vectors_expanded_SIMD(size_t, float* const, float* const);
+float mul_vectors_expanded_SIMD(size_t, float*, float*);
 
 /**
  * Like matrix_mul_scalar_expanded_preextract so @b expands and @b preextracts but it

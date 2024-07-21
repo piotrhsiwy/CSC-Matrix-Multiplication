@@ -42,7 +42,7 @@ error sum_compressed_matrix
 /**
  * multiply in place each value in the vector (float values) with scalar.
  */
-void mul_compressed_values_vector_w_scalar(DYNAMIC_ARRAY(float)* vector, const float scalar);
+void mul_compressed_values_vector_w_scalar(DYNAMIC_ARRAY(float)* vector, float scalar);
 
 /**
  * Multiplies a vector with an array of vectors. An array of rows of Matrix A and 1 column of Matrix B
@@ -130,13 +130,7 @@ size_t extract_expanded_col_csc(const matrix_data* matrix, uint64_t index, float
  *   columns indices of the values in the matrix
  * @return OUT_OF_MEMORY in case adding new element to the dynamic_vector fails (realloc fails) OK else
  */
-error extract_compressed_row_csc
-(
-	const matrix_data* const matrix,
-	const uint64_t index,
-	DYNAMIC_ARRAY(float)* values,
-	DYNAMIC_ARRAY(uint64_t)* indices
-);
+error extract_compressed_row_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(float)* values, DYNAMIC_ARRAY(uint64_t)* indices);
 
 /**
  * Extracts a column in a compressed form, from a matrix in CSC.
@@ -154,7 +148,7 @@ error extract_compressed_row_csc
  *  OUT_OF_MEMORY in case adding new element to either the values or the indices fails (realloc fails)
  *  OK else
  */
-error extract_compressed_col_csc(const matrix_data* const matrix, const uint64_t index, DYNAMIC_ARRAY(float)* values,  DYNAMIC_ARRAY(uint64_t)* indices);
+error extract_compressed_col_csc(const matrix_data* matrix, uint64_t index, DYNAMIC_ARRAY(float)* values,  DYNAMIC_ARRAY(uint64_t)* indices);
 
 /**
  * expands a matrix in Compressed Sparse Column Format (CSC) to a regular matrix

@@ -146,5 +146,4 @@ __attribute__((hot)) void matrix_mul_scalar(const void *const a, const void *con
     dynamic_array_destroy((generic_dynamic_array*)&indices_A);
     dynamic_array_destroy((generic_dynamic_array*)&values_B);
     dynamic_array_destroy((generic_dynamic_array*)&indices_B);
-    return;
 }

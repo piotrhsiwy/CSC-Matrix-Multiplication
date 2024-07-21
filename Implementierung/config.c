@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
+
 struct option options_struct[] = {
     { "help", no_argument, 0, 'h' }
 };
@@ -103,10 +104,12 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
     return OK;
 }
 
+//TODO: use or remove
 void print_config_struct(config option) {
     printf("");
 }
 
+//TODO: use
 // to run this unit-test, put it somewhere in the main. Most of the time, the user doesnt want to unit-test so its not included.
 void unit_test_parse_arguments(void) {
     // do the basics work?
