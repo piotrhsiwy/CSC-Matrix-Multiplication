@@ -19,8 +19,17 @@ das Programm erstellt werden kann - *siehe unten*.
 ```bash
 cd ./Implementierung
 make [release|debug|...] #eine der genannten Optionen
+./main [optionen (bspw. --help oder -a matrixA.txt -a matrixB.txt -o ergebnis.txt)]
 ```
 
 ## Arbeitsweise
+Von den Projektmitgliedern wurde mindestens einmal wöchentlich ein Meeting einberufen, bei dem der bisherige
+Arbeitsfortschritt, aktuelle Probleme besprochen und die nächsten Aufgaben verteilt und besprochen wurden.
 
-## Arbeitsablauf
+Im Zuge dieser Meetings wurde auch stets ein Codereview aller Codeänderungen seit dem letzten Meeting von allen
+Mitgliedern durchgeführt, um Bugs zu vermeiden.
+
+Von git-branches wurde abgesehen, da sowohl Artemis diese nicht unterstützt, als auch, um schnellere Zusammenarbeit
+zu ermöglichen. Um dennoch Merge-Konflikte zu vermeiden wurde der Quellcode in viele separate Dateien aufgeteilt.
+
+## Arbeitsaufteilung
