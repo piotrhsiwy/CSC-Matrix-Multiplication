@@ -31,4 +31,4 @@ rng_start_values get_current_rng_seed(void);
  */
 int next_random_number(void);
 
-#endif //GRA24CAPSPROJEKT_T064_RNG_H
+#endif // GRA24CAPSPROJEKT_T064_RNG_H
