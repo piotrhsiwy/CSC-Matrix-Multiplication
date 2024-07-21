@@ -69,7 +69,6 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
             RETURN_IF_NOT_OK_SIMPLE(err_return_value);
             break;
         case 'V':
-            // TODO handle invalid arguments (i.e. things that arent a number)
             err_return_value = parse_number(optarg, &program_config->algorithm);
             if (err_return_value != OK) {
                 fprintf(stderr, "You tried to pass something thats not a number to select the algorithm.\n Falling back to the default.");
