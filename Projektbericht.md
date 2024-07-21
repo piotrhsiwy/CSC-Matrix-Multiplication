@@ -31,7 +31,7 @@ unterschiedlicher Größe und Dichte automatisch generiert und mehrfach multipli
 Algorithmen werden in der angegebenen Datei dokumentiert und die Ergebnisse überprüft.
 
 ## Arbeitsaufteilung
-Für verschiedene Implementierung Algorithmen war *Piotr Siwy* verantwortlich, wobei die Ideen für die meisten Algorithmen
+Für verschiedene Algorithmen war *Piotr Siwy* verantwortlich, wobei die Ideen für die meisten Algorithmen
 in den Meetings jeweils gesammelt und von allen Mitgliedern verbessert wurden. Darüber hinaus erstellte er verschiedene
 Hilfsfunktionen zu Matrizen. Zudem optimierte der diese mittels u. A. Profiling. Der Quellcode dazu befindet sich
 überwiegend in *algorithms/*.**TODO: weitere Gebiete?**
