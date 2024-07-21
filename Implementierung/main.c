@@ -40,7 +40,8 @@ int main(const int argc, char** argv)
     }
     if (options.requested_help) {
         // TODO add all the algorithms and what they do
-        const char* const help_str = "Das Programm unterstützt folgende Optionen:\n"
+        const char* const help_str = "Help Message\n\n"
+                                     "Das Programm unterstützt folgende Optionen:\n"
                                      "-a <Pfad zur Datei> : Pfad zur Datei, in der die erste Matrix, die multipliziert werden soll liegt.\n"
                                      "-b <Pfad zur Datei> : Pfad zur Datei, in der die zweite Matrix, die multipliziert werden soll liegt.\n"
                                      "-o <Pfad zur Datei> : Pfad, an dem das Ergebnis der Multiplikation geschrieben werden sollte.\n\n"
