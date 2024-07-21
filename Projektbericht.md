@@ -1,8 +1,8 @@
 # Projektbericht: Multiplikation dünnbesetzter Matrizen
 
 ## Ziel des Projekts
-Es sollten verschiedene Algorithmen zur Matrixmultiplikation dünnbesetzter Matrizen im CSC Format zu entwickelt und/oder
-optimiert und verglichen werden. Dazu sollten der mit C Standard C17 und gcc als Compiler verwendet werden.
+Es sollten Algorithmen zur Matrixmultiplikation dünnbesetzter Matrizen im CSC Format zu entwickelt und/oder optimiert
+und verglichen werden. Dazu sollten der C Standard C17 und gcc als Compiler verwendet werden.
 
 ## Ausführen des entwickelten Programms
 Im Ordner *Implementierung/* befindet sich ein *Makefile*, über das das Programm unter Linux erstellt werden kann. *gcc*
@@ -16,21 +16,19 @@ make release
 
 ## Arbeitsweise
 Es wurde einmal wöchentlich ein Stand-up abgehalten, bei dem der Arbeitsfortschritt und aktuelle Probleme besprochen und
-die nächsten Aufgaben verteilt wurden.
+weitere Aufgaben verteilt wurden.
 
-Im Zuge dieser Meetings wurde stets ein Codereview aller Codeänderungen seit dem letzten Termin von Allen durchgeführt,
-um Bugs zu vermeiden.
+Im Zuge dieser Meetings wurde ein Codereview aller Codeänderungen seit dem letzten Termin von Allen durchgeführt.
 
-Von git-branches wurde abgesehen, um schnellere Zusammenarbeit zu ermöglichen. Um dennoch Merge-Konflikte zu vermeiden
+Von git-Branches wurde abgesehen, um schnellere Zusammenarbeit zu ermöglichen. Um dennoch Merge-Konflikte zu vermeiden
 wurde der Quellcode in viele separate Dateien aufgeteilt und Änderungen klar kommuniziert.
 
 ## Performanzanalyse
 Es wurden parallel mit zwei verschiedenen Systemen und CPU-Architekturen die Performanz der Implementierungen gemessen.
 
-Dazu wurde eine *Benchmarking-Funktionalität* in das Programm eingebaut, welche über die Option *-U <csv-Datei-Pfad>*
-verwendet werden kann. Es werden Matrizen unterschiedlicher Größe und Dichte automatisch generiert und mehrfach
-multipliziert. Die Zeiten der einzelnen Algorithmen werden in der angegebenen Datei dokumentiert und die Ergebnisse
-überprüft.
+Dazu wurde eine *Benchmarking-Funktionalität* in das Programm eingebaut: *-U <csv-Datei-Pfad>*. Es werden Matrizen
+unterschiedlicher Größe und Dichte automatisch generiert und mehrfach multipliziert. Die Zeiten der einzelnen
+Algorithmen werden in der angegebenen Datei dokumentiert und die Ergebnisse überprüft.
 
 ## Arbeitsaufteilung
 Das Projekt wurde in drei große Bereiche unterteilt, wovon jeder einen übernommen hat. Jedoch hat jedes Mitglied in
