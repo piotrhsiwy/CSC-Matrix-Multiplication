@@ -29,7 +29,8 @@ void nested_free(size_t size, float** vectors);
  * @param result_indices is where the result is stored
  *
  * @return
- *  // TODO
+ *  OUT_OF_MEMORY in case either the values or the indices cannot be added to the result vectors due to insufficient memory
+ *  OK else
  */
 error sum_compressed_matrix(
     DYNAMIC_ARRAY_2D_float* const vector_2D_values,
