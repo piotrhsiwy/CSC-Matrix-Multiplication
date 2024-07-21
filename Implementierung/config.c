@@ -93,8 +93,11 @@ __attribute__((cold)) error parse_arguments(const int argc, char* const* const a
             program_config->is_benchmark = true;
             program_config->benchmark_repeat_count = 1;
             break;
+        case '?':
+            // user tried to pass an option that doesnt exist.
+            fprintf(stderr, "You tried to pass option '%c' which doesnt exists.", optopt);
+            break;
         default:
-            // TODO handle all possible return values of getopt_long
             break;
         }
     }
