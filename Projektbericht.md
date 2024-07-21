@@ -1,6 +1,6 @@
 # Projektbericht: Multiplikation dünnbesetzter Matrizen
 
-## Ziel des Projekts
+## Projektzielsetung
 Es sollten Algorithmen zur Matrixmultiplikation dünnbesetzter Matrizen im CSC Format zu entwickelt und/oder optimiert
 und verglichen werden. Dazu sollten der C Standard C17 und gcc als Compiler verwendet werden.
 
