@@ -1,7 +1,7 @@
 #ifndef GRA24CAPSPROJEKT_T064_CONFIG_H
 #define GRA24CAPSPROJEKT_T064_CONFIG_H
 
-#include "error_handling/errors.h"
+#include "error-handling/errors.h"
 
 #include <stdbool.h>
 

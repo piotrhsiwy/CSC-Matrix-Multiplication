@@ -7,7 +7,7 @@
 #define _POSIX_C_SOURCE 200809L // NOLINT(*-reserved-identifier)
 #pragma clang diagnostic pop
 
-#include "error_handling/errors.h"
+#include "error-handling/errors.h"
 #include "util/dynamic_array.h"
 
 #include <stdint.h>

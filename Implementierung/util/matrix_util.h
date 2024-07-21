@@ -4,7 +4,7 @@
 #include <stdint.h> // uint64_t
 #include <string.h> // memccpy
 
-#include "../error_handling/errors.h"
+#include "../error-handling/errors.h"
 #include "../matrix.h"
 #include "dynamic_array.h"
 #include "pair.h"
