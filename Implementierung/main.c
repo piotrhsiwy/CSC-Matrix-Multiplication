@@ -74,7 +74,6 @@ int main(const int argc, char** argv)
     }
     // Did the user pass all required options?
     if (NULL == options.matrixA_path) {
-        // TODO bessere Fehlermeldung, v. A. wenn -U ohne Parameter angegeben wird.
         fprintf(stderr, "Ein Pfad für die Matrix A muss spezifiziert werden.\n");
         deallocate_config_buffers(&options);
         return EXIT_FAILURE;
@@ -180,7 +179,6 @@ int main(const int argc, char** argv)
     }
 
     // now write the output
-    // TODO evtl printen??
     FILE* matrix_output_file = fopen(options.matrix_output_path, "w");
     if (!matrix_output_file) {
         fprintf(stderr, "Datei '%s' kann nicht geöffnet werden\n", options.matrix_output_path);
